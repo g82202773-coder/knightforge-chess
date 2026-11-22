@@ -50,19 +50,19 @@ class OpeningCatalog:
     def from_dict(cls, payload: dict[str, Any]) -> OpeningCatalog:
         """Validate taxonomy structure and flatten its named entries."""
         if not isinstance(payload, dict):
-            raise ValueError("Taxonomy root must be an object.")
+            raise TypeError("Taxonomy root must be an object.")
         version = payload.get("schema_version")
         families = payload.get("families")
         if not isinstance(version, str) or not version.strip():
             raise ValueError("schema_version is required.")
         if not isinstance(families, list):
-            raise ValueError("families must be an array.")
+            raise TypeError("families must be an array.")
 
         references: list[OpeningReference] = []
         seen_ids: set[str] = set()
         for family_index, family in enumerate(families):
             if not isinstance(family, dict):
-                raise ValueError(f"Family {family_index} must be an object.")
+                raise TypeError(f"Family {family_index} must be an object.")
             family_id = cls._required_text(family, "id", f"family {family_index}")
             family_name = cls._required_text(family, "name", family_id)
             side = family.get("side")
@@ -70,11 +70,11 @@ class OpeningCatalog:
                 raise ValueError(f"Invalid side for family {family_id}.")
             systems = family.get("systems")
             if not isinstance(systems, list):
-                raise ValueError(f"systems must be an array for family {family_id}.")
+                raise TypeError(f"systems must be an array for family {family_id}.")
 
             for system_index, system in enumerate(systems):
                 if not isinstance(system, dict):
-                    raise ValueError(f"System {system_index} in {family_id} must be an object.")
+                    raise TypeError(f"System {system_index} in {family_id} must be an object.")
                 system_id = cls._required_text(system, "id", family_id)
                 system_name = cls._required_text(system, "name", system_id)
                 if system_id in seen_ids:
