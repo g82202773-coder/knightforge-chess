@@ -4,7 +4,7 @@
 
 KnightForge is a chess-learning platform for beginners through advanced players. Its goal is to teach not only which move to play, but *why* it works—then turn each learner's mistakes into a focused training plan.
 
-> Project status: **Foundation / planning**. No playable app or chess engine integration has been implemented yet.
+> Project status: **Engine foundation in progress**. The Python package now contains a standard-chess rules wrapper, opening taxonomy and variation-tree validation, provenance-aware knowledge records, and a bounded Stockfish UCI adapter. There is still no playable app, deployed API, bundled Stockfish executable, persistent opening repository, or complete opening/puzzle library.
 
 ## Product pillars
 
@@ -59,11 +59,17 @@ These are proposed defaults, not implemented dependencies yet. We will confirm t
 ## Current status
 
 - [x] Public GitHub repository created.
-- [x] Product and architecture foundation documented.
-- [ ] Select and scaffold the first runnable client.
-- [ ] Implement and test the chessboard and rules integration.
-- [ ] Build the first beginner lesson and puzzle flow.
-- [ ] Integrate Stockfish analysis.
+- [x] Product, architecture, and roadmap documented.
+- [x] Python engine package scaffolded with CI, linting, and automated tests.
+- [x] Standard-chess game-state wrapper implemented on python-chess.
+- [x] Opening taxonomy reader and legal variation-tree model implemented.
+- [x] Versioned opening-tree serialization and position/transposition index implemented.
+- [x] Provenance-aware knowledge record model implemented.
+- [x] Bounded Stockfish UCI adapter implemented; executable setup and live integration tests remain outstanding.
+- [ ] Add persistent opening repository and robust import/export workflow.
+- [ ] Expand rule-edge-case, draw-claim, and Stockfish adapter tests.
+- [ ] Select and scaffold the first runnable client and API.
+- [ ] Build the first beginner lesson and validated puzzle flow.
 - [ ] Add accounts, synchronization, and subscriptions after the core learning loop works.
 
 ## License
