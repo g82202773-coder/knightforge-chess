@@ -1,4 +1,3 @@
-import chess
 import pytest
 
 from knightforge_engine.opening_tree import OpeningTree, VariationNode
