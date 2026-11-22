@@ -16,7 +16,7 @@ This is a proposed architecture. No dependencies or services have been deployed 
 
 - Identity and profiles
 - Course catalogue and lesson content
-- Openings and variation trees
+- Openings and variation trees (implemented foundation: validated move trees, position/transposition index, and local versioned JSON persistence)
 - Puzzle catalogue and attempts
 - Games, positions, FEN, and PGN
 - Engine analysis jobs
@@ -47,6 +47,10 @@ This is a proposed architecture. No dependencies or services have been deployed 
 - LearningEvent(id, user_id, event_type, reference_id, outcome, created_at)
 
 Schema details will be refined before migrations are written.
+
+### Current opening persistence boundary
+
+The engine currently persists validated opening trees in a versioned JSON document using atomic file replacement. It supports stable-ID lookup, case-insensitive search by ID/name/ECO/alias, duplicate rejection, and re-validation on load. This adapter is deliberately single-process/single-writer; it is suitable for local development and early content authoring, not concurrent multi-worker production. PostgreSQL remains the intended transactional store when the API/database phase begins. The move-order tree remains the canonical authored variation structure; the position index connects transpositions without discarding opening identity or move-order context.
 
 ## 5. Key API concepts
 
