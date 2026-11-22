@@ -11,3 +11,5 @@ __all__ = [
     "KnowledgeRecord",
     "KnowledgeType",
 ]
+
+from .opening_tree import OpeningTree, VariationNode
