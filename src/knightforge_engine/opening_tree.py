@@ -13,7 +13,6 @@ from typing import Any
 
 import chess
 
-
 TREE_SCHEMA_VERSION = 1
 
 
