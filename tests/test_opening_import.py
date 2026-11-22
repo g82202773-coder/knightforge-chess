@@ -89,3 +89,15 @@ def test_import_rejects_illegal_move_in_any_record_before_mutation(tmp_path):
 def test_import_rejects_unknown_envelope_schema():
     with pytest.raises(ValueError, match="Unsupported"):
         parse_opening_import({"schema_version": 2, "openings": []})
+
+def test_import_rejects_empty_opening_tree(tmp_path):
+    repository = OpeningRepository.load(tmp_path / "openings.json")
+    record = _record()
+    record["roots"] = []
+
+    with pytest.raises(ValueError, match="no move branches"):
+        import_openings({"schema_version": 1, "openings": [record]}, repository)
+
+    assert repository.all() == ()
+    assert not repository.path.exists()
+
