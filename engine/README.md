@@ -11,12 +11,28 @@ This package is the shared chess foundation for KnightForge. It is designed to b
 - Typed, provenance-aware records for opening lines and tactical knowledge.
 - A versioned JSON opening repository with legal validation, ID/ECO/name/alias search, duplicate protection, and atomic file replacement.
 - A versioned opening import pipeline that validates complete batches, legal move trees, source/license metadata, and duplicate IDs before one repository save.
+- An opening coverage analyzer that compares taxonomy systems and named variations against stored, legally validated move trees and reports missing content, provenance gaps, review state, move-node totals, and transpositions.
 
 ## Important boundaries
 
 The rules library decides legality and game state. Stockfish supplies search results and evaluations under explicit limits. The knowledge catalogue stores reviewed chess concepts and lines. These are separate responsibilities.
 
 This package does **not** yet contain a complete opening encyclopedia, puzzle database, custom search algorithm, or a bundled Stockfish executable. Those require separate implementation, sourced content, validation, and testing. Stockfish must be installed separately and its distribution terms must be followed.
+
+## Opening coverage analysis
+
+The taxonomy is a naming/index layer, not playable opening content. Coverage is counted only when a repository tree uses the exact taxonomy system ID, and a named variation is counted only when a node in that tree carries the exact variation label. Similar names and aliases do not inflate coverage.
+
+```python
+from knightforge_engine import OpeningCatalog, OpeningRepository, analyze_opening_coverage
+
+catalog = OpeningCatalog.load("data/openings/opening_taxonomy.json")
+repository = OpeningRepository.load("data/openings/repository.json")
+report = analyze_opening_coverage(catalog, repository)
+print(report.to_dict())
+```
+
+The report exposes missing systems and variations, records missing ECO/source/license metadata, draft versus reviewed records, validated move-node totals, and transposition counts. These are content coverage metrics, not a claim that the taxonomy itself is exhaustive.
 
 ## Opening content import
 
