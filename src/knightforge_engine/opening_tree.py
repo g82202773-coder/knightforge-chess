@@ -7,11 +7,10 @@ piece placement, side to move, castling rights, and legally relevant en-passant.
 
 from __future__ import annotations
 
+import chess
 from collections.abc import Iterable, Mapping
 from dataclasses import dataclass, field
 from typing import Any
-
-import chess
 
 
 TREE_SCHEMA_VERSION = 1
