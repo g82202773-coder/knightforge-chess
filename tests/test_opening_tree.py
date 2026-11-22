@@ -141,12 +141,22 @@ def test_transposition_index_detects_reached_identical_positions():
     assert any(len(paths) == 2 for paths in matches.values())
 
 
-def test_transposition_key_distinguishes_side_to_move_and_castling_rights():
-    tree = OpeningTree(
-        opening_id="position-key",
-        name="Position key",
-        side="both",
-        roots=(VariationNode("e2e4"),),
-    )
-    index = tree.position_index()
-    assert len(index) == 2
+
+
+
+def test_position_key_distinguishes_side_to_move():
+    white_to_move = chess.Board("8/8/8/8/8/8/4k3/4K3 w - - 0 1")
+    black_to_move = chess.Board("8/8/8/8/8/8/4k3/4K3 b - - 0 1")
+    assert OpeningTree._position_key(white_to_move) != OpeningTree._position_key(black_to_move)
+
+
+def test_position_key_distinguishes_castling_rights():
+    with_rights = chess.Board("r3k2r/8/8/8/8/8/8/R3K2R w KQkq - 0 1")
+    without_rights = chess.Board("r3k2r/8/8/8/8/8/8/R3K2R w - - 0 1")
+    assert OpeningTree._position_key(with_rights) != OpeningTree._position_key(without_rights)
+
+
+def test_position_key_keeps_only_legally_relevant_en_passant():
+    legal_ep = chess.Board("4k3/8/8/3pP3/8/8/8/4K3 w - d6 0 1")
+    no_ep = chess.Board("4k3/8/8/3pP3/8/8/8/4K3 w - - 0 1")
+    assert OpeningTree._position_key(legal_ep) != OpeningTree._position_key(no_ep)
