@@ -9,7 +9,7 @@
       "name": "Open Games: 1.e4 e5",
       "side": "white",
       "systems": [
-        {"id":"ruy-lopez","name":"Ruy Lopez","variations":["Morphy Defence","Closed Ruy Lopez","Open Ruy Lopez","Berlin Defence","Marshall Attack","Anti-Marshall","Exchange Variation","Schliemann Defence","Bird Defence","Archangel / Arkhangelsk Variation","Zaitsev Variation","Chigorin Variation","Breyer Variation","Smy slov Variation","Cozi o Variation"]},
+        {"id":"ruy-lopez","name":"Ruy Lopez","variations":["Morphy Defence","Closed Ruy Lopez","Open Ruy Lopez","Berlin Defence","Marshall Attack","Anti-Marshall","Exchange Variation","Schliemann Defence","Bird Defence","Archangel / Arkhangelsk Variation","Zaitsev Variation","Chigorin Variation","Breyer Variation","Smyslov Variation","Cozio Variation"]},
         {"id":"italian-game","name":"Italian Game","variations":["Giuoco Piano","Giuoco Pianissimo","Evans Gambit","Two Knights Defence","Fried Liver Attack","Traxler Counterattack","Max Lange Attack","Italian Four Knights","Hungarian Defence"]},
         {"id":"scotch-game","name":"Scotch Game","variations":["Classical Variation","Mieses Variation","Schmidt Variation","Steinitz Variation","Scotch Gambit","Göring Gambit","Schmidt Gambit"]},
         {"id":"kings-gambit","name":"King's Gambit","variations":["King's Gambit Accepted","King's Gambit Declined","Kieseritzky Gambit","Muzio Gambit","Allgaier Gambit","Bishop's Gambit","Fischer Defence","Falkbeer Countergambit","Modern Defence"]},
@@ -40,7 +40,7 @@
         {"id":"pirc","name":"Pirc Defence","variations":["Classical System","Austrian Attack","150 Attack","Byrne Variation","Sämisch Variation"]},
         {"id":"modern","name":"Modern Defence","variations":["Averbakh System","Austrian Attack","Two Knights System","Honduran Defence"]},
         {"id":"scandinavian","name":"Scandinavian Defence","variations":["Main Line 2...Qxd5","Icelandic Gambit","Portuguese Variation","Modern Variation","Blackburne–Kloosterboer Gambit"]},
-        {"id":"ale khine","name":"Alekhine's Defence","variations":["Four Pawns Attack","Modern Variation","Exchange Variation","Two Pawns Attack","Scandinavian Variation"]},
+        {"id":"alekhine","name":"Alekhine's Defence","variations":["Four Pawns Attack","Modern Variation","Exchange Variation","Two Pawns Attack","Scandinavian Variation"]},
         {"id":"nimzowitsch-defence","name":"Nimzowitsch Defence","variations":["Kennedy Variation","Colorado Countergambit","French Connection"]},
         {"id":"owens-defence","name":"Owen's Defence","variations":["Smith Gambit","Hekili-Loa Gambit"]}
       ]
@@ -56,7 +56,7 @@
         {"id":"london","name":"London System","variations":["Classical London","Jobava London","Accelerated London","Barry Attack","150 Attack","Torre-style transpositions","Modern London setups","Early ...c5 systems","...Qb6 pressure systems"]},
         {"id":"colle","name":"Colle System","variations":["Colle–Zukertort System","Colle-Koltanowski System","Blackburne-Shilling style tactical motifs"]},
         {"id":"trompowsky","name":"Trompowsky Attack","variations":["Classical Defence","Raptor Variation","Edge Variation","Poisoned Pawn ideas"]},
-        {"id":"torre","name":"Torre Attack","variations":["Classical System","主-line ...c5 setups","Tartakower-style setups"]},
+        {"id":"torre","name":"Torre Attack","variations":["Classical System","Main-line ...c5 setups","Tartakower-style setups"]},
         {"id":"catalan","name":"Catalan Opening","variations":["Open Catalan","Closed Catalan","Closed Catalan with ...a6","Modern ...Bb4+ systems"]},
         {"id":"blackmar-diemer","name":"Blackmar–Diemer Gambit","variations":["Accepted","Declined","Ryder Gambit","Teichmann Defence","Bogoljubow Defence"]},
         {"id":"queens-indian-attack","name":"Queen's Indian Attack","variations":["Classical setup","Nimzo-Indian move-order setup","Torre/London transpositions"]}
