@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
+import io
 from dataclasses import dataclass
 from enum import Enum
-import io
 
 import chess
 import chess.pgn
@@ -139,7 +139,7 @@ class ChessGame:
         return self._board.copy(stack=True)
 
     @classmethod
-    def from_pgn(cls, pgn_text: str) -> "ChessGame":
+    def from_pgn(cls, pgn_text: str) -> ChessGame:
         """Load the mainline of a PGN, rejecting parse errors and illegal moves."""
         stream = io.StringIO(pgn_text)
         game = chess.pgn.read_game(stream)
