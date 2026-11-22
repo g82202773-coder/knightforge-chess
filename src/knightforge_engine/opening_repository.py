@@ -90,6 +90,28 @@ class OpeningRepository:
         self._openings[opening.opening_id] = opening
         self.save()
 
+    def add_many(self, openings: tuple[OpeningTree, ...]) -> None:
+        """Validate and persist a batch as one repository update.
+
+        The batch is rejected before mutation if it contains invalid records
+        or IDs that already exist in the repository.
+        """
+        staged: dict[str, OpeningTree] = {}
+        for opening in openings:
+            opening.validate()
+            if opening.opening_id in self._openings or opening.opening_id in staged:
+                raise ValueError(f"Opening already exists: {opening.opening_id}")
+            staged[opening.opening_id] = opening
+        if not staged:
+            return
+        self._openings.update(staged)
+        try:
+            self.save()
+        except Exception:
+            for opening_id in staged:
+                del self._openings[opening_id]
+            raise
+
     def upsert(self, opening: OpeningTree) -> None:
         """Validate and insert or replace an opening by stable ID."""
         opening.validate()
