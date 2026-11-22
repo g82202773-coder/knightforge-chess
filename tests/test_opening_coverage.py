@@ -83,3 +83,21 @@ def test_coverage_counts_reviewed_records_and_serializes(tmp_path):
     assert report.reviewed_tree_ids == ("ruy-lopez",)
     assert payload["stored_tree_count"] == 1
     assert payload["system_coverage_ratio"] == 0.5
+
+
+def test_empty_placeholder_tree_does_not_count_as_playable_coverage(tmp_path):
+    repository = OpeningRepository.load(tmp_path / "openings.json")
+    repository.add(OpeningTree(
+        opening_id="ruy-lopez",
+        name="Ruy Lopez",
+        side="white",
+        roots=(),
+    ))
+
+    report = analyze_opening_coverage(_catalog(), repository)
+
+    assert report.stored_tree_count == 1
+    assert report.matched_system_ids == ()
+    assert report.missing_system_ids == ("italian-game", "ruy-lopez")
+    assert report.trees_without_moves == ("ruy-lopez",)
+    assert report.system_coverage_ratio == 0.0
