@@ -75,3 +75,78 @@ def test_mainline_san_respects_custom_starting_position():
     )
     tree.validate()
     assert tree.mainline_san() == ("e4",)
+
+
+def test_opening_tree_round_trip_preserves_metadata_and_branches():
+    tree = OpeningTree(
+        opening_id="sicilian",
+        name="Sicilian Defence",
+        side="black",
+        eco="B20",
+        aliases=("Sicilian",),
+        source_name="Test source",
+        source_url="https://example.org/chess",
+        license_name="CC BY 4.0",
+        review_status="reviewed",
+        transposition_notes=("Can transpose from another move order.",),
+        roots=(VariationNode("e2e4", children=(
+            VariationNode("c7c5", label="Open Sicilian"),
+            VariationNode("e7e6", label="French Defence"),
+        )),),
+    )
+
+    restored = OpeningTree.from_dict(tree.to_dict())
+
+    assert restored == tree
+    assert restored.mainline_san() == ("e4", "c5")
+
+
+def test_deserialization_rejects_unknown_schema_version():
+    with pytest.raises(ValueError, match="Unsupported"):
+        OpeningTree.from_dict({"schema_version": 2})
+
+
+def test_deserialization_rejects_malformed_node_fields():
+    payload = {
+        "schema_version": 1,
+        "opening_id": "broken",
+        "name": "Broken",
+        "side": "white",
+        "roots": [{"move_uci": "e2e4", "children": "not-an-array"}],
+    }
+    with pytest.raises(TypeError, match="children"):
+        OpeningTree.from_dict(payload)
+
+
+def test_transposition_index_detects_reached_identical_positions():
+    # The two move orders reach the same position after 1.Nf3 d5 2.g3
+    # and 1.g3 d5 2.Nf3.
+    tree = OpeningTree(
+        opening_id="transposition-test",
+        name="Transposition test",
+        side="both",
+        roots=(
+            VariationNode("g1f3", children=(
+                VariationNode("d7d5", children=(VariationNode("g2g3"),)),
+            )),
+            VariationNode("g2g3", children=(
+                VariationNode("d7d5", children=(VariationNode("g1f3"),)),
+            )),
+        ),
+    )
+
+    matches = tree.transpositions()
+
+    assert matches
+    assert any(len(paths) == 2 for paths in matches.values())
+
+
+def test_transposition_key_distinguishes_side_to_move_and_castling_rights():
+    tree = OpeningTree(
+        opening_id="position-key",
+        name="Position key",
+        side="both",
+        roots=(VariationNode("e2e4"),),
+    )
+    index = tree.position_index()
+    assert len(index) == 2
