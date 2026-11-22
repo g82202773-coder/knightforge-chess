@@ -1,0 +1,112 @@
+{
+  "schema_version": "1.0.0",
+  "catalog_status": "taxonomy_seed",
+  "completeness": "Not exhaustive. This is the initial hierarchy of major opening families and named systems; individual move-order branches and transpositions are expanded and validated incrementally.",
+  "move_validation": "Every published line must be replayed from its declared starting position with the rules engine. Names alone do not imply a forced or universally accepted move order.",
+  "families": [
+    {
+      "id": "open-games",
+      "name": "Open Games: 1.e4 e5",
+      "side": "white",
+      "systems": [
+        {"id":"ruy-lopez","name":"Ruy Lopez","variations":["Morphy Defence","Closed Ruy Lopez","Open Ruy Lopez","Berlin Defence","Marshall Attack","Anti-Marshall","Exchange Variation","Schliemann Defence","Bird Defence","Archangel / Arkhangelsk Variation","Zaitsev Variation","Chigorin Variation","Breyer Variation","Smy slov Variation","Cozi o Variation"]},
+        {"id":"italian-game","name":"Italian Game","variations":["Giuoco Piano","Giuoco Pianissimo","Evans Gambit","Two Knights Defence","Fried Liver Attack","Traxler Counterattack","Max Lange Attack","Italian Four Knights","Hungarian Defence"]},
+        {"id":"scotch-game","name":"Scotch Game","variations":["Classical Variation","Mieses Variation","Schmidt Variation","Steinitz Variation","Scotch Gambit","Göring Gambit","Schmidt Gambit"]},
+        {"id":"kings-gambit","name":"King's Gambit","variations":["King's Gambit Accepted","King's Gambit Declined","Kieseritzky Gambit","Muzio Gambit","Allgaier Gambit","Bishop's Gambit","Fischer Defence","Falkbeer Countergambit","Modern Defence"]},
+        {"id":"vienna-game","name":"Vienna Game","variations":["Vienna Gambit","Falkbeer Variation","Max Lange Defence","Mieses Variation","Frankenstein–Dracula Variation"]},
+        {"id":"four-knights","name":"Four Knights Game","variations":["Spanish Variation","Italian Variation","Scotch Variation","Belgrade Gambit","Rubinstein Variation","Double Ruy Lopez"]},
+        {"id":"petrov","name":"Petrov Defence","variations":["Classical Attack","Three Knights Game","Nimzowitsch Attack","Cochrane Gambit","Stafford Gambit","Steinitz Attack"]},
+        {"id":"philidor","name":"Philidor Defence","variations":["Hanham Variation","Exchange Variation","Lion Variation","Philidor Countergambit","Antoshin Variation"]},
+        {"id":"center-game","name":"Center Game","variations":["Accepted Variation","Danish Gambit","Hall Variation"]},
+        {"id":"bishops-opening","name":"Bishop's Opening","variations":["Berlin Defence","Philidor Variation","Urusov Gambit","Boden–Kieseritzky Gambit"]}
+      ]
+    },
+    {
+      "id": "sicilian-defence",
+      "name": "Sicilian Defence",
+      "side": "black",
+      "systems": [
+        {"id":"open-sicilian","name":"Open Sicilian","variations":["Najdorf Variation","Classical Variation","Dragon Variation","Yugoslav Attack","Classical Dragon","Accelerated Dragon","Hyper-Accelerated Dragon","Scheveningen Variation","Sveshnikov Variation","Kalashnikov Variation","Taimanov Variation","Kan Variation","Four Knights Variation","Lasker–Pelikan Variation","Richter–Rauzer Attack","Sozin Attack","English Attack","Velimirović Attack","Keres Attack"]},
+        {"id":"anti-sicilians","name":"Anti-Sicilians","variations":["Alapin Variation","Rossolimo Variation","Moscow Variation","Closed Sicilian","Grand Prix Attack","Smith–Morra Gambit","Wing Gambit","McDonnell Attack","Chameleon Variation","Bowdler Attack"]}
+      ]
+    },
+    {
+      "id": "semi-open-games",
+      "name": "Semi-Open Games after 1.e4",
+      "side": "black",
+      "systems": [
+        {"id":"french","name":"French Defence","variations":["Winawer Variation","Classical Variation","Tarrasch Variation","Advance Variation","Exchange Variation","Rubinstein Variation","Burn Variation","MacCutcheon Variation","Steinitz Variation","Fort Knox Variation","King's Indian Attack setup"]},
+        {"id":"caro-kann","name":"Caro-Kann Defence","variations":["Advance Variation","Classical Variation","Exchange Variation","Panov–Botvinnik Attack","Two Knights Attack","Fantasy Variation","Tal Variation","Bronstein–Larsen Variation","Gurgenidze Variation"]},
+        {"id":"pirc","name":"Pirc Defence","variations":["Classical System","Austrian Attack","150 Attack","Byrne Variation","Sämisch Variation"]},
+        {"id":"modern","name":"Modern Defence","variations":["Averbakh System","Austrian Attack","Two Knights System","Honduran Defence"]},
+        {"id":"scandinavian","name":"Scandinavian Defence","variations":["Main Line 2...Qxd5","Icelandic Gambit","Portuguese Variation","Modern Variation","Blackburne–Kloosterboer Gambit"]},
+        {"id":"ale khine","name":"Alekhine's Defence","variations":["Four Pawns Attack","Modern Variation","Exchange Variation","Two Pawns Attack","Scandinavian Variation"]},
+        {"id":"nimzowitsch-defence","name":"Nimzowitsch Defence","variations":["Kennedy Variation","Colorado Countergambit","French Connection"]},
+        {"id":"owens-defence","name":"Owen's Defence","variations":["Smith Gambit","Hekili-Loa Gambit"]}
+      ]
+    },
+    {
+      "id": "queens-pawn-openings",
+      "name": "Queen's Pawn Openings",
+      "side": "white",
+      "systems": [
+        {"id":"queens-gambit","name":"Queen's Gambit","variations":["Queen's Gambit Accepted","Queen's Gambit Declined","Exchange Variation","Tarrasch Defence","Semi-Tarrasch Defence","Orthodox Defence","Lasker Defence","Cambridge Springs Defence","Ragozin Defence","Vienna Variation","Albin Countergambit","Chigorin Defence","Baltic Defence","Marshall Defence"]},
+        {"id":"slav","name":"Slav Defence","variations":["Classical Slav","Exchange Slav","Geller Gambit","Czech Variation","Schlechter Variation","Winawer Countergambit","Quiet Variation"]},
+        {"id":"semi-slav","name":"Semi-Slav Defence","variations":["Meran Variation","Anti-Meran","Botvinnik Variation","Moscow Variation","Anti-Moscow Gambit","Noteboom Variation","Stern Variation"]},
+        {"id":"london","name":"London System","variations":["Classical London","Jobava London","Accelerated London","Barry Attack","150 Attack","Torre-style transpositions","Modern London setups","Early ...c5 systems","...Qb6 pressure systems"]},
+        {"id":"colle","name":"Colle System","variations":["Colle–Zukertort System","Colle-Koltanowski System","Blackburne-Shilling style tactical motifs"]},
+        {"id":"trompowsky","name":"Trompowsky Attack","variations":["Classical Defence","Raptor Variation","Edge Variation","Poisoned Pawn ideas"]},
+        {"id":"torre","name":"Torre Attack","variations":["Classical System","主-line ...c5 setups","Tartakower-style setups"]},
+        {"id":"catalan","name":"Catalan Opening","variations":["Open Catalan","Closed Catalan","Closed Catalan with ...a6","Modern ...Bb4+ systems"]},
+        {"id":"blackmar-diemer","name":"Blackmar–Diemer Gambit","variations":["Accepted","Declined","Ryder Gambit","Teichmann Defence","Bogoljubow Defence"]},
+        {"id":"queens-indian-attack","name":"Queen's Indian Attack","variations":["Classical setup","Nimzo-Indian move-order setup","Torre/London transpositions"]}
+      ]
+    },
+    {
+      "id": "indian-defences",
+      "name": "Indian Defences",
+      "side": "black",
+      "systems": [
+        {"id":"kings-indian","name":"King's Indian Defence","variations":["Classical Variation","Mar del Plata Variation","Sämisch Variation","Four Pawns Attack","Fianchetto Variation","Averbakh Variation","Petrosian System","Makogonov System","London System responses"]},
+        {"id":"grunfeld","name":"Grünfeld Defence","variations":["Exchange Variation","Russian System","Three Knights Variation","Fianchetto Variation","Stockholm Variation","Bf4 systems","Brinckmann Attack"]},
+        {"id":"nimzo-indian","name":"Nimzo-Indian Defence","variations":["Classical Variation","Rubinstein Variation","Sämisch Variation","Leningrad Variation","4.Qc2","4.e3","4.f3","Kmoch Variation"]},
+        {"id":"queens-indian","name":"Queen's Indian Defence","variations":["Classical Variation","Petrosian System","4.g3","4.a3","Kasparov Variation"]},
+        {"id":"bogo-indian","name":"Bogo-Indian Defence","variations":["Exchange Variation","主-line 4.Bd2","4.Nbd2 systems"]},
+        {"id":"benoni","name":"Benoni Defence","variations":["Modern Benoni","Classical Variation","Taimanov Variation","Four Pawns Attack","Fianchetto System","Czech Benoni","Snake Benoni"]},
+        {"id":"benko","name":"Benko Gambit","variations":["Accepted","Declined","Fianchetto Variation","Nescafe Frappe Attack","Half-Accepted lines"]},
+        {"id":"budapest","name":"Budapest Gambit","variations":["Fajarowicz Variation","Rubinstein Variation","Adler Variation"]},
+        {"id":"baltic","name":"Baltic Defence","variations":["Main line","Pseudo-Slav move orders"]}
+      ]
+    },
+    {
+      "id": "flank-openings",
+      "name": "Flank Openings and Hypermodern Systems",
+      "side": "white",
+      "systems": [
+        {"id":"english","name":"English Opening","variations":["Symmetrical Variation","Reversed Sicilian","Four Knights Variation","Botvinnik System","King's English","Mikenas–Carls Variation","Averbakh System","Anglo-Indian setups","Anglo-Dutch","Agincourt Defence"]},
+        {"id":"reti","name":"Réti Opening","variations":["Réti Gambit","King's Indian Attack setup","Catalan transposition","Old Indian Attack","New York system"]},
+        {"id":"kings-indian-attack","name":"King's Indian Attack","variations":["Classical KIA","French Defence setup","Sicilian setup","Petrosian-style setup"]},
+        {"id":"bird","name":"Bird's Opening","variations":["From's Gambit","Dutch Variation","Classical Variation","Lasker Variation","Hobbs Gambit"]},
+        {"id":"larsen","name":"Nimzo-Larsen Attack","variations":["Classical setup","Modern setup","Dutch setup","Indian setup"]},
+        {"id":"polish","name":"Polish Opening","variations":["Outflank Variation","King's Indian setup","Bugayev Advance Variation"]},
+        {"id":"dunst","name":"Van Geet Opening","variations":["Sleipner Variation","Reversed Nimzowitsch","Scandinavian setup"]},
+        {"id":"sokolsky","name":"Sokolsky / Orangutan Opening","variations":["Main line","Outflank systems","King's Indian setup"]}
+      ]
+    },
+    {
+      "id": "dutch-defence",
+      "name": "Dutch Defence",
+      "side": "black",
+      "systems": [
+        {"id":"dutch-stonewall","name":"Stonewall Dutch","variations":["Classical Stonewall","Hübner Variation","Botvinnik Variation"]},
+        {"id":"dutch-leningrad","name":"Leningrad Dutch","variations":["Main line","Classical setup","Basman system"]},
+        {"id":"dutch-classical","name":"Classical Dutch","variations":["Ilyin-Zhenevsky Variation","Hort-Antoshin Variation","Classical setup"]}
+      ]
+    }
+  ],
+  "record_requirements": {
+    "required_fields": ["id","name","family_id","parent_id","side","starting_fen","moves_uci","source","license","review_status"],
+    "optional_fields": ["eco","aliases","plans_white","plans_black","pawn_structures","typical_tactics","traps","refutations","transpositions","model_positions","training_items"],
+    "publication_rule": "A named variation is a taxonomy label until it has one or more legally validated move-tree branches, reliable source attribution, and review status. Do not fabricate ECO codes or claim a single canonical move order where transpositions exist."
+  }
+}
