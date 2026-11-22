@@ -9,6 +9,7 @@ This package is the shared chess foundation for KnightForge. It is designed to b
 - Game termination and draw-state reporting from the rules library.
 - A bounded UCI adapter for Stockfish analysis.
 - Typed, provenance-aware records for opening lines and tactical knowledge.
+- A versioned JSON opening repository with legal validation, ID/ECO/name/alias search, duplicate protection, and atomic file replacement.
 
 ## Important boundaries
 
