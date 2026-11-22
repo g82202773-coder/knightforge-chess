@@ -99,8 +99,11 @@ def analyze_opening_coverage(
 
     trees = repository.all()
     by_id = {tree.opening_id: tree for tree in trees}
-    matched_system_ids = tuple(sorted(set(systems) & set(by_id)))
-    missing_system_ids = tuple(sorted(set(systems) - set(by_id)))
+    # A taxonomy ID is covered only by a tree containing at least one legal move.
+    # Empty draft placeholders must remain visible as missing playable content.
+    playable_ids = {tree_id for tree_id, tree in by_id.items() if tree.roots}
+    matched_system_ids = tuple(sorted(set(systems) & playable_ids))
+    missing_system_ids = tuple(sorted(set(systems) - playable_ids))
 
     matched_variations: list[str] = []
     missing_variations: list[str] = []
