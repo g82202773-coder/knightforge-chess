@@ -7,8 +7,8 @@ are referenced by position hash/FEN metadata rather than duplicated as aliases.
 
 from __future__ import annotations
 
+from collections.abc import Iterable
 from dataclasses import dataclass, field
-from typing import Iterable
 
 import chess
 
@@ -22,7 +22,7 @@ class VariationNode:
     white_plan: str = ""
     black_plan: str = ""
     explanation: str = ""
-    children: tuple["VariationNode", ...] = field(default_factory=tuple)
+    children: tuple[VariationNode, ...] = field(default_factory=tuple)
 
 
 @dataclass(frozen=True, slots=True)
