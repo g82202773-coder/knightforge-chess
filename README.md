@@ -64,9 +64,11 @@ These are proposed defaults, not implemented dependencies yet. We will confirm t
 - [x] Standard-chess game-state wrapper implemented on python-chess.
 - [x] Opening taxonomy reader and legal variation-tree model implemented.
 - [x] Versioned opening-tree serialization and position/transposition index implemented.
+- [x] Persistent versioned JSON opening repository with atomic writes, validated load, duplicate protection, and ID/name/ECO/alias search.
 - [x] Provenance-aware knowledge record model implemented.
 - [x] Bounded Stockfish UCI adapter implemented; executable setup and live integration tests remain outstanding.
-- [ ] Add persistent opening repository and robust import/export workflow.
+- [ ] Add PostgreSQL-backed opening storage when the API/database layer is introduced.
+- [ ] Add a curated opening import/export workflow with provenance and review checks.
 - [ ] Expand rule-edge-case, draw-claim, and Stockfish adapter tests.
 - [ ] Select and scaffold the first runnable client and API.
 - [ ] Build the first beginner lesson and validated puzzle flow.
