@@ -52,6 +52,8 @@ def parse_opening_import(payload: Mapping[str, Any]) -> tuple[OpeningTree, ...]:
             raise ValueError(f"Opening {opening.opening_id!r} is missing source_name.")
         if not opening.license_name.strip():
             raise ValueError(f"Opening {opening.opening_id!r} is missing license_name.")
+        if not opening.roots:
+            raise ValueError(f"Opening {opening.opening_id!r} has no move branches.")
         if opening.opening_id in seen_ids:
             raise ValueError(f"Duplicate opening_id in import batch: {opening.opening_id}")
         seen_ids.add(opening.opening_id)
