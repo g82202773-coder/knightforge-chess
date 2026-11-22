@@ -29,7 +29,7 @@ def test_castling_and_en_passant_are_legal() -> None:
 
 
 def test_promotion_is_supported() -> None:
-    game = ChessGame("8/P7/8/8/8/8/7k/7K w - - 0 1")
+    game = ChessGame("7k/P7/8/8/8/8/8/7K w - - 0 1")
     assert "a7a8q" in game.legal_moves
     assert "a7a8n" in game.legal_moves
 
