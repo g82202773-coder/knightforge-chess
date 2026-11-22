@@ -1,6 +1,5 @@
 """Tests for provenance-aware opening import."""
 
-import json
 
 import pytest
 
