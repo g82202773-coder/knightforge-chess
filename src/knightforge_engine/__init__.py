@@ -10,6 +10,8 @@ __all__ = [
     "KnowledgeLine",
     "KnowledgeRecord",
     "KnowledgeType",
+    "OpeningTree",
+    "VariationNode",
 ]
 
 from .opening_tree import OpeningTree, VariationNode
