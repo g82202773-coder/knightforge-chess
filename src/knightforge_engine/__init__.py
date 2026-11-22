@@ -6,10 +6,10 @@ from .knowledge import KnowledgeLine, KnowledgeRecord, KnowledgeType
 __all__ = [
     "ChessGame",
     "GameStatus",
-    "MoveResult",
     "KnowledgeLine",
     "KnowledgeRecord",
     "KnowledgeType",
+    "MoveResult",
     "OpeningTree",
     "VariationNode",
 ]
