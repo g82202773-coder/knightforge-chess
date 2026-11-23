@@ -58,13 +58,13 @@ def test_catalog_exposes_browseable_family_system_variation_hierarchy():
     catalog = OpeningCatalog.load("data/openings/opening_taxonomy.json")
     families = catalog.families()
     assert len(families) == 7
-    london = catalog.get_system_detail("london-system")
+    london = catalog.get_system_detail("london")
     assert london is not None
     assert london.name == "London System"
     assert "Jobava London" in london.variations
     queen_pawn = catalog.get_family("queens-pawn-openings")
     assert queen_pawn is not None
-    assert any(system.system_id == "london-system" for system in queen_pawn.systems)
+    assert any(system.system_id == "london" for system in queen_pawn.systems)
 
 
 def test_catalog_rejects_duplicate_variation_names_case_insensitively():
