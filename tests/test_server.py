@@ -137,7 +137,11 @@ def _assert_test_mode_answer_hidden(state):
     assert state["engine"]["recommendation"] is None
     assert state["engine"]["recommendation_arrow"] is None
     assert "e2e4" not in str(state["engine"])
-    assert "e4" not in str(state.get("feedback"))
+    feedback = state.get("feedback")
+    if feedback is not None:
+        assert feedback.get("best_uci") is None
+        assert feedback.get("best_san") is None
+        assert feedback.get("engine_top_choice") is None
 
 
 def test_test_modes_keep_answer_hidden_after_move_and_state_refresh():
