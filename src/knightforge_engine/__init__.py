@@ -1,6 +1,7 @@
 """KnightForge chess rules, analysis, and knowledge package."""
 
 from .core import ChessGame, GameStatus, MoveResult
+from .guided_learning import CoachPrompt, GuidedLesson, GuidedLessonSession, LessonNode, MoveSubmission
 from .knowledge import KnowledgeLine, KnowledgeRecord, KnowledgeType
 from .opening_catalog import (
     OpeningCatalog,
@@ -24,6 +25,11 @@ from .variation_matching import (
 
 __all__ = [
     "ChessGame",
+    "CoachPrompt",
+    "GuidedLesson",
+    "GuidedLessonSession",
+    "LessonNode",
+    "MoveSubmission",
     "GameStatus",
     "KnowledgeLine",
     "KnowledgeRecord",
