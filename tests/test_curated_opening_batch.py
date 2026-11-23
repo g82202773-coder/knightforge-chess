@@ -33,6 +33,25 @@ def test_curated_batch_contains_taxonomy_systems_and_legal_anchored_lines(tmp_pa
         assert record._contains_path(record.roots, record.anchor_uci)
 
 
+
+def _variation_labels(nodes):
+    labels = set()
+    for node in nodes:
+        if node.label.strip():
+            labels.add(node.label.strip().casefold())
+        labels.update(_variation_labels(node.children))
+    return labels
+
+def test_curated_variation_labels_match_the_taxonomy(tmp_path):
+    payload = json.loads(BATCH_PATH.read_text(encoding="utf-8"))
+    taxonomy = OpeningCatalog.load(TAXONOMY_PATH)
+    for record in parse_opening_import(payload):
+        system = taxonomy.get_system_detail(record.opening_id)
+        assert system is not None
+        expected = {name.casefold() for name in system.variations}
+        assert _variation_labels(record.roots) <= expected
+
+
 def test_curated_batch_imports_atomically_and_is_not_misreported_as_published(tmp_path):
     payload = json.loads(BATCH_PATH.read_text(encoding="utf-8"))
     repository = OpeningRepository.load(tmp_path / "openings.json")
