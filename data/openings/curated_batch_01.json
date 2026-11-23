@@ -2,7 +2,7 @@
   "schema_version": 1,
   "batch_id": "curated-opening-drafts-01",
   "content_status": "in_review",
-  "provenance_note": "Original KnightForge-authored educational move-line drafts. Move legality is verified by repository tests. Named variation labels and explanations require editorial review before publication. Content license review is pending; do not redistribute these records as licensed material until review is complete.",
+  "provenance_note": "Original KnightForge-authored educational move-line drafts. The added repository test suite is designed to validate move legality against the rules engine. Named variation labels and explanations require editorial review before publication. Content license review is pending; do not redistribute these records as licensed material until review is complete.",
   "openings": [
     {
       "schema_version": 1,
