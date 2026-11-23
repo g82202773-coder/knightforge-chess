@@ -367,3 +367,79 @@ def test_tactics_filters_restart_and_unknown_ids():
     assert restarted.json()["state"]["hint_level"] == 0
     assert restarted.json()["state"]["progress"]["attempts"] == 0
     assert client.get("/api/tactics/unknown").status_code == 404
+
+
+def test_strategy_lesson_catalog_and_detail():
+    response = client.get("/api/strategy/lessons")
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["count"] == 6
+    assert payload["content_status"] == "editorial_draft"
+    assert {"development", "pawn_structure", "open_files", "outposts",
+            "king_safety", "planning"} <= set(payload["themes"])
+    detail = client.get("/api/strategy/lessons/pawn-structure")
+    assert detail.status_code == 200
+    assert detail.json()["checklist"]
+    assert "long-term" in detail.json()["principle"]
+    assert client.get("/api/strategy/lessons/missing").status_code == 404
+
+
+def test_strategy_exercises_are_valid_and_solutions_are_legal():
+    from knightforge_engine.strategy_training import EXERCISES
+
+    response = client.get("/api/strategy/exercises")
+    assert response.status_code == 200
+    assert response.json()["count"] == len(EXERCISES) == 4
+    for exercise in EXERCISES:
+        board = chess.Board(exercise.fen)
+        assert board.is_valid()
+        assert chess.Move.from_uci(exercise.solution_uci) in board.legal_moves
+    assert client.get("/api/strategy/exercises?theme=development").json()["count"] == 2
+    assert client.get("/api/strategy/exercises?theme=nonexistent").json()["count"] == 0
+
+
+def test_strategy_practice_hides_answer_and_explains_correct_decision():
+    created = client.post("/api/strategy", json={
+        "exercise_id": "develop-knight", "mode": "practice",
+    })
+    assert created.status_code == 200
+    strategy_id = created.json()["strategy_id"]
+    state = created.json()["state"]
+    assert state["expected_move"] is None
+    assert state["hints_available"] is True
+    assert "g1f3" not in str(state)
+
+    wrong = client.post(f"/api/strategy/{strategy_id}/moves", json={"uci": "a2a3"})
+    assert wrong.status_code == 200
+    assert wrong.json()["correct"] is False
+    assert wrong.json()["state"]["fen"] == state["fen"]
+
+    solved = client.post(f"/api/strategy/{strategy_id}/moves", json={"uci": "g1f3"})
+    assert solved.status_code == 200
+    assert solved.json()["correct"] is True
+    assert solved.json()["state"]["solved"] is True
+    assert "controls e5 and d4" in solved.json()["state"]["explanation"]
+
+
+def test_strategy_hints_mastery_restart_and_unknown_session():
+    mastery = client.post("/api/strategy", json={
+        "exercise_id": "claim-centre", "mode": "mastery",
+    }).json()
+    strategy_id = mastery["strategy_id"]
+    assert mastery["state"]["hints_available"] is False
+    assert client.post(f"/api/strategy/{strategy_id}/hints", json={"level": 1}).status_code == 403
+
+    practice = client.post("/api/strategy", json={
+        "exercise_id": "develop-bishop", "mode": "practice",
+    }).json()
+    strategy_id = practice["strategy_id"]
+    for level in (1, 2, 3):
+        hint = client.post(f"/api/strategy/{strategy_id}/hints", json={"level": level})
+        assert hint.status_code == 200
+    assert hint.json()["state"]["expected_move"] == "f1c4"
+    restarted = client.post(f"/api/strategy/{strategy_id}/restart")
+    assert restarted.status_code == 200
+    assert restarted.json()["state"]["hint_level"] == 0
+    assert restarted.json()["state"]["progress"]["attempts"] == 0
+    assert client.get("/api/strategy/not-a-session").status_code == 404
+    assert client.post("/api/strategy", json={"exercise_id": "missing"}).status_code == 404
