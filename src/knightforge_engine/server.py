@@ -19,6 +19,7 @@ from .adaptive_coach import AdaptiveOpeningCoach
 from .analysis import StockfishAnalyzer
 from .coach_presentation import coach_state_payload, submission_payload
 from .guided_learning import GuidedLesson, LessonNode
+from .full_game import FullGame
 from .opening_catalog import OpeningCatalog
 from .opening_import import parse_opening_import
 from .opening_repository import OpeningRepository
@@ -57,6 +58,7 @@ class SessionStore:
         self._training_sessions: dict[str, tuple[OpeningTrainingSession, threading.RLock]] = {}
         self._tactics_sessions: dict[str, tuple[TacticsSession, threading.RLock]] = {}
         self._strategy_sessions: dict[str, tuple[StrategySession, threading.RLock]] = {}
+        self._full_games: dict[str, tuple[FullGame, threading.RLock]] = {}
         self._lock = threading.RLock()
         self.repository = OpeningRepository.load(Path(os.environ.get("KNIGHTFORGE_OPENINGS_PATH", "data/openings/repository.json")))
         data_root = Path(__file__).resolve().parents[2] / "data" / "openings"
@@ -169,6 +171,57 @@ class CreateStrategyRequest(BaseModel):
 class PositionalAnalysisRequest(BaseModel):
     fen: str = Field(min_length=15, max_length=120)
     candidate_uci: list[str] | None = Field(default=None, max_length=12)
+
+def _full_game_record(game_id: str) -> tuple[FullGame, threading.RLock]:
+    with store._lock:
+        record = store._full_games.get(game_id)
+    if record is None:
+        raise HTTPException(status_code=404, detail="Game not found or expired.")
+    return record
+
+
+@app.post("/api/games")
+def create_full_game() -> dict:
+    game = FullGame()
+    game_id = secrets.token_urlsafe(18)
+    with store._lock:
+        store._full_games[game_id] = (game, threading.RLock())
+    return {"game_id": game_id, "state": game.state()}
+
+
+@app.get("/api/games/{game_id}")
+def get_full_game(game_id: str) -> dict:
+    game, lock = _full_game_record(game_id)
+    with lock:
+        return {"game_id": game_id, "state": game.state()}
+
+
+@app.post("/api/games/{game_id}/moves")
+def play_full_game_move(game_id: str, request: MoveRequest) -> dict:
+    game, lock = _full_game_record(game_id)
+    with lock:
+        try:
+            return game.play(request.uci)
+        except ValueError as exc:
+            raise HTTPException(status_code=422, detail=str(exc)) from exc
+
+
+@app.post("/api/games/{game_id}/undo")
+def undo_full_game(game_id: str) -> dict:
+    game, lock = _full_game_record(game_id)
+    with lock:
+        try:
+            return {"state": game.undo()}
+        except ValueError as exc:
+            raise HTTPException(status_code=409, detail=str(exc)) from exc
+
+
+@app.post("/api/games/{game_id}/restart")
+def restart_full_game(game_id: str) -> dict:
+    game, lock = _full_game_record(game_id)
+    with lock:
+        return {"state": game.restart()}
+
 
 @app.get("/api/health")
 def health() -> dict:
