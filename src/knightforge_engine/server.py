@@ -22,8 +22,8 @@ from .guided_learning import GuidedLesson, LessonNode
 from .opening_catalog import OpeningCatalog
 from .opening_import import parse_opening_import
 from .opening_repository import OpeningRepository
-from .opening_tree import OpeningTree, VariationNode
 from .opening_training import OpeningTrainingSession, TrainingMode
+from .opening_tree import OpeningTree, VariationNode
 
 Mode = Literal["guided", "practice", "mastery"]
 
