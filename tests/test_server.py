@@ -163,3 +163,46 @@ def test_test_modes_keep_answer_hidden_after_move_and_state_refresh():
         assert refreshed.status_code == 200
         _assert_test_mode_answer_hidden(refreshed.json()["state"])
 
+
+
+def test_opening_explorer_lists_curated_studies_with_review_status():
+    response = client.get("/api/openings")
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["count"] == 8
+    assert payload["content_status"] == "in_review"
+    assert {item["opening_id"] for item in payload["items"]} >= {
+        "italian-game", "open-sicilian", "french", "caro-kann",
+        "queens-gambit", "london", "kings-gambit", "english",
+    }
+    assert all(item["review_status"] == "in_review" for item in payload["items"])
+    assert client.get("/api/openings?query=najdorf").json()["count"] == 0
+    assert client.get("/api/openings?query=sicilian").json()["items"][0]["opening_id"] == "open-sicilian"
+    assert all(item["side"] == "white" for item in client.get("/api/openings?side=white").json()["items"])
+    assert client.get("/api/openings?side=invalid").status_code == 422
+
+
+def test_opening_explorer_detail_contains_san_fen_and_selectable_variations():
+    response = client.get("/api/openings/open-sicilian")
+    assert response.status_code == 200
+    opening = response.json()
+    assert opening["name"] == "Open Sicilian"
+    assert opening["family_name"] == "Sicilian Defence"
+    assert opening["review_status"] == "in_review"
+    assert opening["branch_count"] > 10
+    assert opening["mainline_san"][:4] == ["e4", "c5", "Nf3", "d6"]
+
+    def walk(nodes):
+        for node in nodes:
+            assert node["san"]
+            assert node["uci"]
+            assert len(node["fen_after"].split()) == 6
+            yield node
+            yield from walk(node["children"])
+
+    nodes = list(walk(opening["roots"]))
+    labels = {node["label"] for node in nodes}
+    assert {"Najdorf Variation", "Dragon Variation", "Sveshnikov Variation"} <= labels
+    assert all(node["path_uci"][-1] == node["uci"] for node in nodes)
+    assert client.get("/api/openings/not-a-real-opening").status_code == 404
+
