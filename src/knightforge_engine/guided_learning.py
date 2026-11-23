@@ -116,7 +116,7 @@ class GuidedLessonSession:
         self.lesson = lesson
         self.game = ChessGame(lesson.starting_fen)
         self._nodes = lesson.roots
-        self._history: list[tuple[ChessGame, tuple[LessonNode, ...]]] = []
+        self._history: list[tuple[str, tuple[LessonNode, ...]]] = []
         self._deviation = False
 
     @property
@@ -205,7 +205,7 @@ class GuidedLessonSession:
             )
             return MoveSubmission(False, False, False, None, corrected, "Retry the lesson move.")
 
-        self._history.append((self.game.copy(), self._nodes))
+        self._history.append((self.game.fen, self._nodes))
         result = self.game.push_uci(move.uci())
         if matching is None:
             self._deviation = True
@@ -221,8 +221,8 @@ class GuidedLessonSession:
         """Restore the exact previous game state and lesson branch."""
         if not self._history:
             raise ValueError("There is no move to undo.")
-        game, nodes = self._history.pop()
-        self.game = game
+        fen, nodes = self._history.pop()
+        self.game = ChessGame(fen)
         self._nodes = nodes
         self._deviation = False
 
