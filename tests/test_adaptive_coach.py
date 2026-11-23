@@ -9,6 +9,7 @@ from knightforge_engine import (
     OpeningTree,
     VariationNode,
 )
+from knightforge_engine.analysis import AnalysisResult, EngineLine
 
 
 def reviewed_repository(tmp_path):
@@ -99,9 +100,19 @@ class FakeAnalyzer:
         self.calls = []
 
     def analyse(self, fen, *, time_limit=1.0, depth=None, multipv=3):
-        from knightforge_engine.analysis import AnalysisResult, EngineLine
-
+        board = chess.Board(fen)
+        preferred = {
+            chess.STARTING_FEN: "g1f3",
+        }.get(fen)
+        if preferred is None:
+            preferred = "e7e5" if board.turn == chess.BLACK and board.piece_at(chess.E7) else next(
+                move.uci() for move in board.legal_moves
+            )
+        move = chess.Move.from_uci(preferred)
+        if move not in board.legal_moves:
+            move = next(iter(board.legal_moves))
         self.calls.append((fen, time_limit, depth, multipv))
+        san = board.san(move)
         return AnalysisResult(
             engine_name="Fake Stockfish",
             engine_version="test",
@@ -113,8 +124,8 @@ class FakeAnalyzer:
                 depth=depth or 8,
                 score_cp=25,
                 score_mate=None,
-                moves_uci=("g1f3",),
-                moves_san=("Nf3",),
+                moves_uci=(move.uci(),),
+                moves_san=(san,),
             ),),
         )
 
@@ -138,8 +149,8 @@ def test_stockfish_deviation_analysis_is_bounded_and_not_book_theory(tmp_path):
 
     result = coach.analyze_deviation(time_limit=0.5, depth=12, multipv=2)
     assert result.engine_name == "Fake Stockfish"
-    assert result.lines[0].moves_san == ("Nf3",)
-    assert analyzer.calls == [(deviation.fen, 0.5, 12, 2)]
+    assert len(result.lines[0].moves_san) == 1
+    assert analyzer.calls[-1] == (deviation.fen, 0.5, 12, 2)
     assert deviation.knowledge_status == "no_reviewed_match"
 
 
@@ -153,3 +164,52 @@ def test_stockfish_analysis_requires_configured_analyzer_after_deviation(tmp_pat
         assert "No Stockfish analyzer configured" in str(exc)
     else:
         raise AssertionError("missing analyzer should be reported")
+
+
+def test_engine_decision_is_attached_automatically_and_move_is_compared(tmp_path):
+    analyzer = FakeAnalyzer()
+    coach = AdaptiveOpeningCoach(lesson(), reviewed_repository(tmp_path), analyzer=analyzer)
+
+    initial = coach.state
+    assert initial.recommendation is not None
+    assert initial.recommendation.uci == "g1f3"
+    assert initial.active_hint is not None
+    assert initial.active_hint.level == 1
+
+    submitted = coach.submit_uci("e2e4")
+    assert submitted.state.move_comparison is not None
+    assert submitted.state.move_comparison.played_uci == "e2e4"
+    assert submitted.state.move_comparison.matched_candidate_rank is None
+    # The new side-to-move position is already analysed before submit_uci returns.
+    assert submitted.state.recommendation is not None
+    assert submitted.state.recommendation.uci == "e7e5"
+    assert submitted.state.active_hint.level == 1
+
+
+def test_progressive_hint_reveal_updates_arrow_without_reanalysing(tmp_path):
+    analyzer = FakeAnalyzer()
+    coach = AdaptiveOpeningCoach(lesson(), reviewed_repository(tmp_path), analyzer=analyzer)
+    calls_before = len(analyzer.calls)
+
+    source_hint = coach.reveal_hint(2)
+    assert source_hint.active_hint.level == 2
+    assert source_hint.active_hint.arrow_from == "g1"
+    assert source_hint.active_hint.arrow_to is None
+
+    arrow_hint = coach.reveal_hint(3)
+    assert (arrow_hint.active_hint.arrow_from, arrow_hint.active_hint.arrow_to) == (
+        "g1", "f3"
+    )
+    assert arrow_hint.recommendation_arrow == ("g1", "f3")
+    assert len(analyzer.calls) == calls_before
+
+
+def test_wrong_lesson_move_keeps_position_decision_and_returns_comparison(tmp_path):
+    coach = AdaptiveOpeningCoach(
+        lesson(), reviewed_repository(tmp_path), analyzer=FakeAnalyzer()
+    )
+    result = coach.submit_uci("d2d4")
+    assert not result.submission.applied
+    assert result.state.fen == chess.STARTING_FEN
+    assert result.state.move_comparison is not None
+    assert result.state.recommendation.uci == "g1f3"
