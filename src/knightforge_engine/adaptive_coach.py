@@ -123,9 +123,36 @@ class AdaptiveOpeningCoach:
         """Reveal one of the current recommendation's four progressive hints."""
         if not 1 <= level <= 4:
             raise ValueError("Hint level must be between 1 and 4.")
-        if self._decision is None:
-            raise RuntimeError("No engine recommendation is available for this position.")
-        hint = self._decision.best.hints[level - 1]
+        if self._decision is not None:
+            hint = self._decision.best.hints[level - 1]
+        else:
+            # A curated lesson already contains a validated next move. Use it
+            # for progressive hints when Stockfish is unavailable; do not
+            # pretend this lesson-derived hint is an engine recommendation.
+            prompt = self.session.prompt()
+            if prompt.expected_uci is None:
+                raise RuntimeError(
+                    "No lesson move or engine recommendation is available for this position."
+                )
+            board = self.session.game.copy_board()
+            move = chess.Move.from_uci(prompt.expected_uci)
+            piece = board.piece_at(move.from_square)
+            if piece is None:
+                raise RuntimeError("The lesson move has no moving piece.")
+            piece_name = chess.piece_name(piece.piece_type)
+            source = chess.square_name(move.from_square)
+            target = chess.square_name(move.to_square)
+            san = board.san(move)
+            lesson_hints = (
+                CoachHint(1, f"Look for a useful move with your {piece_name}."),
+                CoachHint(2, f"Find your {piece_name} on {source.upper()}.",
+                          arrow_from=source),
+                CoachHint(3, f"Move the {piece_name} from {source.upper()} to {target.upper()}.",
+                          arrow_from=source, arrow_to=target),
+                CoachHint(4, f"Play {san} ({source.upper()} to {target.upper()}).",
+                          arrow_from=source, arrow_to=target, reveal_uci=move.uci()),
+            )
+            hint = lesson_hints[level - 1]
         self.state = replace(self.state, active_hint=hint)
         return self.state
 
