@@ -119,7 +119,7 @@ EXERCISES: tuple[StrategyExercise, ...] = (
 
     StrategyExercise(
         "middlegame-outpost", "Establish a protected knight outpost", "outposts", "intermediate",
-        "2r3k1/pp3ppp/8/8/2P2N2/8/PP3PPP/R3R1K1 w - - 0 20",
+        "r5k1/pp3ppp/8/8/2P2N2/8/PP3PPP/R3R1K1 w - - 0 20",
         "f4d5",
         "Nd5 installs the knight on a protected central outpost. The c4-pawn supports d5, and Black has no c- or e-pawn available to chase the knight away. The knight restricts Black and eyes useful central and kingside squares.",
         ("Look for a square in enemy territory that a pawn cannot challenge.", "Check whether one of your pawns can support that square.", "Move the f4-knight to d5."),
