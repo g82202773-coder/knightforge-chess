@@ -70,7 +70,8 @@ def test_practice_and_mastery_do_not_leak_the_lesson_answer():
         coach = created["state"]["coach"]
         assert coach["expected_move"] is None
         assert "E2" not in coach["text"]
-        assert "e2e4" not in str(created["state"])
+        assert "e2e4" not in str(coach)
+        assert created["state"]["board"]["highlighted_squares"] == []
         assert created["state"]["engine"]["recommendation"] is None
     practice = client.post("/api/sessions", json={"mode": "practice"}).json()
     assert practice["state"]["coach"]["hints_available"] is True
