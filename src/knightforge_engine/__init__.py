@@ -2,7 +2,13 @@
 
 from .core import ChessGame, GameStatus, MoveResult
 from .knowledge import KnowledgeLine, KnowledgeRecord, KnowledgeType
-from .opening_catalog import OpeningCatalog, OpeningFamily, OpeningReference, OpeningSystem, OpeningVariation
+from .opening_catalog import (
+    OpeningCatalog,
+    OpeningFamily,
+    OpeningReference,
+    OpeningSystem,
+    OpeningVariation,
+)
 from .opening_coverage import OpeningCoverageReport, analyze_opening_coverage
 from .opening_import import OpeningImportReport, import_openings, parse_opening_import
 from .opening_repository import OpeningRepository
@@ -18,14 +24,14 @@ __all__ = [
     "MoveOption",
     "MoveResult",
     "OpeningCatalog",
-    "OpeningFamily",
     "OpeningCoverageReport",
+    "OpeningFamily",
     "OpeningImportReport",
     "OpeningReference",
-    "OpeningSystem",
-    "OpeningVariation",
     "OpeningRepository",
+    "OpeningSystem",
     "OpeningTree",
+    "OpeningVariation",
     "PositionInspector",
     "SquareState",
     "VariationNode",
