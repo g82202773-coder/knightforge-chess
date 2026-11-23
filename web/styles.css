@@ -56,3 +56,24 @@
 .study-square.legal{box-shadow:inset 0 0 0 4px #8cbd65}
 .study-square.legal .piece{filter:drop-shadow(0 0 3px #d7f18a)}
 #training-feedback{font-size:11px;line-height:1.4}
+
+
+/* Tactical puzzle trainer */
+.tactics-trainer{margin-top:28px;padding:24px;background:linear-gradient(145deg,#1b2721,#17201c);border:1px solid var(--line);border-radius:18px}
+.tactics-layout{display:grid;grid-template-columns:minmax(280px,1fr) minmax(220px,.7fr);gap:20px;align-items:start;margin-top:18px}
+.tactics-board-panel,.tactics-info{min-width:0}
+.tactics-toolbar{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+.tactics-toolbar select{flex:1;min-width:140px;background:#25332b;border:1px solid var(--line);border-radius:8px;padding:9px;color:var(--text);font:11px 'DM Sans',sans-serif}
+.tactics-board{width:100%;max-width:540px;aspect-ratio:1;display:grid;grid-template-columns:repeat(8,1fr);grid-template-rows:repeat(8,1fr);border:5px solid #27372d;border-radius:5px;overflow:hidden;touch-action:manipulation}
+.tactics-square{position:relative;border:0;padding:0;display:grid;place-items:center;min-width:0;min-height:0}
+.tactics-square.light{background:var(--light)}.tactics-square.dark{background:var(--dark)}
+.tactics-square.selected{background:var(--selected)!important}
+.tactics-square.legal:before{content:"";position:absolute;width:24%;height:24%;border-radius:50%;background:#17251d66}
+.tactics-square:disabled{opacity:1}
+.tactics-info{padding:14px;background:#222f27;border:1px solid #35483a;border-radius:12px}
+.tactics-info h3{font:700 19px Manrope,sans-serif;margin:10px 0}
+.tactics-info p{font-size:12px;line-height:1.6;color:var(--muted)}
+.tactics-progress{font:11px 'DM Mono',monospace;color:var(--accent);padding:12px 0}
+.tactics-info .study-nav{display:flex;gap:8px;flex-wrap:wrap}
+.tactics-info .study-comment{margin-top:12px}
+@media(max-width:720px){.tactics-layout{grid-template-columns:1fr}.tactics-board{max-width:100%}.tactics-trainer{padding:15px}}
