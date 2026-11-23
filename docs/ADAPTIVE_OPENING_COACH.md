@@ -32,4 +32,23 @@ print(state.knowledge_status, state.variation_match.matches)
 
 The service never upgrades an engine guess or an unreviewed record into opening theory. The lesson tree still controls expected moves; recognition and variation matching provide independently validated context. For non-standard lesson starting FENs, the service uses position-only matching and does not claim a historical move order.
 
-This is orchestration logic, not a voice/avatar renderer or Stockfish-powered opponent-deviation solver. Clients still render audio, avatar, arrows, highlights, and speech UI.
+## Safe engine analysis after a deviation
+
+Pass a server-configured `StockfishAnalyzer` into the coach to enable explicit analysis after an unexpected opponent move:
+
+```python
+from knightforge_engine import AdaptiveOpeningCoach, StockfishAnalyzer
+
+coach = AdaptiveOpeningCoach(lesson, repository, analyzer=StockfishAnalyzer())
+# After the opponent makes an unlisted but legal move:
+submission = coach.session.submit_uci("d7d5")
+analysis = coach.analyze_deviation(time_limit=1.0, depth=14, multipv=3)
+for line in analysis.lines:
+    print(line.moves_san, line.score_cp, line.score_mate)
+```
+
+The executable must be installed and configured on the trusted server with `STOCKFISH_PATH`. The executable path is never accepted from a learner request. Analysis is opt-in and available only while the lesson is paused at an opponent deviation. The adapter enforces 0.05–30 seconds, depth 1–40, and MultiPV 1–5; it validates the FEN and replays returned PV moves through legal move validation.
+
+Engine candidate lines are analysis suggestions, **not verified opening theory**. They must not be added to the opening catalogue automatically. The coach does not silently call Stockfish on every move, so deployments retain control over CPU usage.
+
+Clients still render audio, avatar, arrows, highlights, and speech UI.
