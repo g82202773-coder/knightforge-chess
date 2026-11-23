@@ -1,16 +1,15 @@
 """FastAPI session server for the KnightForge browser board."""
 from __future__ import annotations
 
+import json
 import os
 import secrets
 import threading
-import json
-
-import chess
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Literal
 
+import chess
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
@@ -20,9 +19,9 @@ from .adaptive_coach import AdaptiveOpeningCoach
 from .analysis import StockfishAnalyzer
 from .coach_presentation import coach_state_payload, submission_payload
 from .guided_learning import GuidedLesson, LessonNode
-from .opening_repository import OpeningRepository
 from .opening_catalog import OpeningCatalog
 from .opening_import import parse_opening_import
+from .opening_repository import OpeningRepository
 from .opening_tree import OpeningTree, VariationNode
 
 Mode = Literal["guided", "practice", "mastery"]
