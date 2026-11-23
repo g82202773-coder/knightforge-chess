@@ -79,6 +79,7 @@ class OpeningTree:
     review_status: str = "draft"
     roots: tuple[VariationNode, ...] = field(default_factory=tuple)
     transposition_notes: tuple[str, ...] = ()
+    anchor_uci: tuple[str, ...] = ()
 
     def validate(self) -> None:
         """Validate metadata and every branch from the declared starting FEN."""
@@ -100,6 +101,8 @@ class OpeningTree:
         if not board.is_valid():
             raise ValueError("Starting FEN is not a valid chess position.")
         self._validate_siblings(board, self.roots, "root")
+        if self.anchor_uci and not self._contains_path(self.roots, self.anchor_uci):
+            raise ValueError("anchor_uci must match a complete legal path in the opening tree.")
 
     @classmethod
     def _validate_siblings(
@@ -122,6 +125,16 @@ class OpeningTree:
             next_position = position.copy()
             next_position.push(move)
             cls._validate_siblings(next_position, node.children, branch)
+
+    @staticmethod
+    def _contains_path(nodes: tuple[VariationNode, ...], path: tuple[str, ...]) -> bool:
+        """Return whether the exact UCI sequence exists as one tree branch."""
+        if not path:
+            return True
+        for node in nodes:
+            if node.move_uci == path[0] and OpeningTree._contains_path(node.children, path[1:]):
+                return True
+        return False
 
     def mainline_uci(self) -> tuple[str, ...]:
         """Return a deterministic first-child path, useful for previews."""
@@ -201,6 +214,7 @@ class OpeningTree:
             "license_name": self.license_name,
             "review_status": self.review_status,
             "transposition_notes": list(self.transposition_notes),
+            "anchor_uci": list(self.anchor_uci),
             "roots": [node.to_dict() for node in self.roots],
         }
 
@@ -224,10 +238,10 @@ class OpeningTree:
         for key in ("eco", "source_url"):
             if payload.get(key) is not None and not isinstance(payload.get(key), str):
                 raise TypeError(f"Opening tree {key} must be a string or null.")
-        for key in ("aliases", "transposition_notes", "roots"):
+        for key in ("aliases", "transposition_notes", "roots", "anchor_uci"):
             if not isinstance(payload.get(key, []), list):
                 raise TypeError(f"Opening tree {key} must be an array.")
-        for key in ("aliases", "transposition_notes"):
+        for key in ("aliases", "transposition_notes", "anchor_uci"):
             if any(not isinstance(item, str) for item in payload.get(key, [])):
                 raise TypeError(f"Opening tree {key} entries must be strings.")
         tree = cls(
@@ -243,6 +257,7 @@ class OpeningTree:
             review_status=payload.get("review_status", "draft"),
             roots=tuple(VariationNode.from_dict(node) for node in payload.get("roots", [])),
             transposition_notes=tuple(payload.get("transposition_notes", [])),
+            anchor_uci=tuple(payload.get("anchor_uci", [])),
         )
         tree.validate()
         return tree
