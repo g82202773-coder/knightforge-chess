@@ -23,7 +23,7 @@ class OpeningTrainingSession:
     mode: TrainingMode = "practice"
     board: chess.Board = field(init=False)
     nodes: tuple[VariationNode, ...] = field(init=False)
-    history: list[tuple[str, tuple[VariationNode, ...], int]] = field(default_factory=list)
+    history: list[tuple[str, tuple[VariationNode, ...], int, int, int]] = field(default_factory=list)
     correct_moves: int = 0
     attempts: int = 0
     hint_level: int = 0
@@ -101,7 +101,7 @@ class OpeningTrainingSession:
         self.attempts += 1
         if matching is None:
             return {"applied": False, "correct": False, "message": "Legal move, but not in this opening line. Try another continuation.", "state": self.state()}
-        self.history.append((self.board.fen(), self.nodes, self.hint_level))
+        self.history.append((self.board.fen(), self.nodes, self.hint_level, self.correct_moves, self.attempts))
         san = self.board.san(move)
         self.board.push(move)
         self.nodes = matching.children
@@ -125,10 +125,12 @@ class OpeningTrainingSession:
     def undo(self) -> dict:
         if not self.history:
             raise ValueError("There is no training move to undo.")
-        fen, nodes, hint = self.history.pop()
+        fen, nodes, hint, correct_moves, attempts = self.history.pop()
         self.board = chess.Board(fen)
         self.nodes = nodes
         self.hint_level = hint
+        self.correct_moves = correct_moves
+        self.attempts = attempts
         self.complete = False
         return self.state()
 
