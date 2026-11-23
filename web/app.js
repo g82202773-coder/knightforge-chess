@@ -21,7 +21,7 @@ $("restart-btn").addEventListener("click",async()=>{try{const r=await api("/api/
 $("mode-select").addEventListener("change",createSession);$("speak-btn").addEventListener("click",()=>state&&speak(state.coach.voice_script||state.coach.text));$("voice-toggle").addEventListener("change",e=>{if(!e.target.checked&&window.speechSynthesis)window.speechSynthesis.cancel();else if(state)speak(state.coach.voice_script||state.coach.text);});createSession();
 
 // Opening study explorer -----------------------------------------------------
-let openingItems=[], activeOpening=null, selectedStudyPath=[];
+let openingItems=[], activeOpening=null, selectedStudyPath=[], trainingId=null, trainingState=null, trainingSelected=null, trainingTargets=[];
 const studyPieceGlyph=PIECES;
 function studyNodeAtPath(nodes,path){
   let current=nodes,node=null;
@@ -38,6 +38,7 @@ function studySanLine(path){
   return sans;
 }
 function renderStudyBoard(fen){
+  if(trainingState){renderTrainingBoard();return;}
   const root=$("study-board");root.innerHTML="";
   const cells=parseFen(fen);
   for(let rank=8;rank>=1;rank--)for(let file=0;file<8;file++){
@@ -98,6 +99,7 @@ async function loadOpeningList(){
 }
 async function loadOpening(openingId){
   try{
+    trainingId=null;trainingState=null;trainingSelected=null;trainingTargets=[];
     activeOpening=await api("/api/openings/"+encodeURIComponent(openingId));selectedStudyPath=[];
     $("variation-tree").innerHTML="";buildVariationTree(activeOpening.roots,$("variation-tree"));
     renderStudyPosition();await loadOpeningList();
@@ -108,3 +110,82 @@ $("opening-side").addEventListener("change",loadOpeningList);
 $("study-prev").addEventListener("click",()=>{if(selectedStudyPath.length){selectedStudyPath.pop();renderStudyPosition();}});
 $("study-next").addEventListener("click",()=>{if(!activeOpening)return;const node=studyNodeAtPath(activeOpening.roots,selectedStudyPath);if(node&&node.children.length){selectedStudyPath.push(node.children[0].uci);renderStudyPosition();}});
 loadOpeningList();
+
+
+// Opening training ----------------------------------------------------------
+function trainingFeedback(message,good){
+  const el=$("training-feedback");el.textContent=message;el.className="feedback"+(good?"":" bad");
+}
+function renderTrainingBoard(){
+  if(!trainingState)return;
+  const root=$("study-board");root.innerHTML="";
+  const cells=parseFen(trainingState.fen),legal=trainingState.legal_moves_uci||[];
+  for(let rank=8;rank>=1;rank--)for(let file=0;file<8;file++){
+    const sq=FILES[file]+rank,entry=cells.find(x=>x.sq===sq),button=document.createElement("button");
+    button.type="button";button.className="study-square "+(((file+rank)%2===0)?"light":"dark");
+    if(sq===trainingSelected)button.classList.add("selected");
+    if(trainingTargets.some(move=>move.slice(2,4)===sq))button.classList.add("legal");
+    if(entry&&entry.p){const piece=document.createElement("span");piece.className="piece "+(entry.p===entry.p.toUpperCase()?"white":"black");piece.textContent=studyPieceGlyph[entry.p];button.append(piece);}
+    button.disabled=trainingState.complete;
+    button.addEventListener("click",()=>trainingClick(sq,entry&&entry.p));
+    root.append(button);
+  }
+}
+function applyTrainingState(s){
+  trainingState=s;trainingSelected=null;trainingTargets=[];
+  renderTrainingBoard();
+  $("study-line").textContent=s.prompt;
+  $("study-ply").textContent=s.progress.plies_played+" plies";
+  $("study-family").textContent=s.learner_color.toUpperCase()+" · "+s.mode.toUpperCase();
+  $("study-branches").textContent=s.complete?"COMPLETE":s.turn.toUpperCase()+" TO MOVE";
+  $("training-progress").textContent=s.progress.correct_moves+" correct · "+s.progress.attempts+" attempts · "+s.progress.accuracy_percent+"% accuracy";
+  $("training-hint").disabled=!s.hints_available||s.hint&&s.hint.level>=3||s.complete;
+  $("training-undo").disabled=false;
+  $("training-restart").disabled=false;
+  if(s.hint)trainingFeedback(s.hint.text,true);
+  if(s.complete)trainingFeedback("Opening line complete. Restart to practise again.",true);
+}
+function trainingClick(square,piece){
+  if(!trainingState||trainingState.complete)return;
+  if(trainingSelected){
+    const candidate=trainingTargets.find(move=>move.slice(2,4)===square);
+    if(candidate){submitTrainingMove(candidate);return;}
+    if(trainingSelected===square){trainingSelected=null;trainingTargets=[];renderTrainingBoard();return;}
+  }
+  const own=trainingState.learner_color==="white"?/[A-Z]/.test(piece||""):/[a-z]/.test(piece||"");
+  if(piece&&own){trainingSelected=square;trainingTargets=(trainingState.legal_moves_uci||[]).filter(move=>move.slice(0,2)===square);renderTrainingBoard();}
+}
+async function submitTrainingMove(uci){
+  try{
+    const result=await api("/api/training/"+trainingId+"/moves",{method:"POST",body:JSON.stringify({uci})});
+    applyTrainingState(result.state);
+    trainingFeedback(result.message,result.applied);
+  }catch(error){trainingFeedback(error.message,false);}
+}
+$("training-start").addEventListener("click",async()=>{
+  if(!activeOpening){trainingFeedback("Choose an opening first.",false);return;}
+  try{
+    const result=await api("/api/training",{method:"POST",body:JSON.stringify({
+      opening_id:activeOpening.opening_id,mode:$("training-mode").value
+    })});
+    trainingId=result.training_id;applyTrainingState(result.state);
+    trainingFeedback("Training started. Play the moves for your repertoire side.",true);
+  }catch(error){trainingFeedback(error.message,false);}
+});
+$("training-hint").addEventListener("click",async()=>{
+  if(!trainingId||!trainingState)return;
+  try{const level=(trainingState.hint?trainingState.hint.level:0)+1;
+    const result=await api("/api/training/"+trainingId+"/hints",{method:"POST",body:JSON.stringify({level})});
+    applyTrainingState(result.state);
+  }catch(error){trainingFeedback(error.message,false);}
+});
+$("training-undo").addEventListener("click",async()=>{
+  if(!trainingId)return;
+  try{const result=await api("/api/training/"+trainingId+"/undo",{method:"POST"});applyTrainingState(result.state);}
+  catch(error){trainingFeedback(error.message,false);}
+});
+$("training-restart").addEventListener("click",async()=>{
+  if(!trainingId)return;
+  try{const result=await api("/api/training/"+trainingId+"/restart",{method:"POST"});applyTrainingState(result.state);trainingFeedback("Training restarted.",true);}
+  catch(error){trainingFeedback(error.message,false);}
+});
