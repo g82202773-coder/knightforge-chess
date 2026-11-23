@@ -6,7 +6,6 @@ the independent verification layer planned for a later increment.
 from __future__ import annotations
 
 from collections import Counter
-from dataclasses import dataclass
 
 import chess
 
@@ -70,6 +69,18 @@ def _pawn_report(board: chess.Board, color: chess.Color) -> dict:
     }
 
 
+def _weak_squares(board: chess.Board, color: chess.Color) -> list[str]:
+    """Central squares in enemy territory that enemy pawns cannot challenge."""
+    enemy_half = range(4, 8) if color else range(0, 4)
+    return [
+        chess.square_name(square) for square in chess.SQUARES
+        if chess.square_rank(square) in enemy_half
+        and chess.square_file(square) in {2, 3, 4, 5}
+        and board.piece_at(square) is None
+        and not _pawn_attacks(board, not color, square)
+    ]
+
+
 def _outposts(board: chess.Board, color: chess.Color) -> list[str]:
     result = []
     enemy_half = range(4, 8) if color else range(0, 4)
@@ -115,6 +126,8 @@ def _features(board: chess.Board) -> dict:
     return {
         "white_pawns": _pawn_report(board, chess.WHITE),
         "black_pawns": _pawn_report(board, chess.BLACK),
+        "white_weak_squares": _weak_squares(board, chess.WHITE),
+        "black_weak_squares": _weak_squares(board, chess.BLACK),
         "white_outpost_squares": _outposts(board, chess.WHITE),
         "black_outpost_squares": _outposts(board, chess.BLACK),
         "white_rooks": _rook_report(board, chess.WHITE),
@@ -153,9 +166,6 @@ def _reply_priority(board: chess.Board, move: chess.Move) -> tuple[float, int, i
     captured = board.piece_at(move.to_square)
     capture_value = PIECE_VALUES.get(captured.piece_type, 0.0) if captured else 0.0
     gives_check = board.gives_check(move)
-    board.push(move)
-    opponent_king_attacked = board.is_check()
-    board.pop()
     return (capture_value + (0.6 if gives_check else 0.0), int(gives_check), -move.to_square)
 
 
@@ -188,7 +198,7 @@ def analyze_position(fen: str, candidate_uci: list[str] | None = None) -> dict:
     if not board.is_valid():
         raise ValueError("FEN describes an invalid chess position.")
     before = _features(board)
-    candidate_moves = list(board.legal_moves) if candidate_uci is None else [
+    candidate_moves = list(board.legal_moves)[:12] if candidate_uci is None else [
         chess.Move.from_uci(uci) for uci in candidate_uci
     ]
     if not candidate_moves:
