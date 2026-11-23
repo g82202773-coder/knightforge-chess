@@ -415,3 +415,78 @@ $("analysis-run").addEventListener("click",async()=>{
 });
 
 loadStrategyLessons();loadStrategyExercises();
+
+/* Full game arena: independent from the short guided lesson session. */
+let fullGameId=null,fullGameState=null,fullGameSelected=null,fullGameTargets=[],fullGameBusy=false;
+function renderFullGame(){
+  if(!fullGameState)return;
+  const root=$("full-game-board");root.innerHTML="";
+  const cells=parseFen(fullGameState.fen);
+  for(let rank=8;rank>=1;rank--)for(let file=0;file<8;file++){
+    const square=FILES[file]+rank,entry=cells.find(x=>x.sq===square),button=document.createElement("button");
+    button.type="button";button.className="square "+(((file+rank)%2===0)?"light":"dark");
+    if(square===fullGameSelected)button.classList.add("selected");
+    if(fullGameTargets.includes(square))button.classList.add(entry&&entry.p?"capture":"legal");
+    if(entry&&entry.p){const piece=document.createElement("span");piece.className="piece "+(entry.p===entry.p.toUpperCase()?"white":"black");piece.textContent=PIECES[entry.p];button.append(piece);}
+    button.setAttribute("aria-label",square+(entry&&entry.p?" "+entry.p:" empty"));
+    button.disabled=fullGameBusy||fullGameState.game_over;
+    button.addEventListener("click",()=>fullGameClick(square,entry&&entry.p));
+    root.append(button);
+  }
+  $("game-turn").textContent=fullGameState.game_over?(fullGameState.checkmate?"Checkmate":"Game over"):((fullGameState.turn==="white"?"White":"Black")+" to move"+(fullGameState.check?" · CHECK":""));
+  $("game-move-number").textContent="MOVE "+fullGameState.move_number;
+  $("game-status").textContent=fullGameState.game_over?(fullGameState.result+" · "+(fullGameState.termination||"finished").replaceAll("_"," ")): (fullGameState.check?"CHECK":"GAME ACTIVE");
+  $("full-game-count").textContent=fullGameState.move_history.length+" plies";
+  const rows=fullGameState.move_history;
+  if(!rows.length)$("full-game-history").textContent="No moves yet.";
+  else{
+    const grouped=[];for(let i=0;i<rows.length;i+=2){const line=document.createElement("div");line.className="full-game-move-row";const number=document.createElement("span");number.textContent=rows[i].move_number+".";const white=document.createElement("strong");white.textContent=rows[i].san;const black=document.createElement("span");black.textContent=rows[i+1]?rows[i+1].san:"";line.append(number,white,black);grouped.push(line);}
+    $("full-game-history").replaceChildren(...grouped);
+  }
+  $("full-game-undo").disabled=!fullGameState.can_undo||fullGameBusy;
+  $("full-game-restart").disabled=fullGameBusy;
+  $("full-game-rules").textContent=fullGameState.checkmate?"Checkmate. The game has ended.":fullGameState.stalemate?"Stalemate. The game is a draw.":fullGameState.check?"Your king is in check. You must resolve it with a legal move.":"Legal moves only · Castling · En passant · Promotion · Check and checkmate";
+}
+function fullGameFeedback(message,good=true){const el=$("full-game-feedback");el.textContent=message;el.className="feedback"+(good?"":" bad");}
+async function loadFullGame(){
+  try{const result=await api("/api/games",{method:"POST",body:"{}"});fullGameId=result.game_id;fullGameState=result.state;fullGameSelected=null;fullGameTargets=[];renderFullGame();fullGameFeedback("New game ready. White moves first.");}
+  catch(error){fullGameFeedback("Could not start game: "+error.message,false);}
+}
+async function fullGameClick(square,piece){
+  if(!fullGameState||fullGameBusy||fullGameState.game_over)return;
+  if(fullGameSelected){
+    if(fullGameTargets.includes(square)){
+      const candidates=fullGameState.legal_moves_uci.filter(uci=>uci.slice(0,2)===fullGameSelected&&uci.slice(2,4)===square);
+      let move=candidates[0];
+      if(candidates.length>1){
+        const choice=(window.prompt("Promote pawn to: Q (queen), R (rook), B (bishop), or N (knight)","q")||"q").trim().toLowerCase();
+        const suffix=["q","r","b","n"].includes(choice)?choice:"q";
+        move=candidates.find(uci=>uci[4]===suffix)||candidates[0];
+      }
+      await submitFullGameMove(move);return;
+    }
+    if(square===fullGameSelected){fullGameSelected=null;fullGameTargets=[];renderFullGame();return;}
+  }
+  const own=piece&&(fullGameState.turn==="white"?piece===piece.toUpperCase():piece===piece.toLowerCase());
+  if(own){fullGameSelected=square;fullGameTargets=fullGameState.legal_moves_uci.filter(uci=>uci.slice(0,2)===square).map(uci=>uci.slice(2,4));renderFullGame();}
+  else{fullGameSelected=null;fullGameTargets=[];renderFullGame();}
+}
+async function submitFullGameMove(uci){
+  fullGameBusy=true;renderFullGame();
+  try{const result=await api("/api/games/"+fullGameId+"/moves",{method:"POST",body:JSON.stringify({uci})});fullGameState=result.state;fullGameSelected=null;fullGameTargets=[];renderFullGame();fullGameFeedback("Played "+result.played+".");}
+  catch(error){fullGameSelected=null;fullGameTargets=[];renderFullGame();fullGameFeedback(error.message,false);}
+  finally{fullGameBusy=false;renderFullGame();}
+}
+$("full-game-undo").addEventListener("click",async()=>{
+  if(!fullGameId||fullGameBusy)return;fullGameBusy=true;
+  try{const result=await api("/api/games/"+fullGameId+"/undo",{method:"POST"});fullGameState=result.state;fullGameSelected=null;fullGameTargets=[];fullGameFeedback("Last move undone.");}
+  catch(error){fullGameFeedback(error.message,false);}
+  finally{fullGameBusy=false;renderFullGame();}
+});
+$("full-game-restart").addEventListener("click",async()=>{
+  if(!fullGameId||fullGameBusy)return;fullGameBusy=true;
+  try{const result=await api("/api/games/"+fullGameId+"/restart",{method:"POST"});fullGameState=result.state;fullGameSelected=null;fullGameTargets=[];fullGameFeedback("New game started. White moves first.");}
+  catch(error){fullGameFeedback(error.message,false);}
+  finally{fullGameBusy=false;renderFullGame();}
+});
+loadFullGame();
