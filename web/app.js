@@ -303,7 +303,7 @@ async function loadStrategyLesson(id){
 async function loadStrategyExercises(){
   try{
     const result=await api("/api/strategy/exercises");$("strategy-exercise").innerHTML="";
-    result.items.forEach(item=>{const option=document.createElement("option");option.value=item.exercise_id;option.textContent=item.title+" · "+item.theme.replaceAll("_"," ");$("strategy-exercise").append(option);});
+    result.items.forEach(item=>{const option=document.createElement("option");option.value=item.exercise_id;option.textContent=(item.position_phase==="middlegame"?"Middlegame · ":"Opening · ")+item.title+" · "+item.theme.replaceAll("_"," ");$("strategy-exercise").append(option);});
   }catch(error){strategyMessage("Could not load positional exercises: "+error.message,false);}
 }
 function renderStrategyBoard(){
@@ -331,6 +331,16 @@ function applyStrategyState(s){
   $("strategy-restart").disabled=false;
   $("strategy-hint-text").textContent=s.hint||"Hints help you identify the strategic idea.";
   $("strategy-explanation").textContent=s.explanation||"";
+  const review=s.strategic_review;
+  $("strategy-review").hidden=!review;
+  if(review){
+    $("strategy-plan").textContent=review.plan;
+    $("strategy-gains").innerHTML="";review.positional_gains.forEach(item=>{const li=document.createElement("li");li.textContent=item;$("strategy-gains").append(li);});
+    $("strategy-concessions").innerHTML="";review.concessions.forEach(item=>{const li=document.createElement("li");li.textContent=item;$("strategy-concessions").append(li);});
+    $("strategy-opponent-plan").textContent=review.opponent_plan;
+    $("strategy-candidate-comparison").textContent=review.candidate_comparison;
+    $("strategy-evaluation-basis").textContent=review.evaluation_basis;
+  }
   if(s.solved)strategyMessage("Decision recorded. Read the explanation and identify the positional gains.",true);
 }
 function strategySquareClick(square,piece){
