@@ -214,8 +214,7 @@ class OpeningRecognizer:
             return (), "san"
         if isinstance(moves, str):
             raw = moves.strip()
-            if notation == "pgn" or (notation == "auto" and
-                                      ("[" in raw or re.search(r"\d+\.(\.\.)?", raw))):
+            if notation == "pgn" or (notation == "auto" and "[" in raw):
                 game = chess.pgn.read_game(io.StringIO(raw))
                 if game is None:
                     raise ValueError("No PGN game found.")
