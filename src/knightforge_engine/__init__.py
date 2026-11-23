@@ -11,6 +11,7 @@ from .opening_catalog import (
 )
 from .opening_coverage import OpeningCoverageReport, analyze_opening_coverage
 from .opening_import import OpeningImportReport, import_openings, parse_opening_import
+from .opening_recognition import OpeningMatch, OpeningRecognition, OpeningRecognizer
 from .opening_repository import OpeningRepository
 from .opening_tree import OpeningTree, VariationNode
 from .position import MoveOption, PositionInspector, SquareState
@@ -27,6 +28,9 @@ __all__ = [
     "OpeningCoverageReport",
     "OpeningFamily",
     "OpeningImportReport",
+    "OpeningMatch",
+    "OpeningRecognition",
+    "OpeningRecognizer",
     "OpeningReference",
     "OpeningRepository",
     "OpeningSystem",
