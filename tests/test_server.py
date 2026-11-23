@@ -389,12 +389,12 @@ def test_strategy_exercises_are_valid_and_solutions_are_legal():
 
     response = client.get("/api/strategy/exercises")
     assert response.status_code == 200
-    assert response.json()["count"] == len(EXERCISES) == 4
+    assert response.json()["count"] == len(EXERCISES) == 8
     for exercise in EXERCISES:
         board = chess.Board(exercise.fen)
         assert board.is_valid()
         assert chess.Move.from_uci(exercise.solution_uci) in board.legal_moves
-    assert client.get("/api/strategy/exercises?theme=development").json()["count"] == 2
+    assert client.get("/api/strategy/exercises?theme=development").json()["count"] == 3
     assert client.get("/api/strategy/exercises?theme=nonexistent").json()["count"] == 0
 
 
@@ -443,3 +443,51 @@ def test_strategy_hints_mastery_restart_and_unknown_session():
     assert restarted.json()["state"]["progress"]["attempts"] == 0
     assert client.get("/api/strategy/not-a-session").status_code == 404
     assert client.post("/api/strategy", json={"exercise_id": "missing"}).status_code == 404
+
+
+def test_middlegame_strategy_positions_and_solution_reviews():
+    from knightforge_engine.strategy_training import EXERCISES, StrategySession
+
+    middlegame = [item for item in EXERCISES if item.exercise_id.startswith("middlegame-")]
+    assert len(middlegame) == 4
+    for exercise in middlegame:
+        board = chess.Board(exercise.fen)
+        assert board.is_valid(), exercise.exercise_id
+        assert board.fullmove_number >= 15, exercise.exercise_id
+        move = chess.Move.from_uci(exercise.solution_uci)
+        assert move in board.legal_moves, exercise.exercise_id
+        session = StrategySession(exercise)
+        assert session.state()["strategic_review"] is None
+        result = session.submit(exercise.solution_uci)
+        assert result["correct"] is True
+        review = result["state"]["strategic_review"]
+        assert review["plan"], exercise.exercise_id
+        assert review["positional_gains"], exercise.exercise_id
+        assert review["concessions"], exercise.exercise_id
+        assert review["opponent_plan"], exercise.exercise_id
+        assert review["candidate_comparison"], exercise.exercise_id
+        assert "no engine score" in review["evaluation_basis"].lower()
+
+
+def test_middlegame_catalog_marks_phase_and_hides_evaluation_until_solved():
+    response = client.get("/api/strategy/exercises?difficulty=intermediate")
+    assert response.status_code == 200
+    items = response.json()["items"]
+    assert len(items) == 4
+    assert all(item["position_phase"] == "middlegame" for item in items)
+    created = client.post("/api/strategy", json={
+        "exercise_id": "middlegame-open-file", "mode": "practice",
+    })
+    assert created.status_code == 200
+    state = created.json()["state"]
+    assert state["position_phase"] == "middlegame"
+    assert state["strategic_review"] is None
+    assert state["expected_move"] is None
+    solved = client.post(
+        f"/api/strategy/{created.json()['strategy_id']}/moves",
+        json={"uci": "d1e1"},
+    )
+    assert solved.status_code == 200
+    review = solved.json()["state"]["strategic_review"]
+    assert "open e-file" in review["plan"].lower()
+    assert any("rook" in item.lower() for item in review["positional_gains"])
