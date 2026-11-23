@@ -55,6 +55,14 @@ def test_hints_and_mastery_mode_policy():
     assert blocked.status_code == 403
 
 
+
+def test_practice_hint_endpoint_works_without_stockfish():
+    practice = client.post("/api/sessions", json={"mode": "practice"}).json()
+    session_id = practice["session_id"]
+    hint = client.post(f"/api/sessions/{session_id}/hints", json={"level": 1})
+    assert hint.status_code == 200
+    assert hint.json()["state"]["coach"]["active_hint"]["level"] == 1
+
 def test_undo_and_restart():
     session_id = client.post("/api/sessions", json={}).json()["session_id"]
     client.post(f"/api/sessions/{session_id}/moves", json={"uci": "e2e4"})
