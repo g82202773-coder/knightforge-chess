@@ -1,6 +1,7 @@
 """KnightForge chess rules, analysis, and knowledge package."""
 
 from .adaptive_coach import AdaptiveOpeningCoach, OpeningCoachState, OpeningCoachSubmission
+from .analysis import AnalysisResult, EngineLine, StockfishAnalyzer
 from .core import ChessGame, GameStatus, MoveResult
 from .guided_learning import (
     CoachPrompt,
@@ -32,8 +33,10 @@ from .variation_matching import (
 
 __all__ = [
     "AdaptiveOpeningCoach",
+    "AnalysisResult",
     "ChessGame",
     "CoachPrompt",
+    "EngineLine",
     "GameStatus",
     "GuidedLesson",
     "GuidedLessonSession",
@@ -61,6 +64,7 @@ __all__ = [
     "PositionBasedVariationMatcher",
     "PositionInspector",
     "SquareState",
+    "StockfishAnalyzer",
     "TacticalCandidate",
     "TacticalScan",
     "TacticalScanner",
