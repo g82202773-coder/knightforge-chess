@@ -4,6 +4,9 @@ from __future__ import annotations
 import os
 import secrets
 import threading
+import json
+
+import chess
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Literal
@@ -18,6 +21,9 @@ from .analysis import StockfishAnalyzer
 from .coach_presentation import coach_state_payload, submission_payload
 from .guided_learning import GuidedLesson, LessonNode
 from .opening_repository import OpeningRepository
+from .opening_catalog import OpeningCatalog
+from .opening_import import parse_opening_import
+from .opening_tree import OpeningTree, VariationNode
 
 Mode = Literal["guided", "practice", "mastery"]
 
@@ -47,6 +53,21 @@ class SessionStore:
         self._sessions: dict[str, SessionRecord] = {}
         self._lock = threading.RLock()
         self.repository = OpeningRepository.load(Path(os.environ.get("KNIGHTFORGE_OPENINGS_PATH", "data/openings/repository.json")))
+        data_root = Path(__file__).resolve().parents[2] / "data" / "openings"
+        self.study_openings: dict[str, OpeningTree] = {}
+        self.opening_catalog: OpeningCatalog | None = None
+        batch_path = data_root / "curated_batch_01.json"
+        taxonomy_path = data_root / "opening_taxonomy.json"
+        if batch_path.exists() and taxonomy_path.exists():
+            try:
+                batch = json.loads(batch_path.read_text(encoding="utf-8"))
+                records = parse_opening_import(batch)
+                self.study_openings = {record.opening_id: record for record in records}
+                self.opening_catalog = OpeningCatalog.load(taxonomy_path)
+            except (OSError, ValueError, TypeError, json.JSONDecodeError):
+                # Optional study content must not take down ordinary chess sessions.
+                self.study_openings = {}
+                self.opening_catalog = None
         self.analyzer: StockfishAnalyzer | None = None
         executable = os.environ.get("STOCKFISH_PATH")
         if executable:
@@ -185,6 +206,105 @@ def restart(session_id: str) -> dict:
         record.coach.restart()
         record.hint_level = 0
         return {"state": state_for(record)}
+
+
+def _opening_mainline_san(opening: OpeningTree) -> list[str]:
+    board = chess.Board(opening.starting_fen)
+    moves: list[str] = []
+    for uci in opening.mainline_uci():
+        move = chess.Move.from_uci(uci)
+        moves.append(board.san(move))
+        board.push(move)
+    return moves
+
+
+def _opening_node_payload(
+    board: chess.Board, node: VariationNode, path: tuple[str, ...]
+) -> dict:
+    move = chess.Move.from_uci(node.move_uci)
+    san = board.san(move)
+    next_board = board.copy()
+    next_board.push(move)
+    next_path = (*path, node.move_uci)
+    return {
+        "uci": node.move_uci,
+        "san": san,
+        "label": node.label,
+        "explanation": node.explanation,
+        "white_plan": node.white_plan,
+        "black_plan": node.black_plan,
+        "path_uci": list(next_path),
+        "fen_after": next_board.fen(),
+        "children": [
+            _opening_node_payload(next_board, child, next_path)
+            for child in node.children
+        ],
+    }
+
+
+def _opening_detail_payload(opening: OpeningTree, catalog: OpeningCatalog | None) -> dict:
+    system = catalog.get_system_detail(opening.opening_id) if catalog else None
+    board = chess.Board(opening.starting_fen)
+    return {
+        "opening_id": opening.opening_id,
+        "name": opening.name,
+        "side": opening.side,
+        "aliases": list(opening.aliases),
+        "family_id": system.family_id if system else None,
+        "family_name": system.family_name if system else "Uncategorised",
+        "review_status": opening.review_status,
+        "source_name": opening.source_name,
+        "license_name": opening.license_name,
+        "starting_fen": opening.starting_fen,
+        "branch_count": opening.branch_count(),
+        "mainline_san": _opening_mainline_san(opening),
+        "roots": [
+            _opening_node_payload(board, node, ())
+            for node in opening.roots
+        ],
+    }
+
+
+@app.get("/api/openings")
+def list_openings(query: str = "", side: str | None = None) -> dict:
+    """List legally validated study trees, including editorial review status."""
+    if side not in {None, "white", "black", "both"}:
+        raise HTTPException(status_code=422, detail="side must be white, black, or both.")
+    term = query.strip().casefold()
+    items = []
+    for opening in store.study_openings.values():
+        if side and opening.side not in {side, "both"}:
+            continue
+        if term and not any(
+            term in value.casefold()
+            for value in (opening.name, opening.opening_id, *opening.aliases)
+        ):
+            continue
+        system = (
+            store.opening_catalog.get_system_detail(opening.opening_id)
+            if store.opening_catalog else None
+        )
+        items.append({
+            "opening_id": opening.opening_id,
+            "name": opening.name,
+            "side": opening.side,
+            "aliases": list(opening.aliases),
+            "family_name": system.family_name if system else "Uncategorised",
+            "review_status": opening.review_status,
+            "branch_count": opening.branch_count(),
+            "mainline_san": _opening_mainline_san(opening),
+        })
+    return {"items": items, "count": len(items), "content_status": "in_review"}
+
+
+@app.get("/api/openings/{opening_id}")
+def get_opening(opening_id: str) -> dict:
+    """Return a SAN/FEN annotated, legally validated opening variation tree."""
+    opening = store.study_openings.get(opening_id)
+    if opening is None:
+        raise HTTPException(status_code=404, detail="Opening study not found.")
+    return _opening_detail_payload(opening, store.opening_catalog)
+
 
 WEB_ROOT = Path(__file__).resolve().parents[2] / "web"
 @app.get("/", include_in_schema=False)
