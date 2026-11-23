@@ -77,6 +77,7 @@ class OpeningTrainingSession:
             "legal_moves_uci": sorted(move.uci() for move in self.board.legal_moves),
             "prompt": "Opening line complete." if self.complete else f"Find the next {self.learner_color} repertoire move.",
             "expected_move": expected.move_uci if expected and show_answer else None,
+            "expected_san": self.board.san(chess.Move.from_uci(expected.move_uci)) if expected and show_answer else None,
             "hint": hint,
             "hints_available": bool(expected) and self.mode == "practice",
             "complete": self.complete,
@@ -101,7 +102,7 @@ class OpeningTrainingSession:
         self.attempts += 1
         if matching is None:
             return {"applied": False, "correct": False, "message": "Legal move, but not in this opening line. Try another continuation.", "state": self.state()}
-        self.history.append((self.board.fen(), self.nodes, self.hint_level, self.correct_moves, self.attempts))
+        self.history.append((self.board.fen(), self.nodes, self.hint_level, self.correct_moves, self.attempts - 1))
         san = self.board.san(move)
         self.board.push(move)
         self.nodes = matching.children
