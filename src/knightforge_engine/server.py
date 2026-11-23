@@ -24,6 +24,7 @@ from .opening_import import parse_opening_import
 from .opening_repository import OpeningRepository
 from .opening_training import OpeningTrainingSession, TrainingMode
 from .opening_tree import OpeningTree, VariationNode
+from .strategy_training import EXERCISES, LESSONS, StrategyMode, StrategySession
 from .tactics_training import PUZZLES, TacticsMode, TacticsSession
 
 Mode = Literal["guided", "practice", "mastery"]
@@ -53,7 +54,7 @@ class SessionStore:
     def __init__(self) -> None:
         self._sessions: dict[str, SessionRecord] = {}
         self._training_sessions: dict[str, tuple[OpeningTrainingSession, threading.RLock]] = {}
-        self._tactics_sessions: dict[str, tuple[TacticsSession, threading.RLock]] = {}
+        self._tactics_sessions: dict[str, tuple[TacticsSession, threading.RLock]] = {}\n        self._strategy_sessions: dict[str, tuple[StrategySession, threading.RLock]] = {}
         self._lock = threading.RLock()
         self.repository = OpeningRepository.load(Path(os.environ.get("KNIGHTFORGE_OPENINGS_PATH", "data/openings/repository.json")))
         data_root = Path(__file__).resolve().parents[2] / "data" / "openings"
