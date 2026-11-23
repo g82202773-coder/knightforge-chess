@@ -12,4 +12,35 @@
 <div class="coach-message"><span class="eyebrow">YOUR NEXT TASK</span><p id="coach-text">Loading your lesson…</p><p id="coach-explanation" class="explanation"></p></div><div id="feedback" class="feedback hidden" aria-live="polite"></div>
 <div class="hint-area"><div class="hint-title"><span class="eyebrow">PROGRESSIVE HINTS</span><span id="hint-level">LEVEL 1 / 4</span></div><p id="hint-text">Hints will appear here when available.</p><button id="hint-btn" class="button hint-button">Reveal next hint</button></div>
 <div class="coach-controls"><label class="toggle"><input id="voice-toggle" type="checkbox"><span>Read coach aloud</span></label><button id="speak-btn" class="icon-button" title="Read current instruction">🔊</button></div><div class="engine-note"><span class="engine-indicator"></span><span id="engine-status">Engine analysis is optional. The board works without Stockfish.</span></div></aside></section>
+
+<section class="opening-explorer" aria-labelledby="opening-explorer-title">
+  <div class="explorer-heading">
+    <div><span class="eyebrow">KNOWLEDGE LIBRARY</span><h2 id="opening-explorer-title">Opening explorer</h2>
+      <p>Browse validated move trees, choose a variation, and step through the position.</p></div>
+    <span class="review-tag">EDITORIAL REVIEW IN PROGRESS</span>
+  </div>
+  <div class="explorer-layout">
+    <aside class="opening-browser">
+      <input id="opening-search" type="search" placeholder="Search openings or variations…" aria-label="Search openings or variations">
+      <select id="opening-side" aria-label="Filter by playing side"><option value="">All sides</option><option value="white">White openings</option><option value="black">Black defences</option></select>
+      <div id="opening-list" class="opening-list" aria-live="polite">Loading opening library…</div>
+    </aside>
+    <div class="opening-study">
+      <div class="study-title"><div><span id="study-family" class="eyebrow">SELECT AN OPENING</span><h3 id="study-name">Choose a study from the library</h3></div><span id="study-branches" class="turn-pill">— branches</span></div>
+      <div class="study-board-row">
+        <div id="study-board" class="study-board" role="img" aria-label="Opening study position"></div>
+        <div class="study-controls">
+          <span class="eyebrow">SELECTED LINE</span>
+          <div id="study-line" class="study-line">Choose an opening to begin.</div>
+          <div class="study-nav"><button id="study-prev" class="button secondary" disabled>← Previous</button><button id="study-next" class="button secondary" disabled>Next →</button></div>
+          <div class="study-comment"><span class="eyebrow">POSITION NOTES</span><p id="study-notes">Variation explanations and plans will appear here.</p></div>
+          <div class="study-comment"><span class="eyebrow">VARIATION LABEL</span><p id="study-variation">No variation selected.</p></div>
+        </div>
+      </div>
+      <div class="variation-heading"><span class="eyebrow">MOVE TREE · SELECT ANY MOVE</span><span id="study-ply" class="move-count">0 ply</span></div>
+      <div id="variation-tree" class="variation-tree">The move tree will appear here.</div>
+      <p id="study-provenance" class="study-provenance"></p>
+    </div>
+  </div>
+</section>
 <footer><span>KNIGHTFORGE ENGINE</span><span>Legal moves · Reviewed lesson knowledge · Optional engine analysis</span></footer></main><script src="/assets/app.js" defer></script></body></html>
