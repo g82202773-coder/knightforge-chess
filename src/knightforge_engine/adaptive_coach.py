@@ -8,6 +8,7 @@ from __future__ import annotations
 from dataclasses import dataclass, replace
 
 import chess
+import chess.engine
 
 from .analysis import AnalysisResult, StockfishAnalyzer
 from .coach_decision import (
@@ -185,7 +186,7 @@ class AdaptiveOpeningCoach:
                         multipv=self.analysis_multipv,
                     )
                     self._set_decision(result)
-                except Exception as exc:
+                except (OSError, RuntimeError, ValueError, chess.engine.EngineError) as exc:
                     # Keep lesson play usable if the optional engine is offline
                     # or returns unusable output; surface the failure in state.
                     self._analysis_error = f"{type(exc).__name__}: {exc}"
