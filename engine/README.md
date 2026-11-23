@@ -11,7 +11,7 @@ This package is the shared chess foundation for KnightForge. It is designed to b
 - Typed, provenance-aware records for opening lines and tactical knowledge.
 - A versioned JSON opening repository with legal validation, ID/ECO/name/alias search, duplicate protection, and atomic file replacement.
 - A versioned opening import pipeline that validates complete batches, legal move trees, source/license metadata, and duplicate IDs before one repository save.
-- An opening coverage analyzer that compares taxonomy systems and named variations against stored, legally validated move trees and reports missing content, provenance gaps, review state, move-node totals, and transpositions.
+- An opening coverage analyzer that compares taxonomy systems and named variations against stored, legally validated move trees and reports missing content, provenance gaps, review state, move-node totals, and transpositions.\n- A rules-backed tactical candidate scanner for immediate checks, captures, promotions, and mate-in-one, with an explicitly heuristic capture-ordering score.
 
 ## Important boundaries
 
@@ -82,7 +82,7 @@ pytest
 Set `STOCKFISH_PATH` to the Stockfish executable when running analysis. Do not expose arbitrary executable paths or unrestricted engine settings through a public API.
 
 
-## Position-based variation matching
+## Tactical candidate scanning\n\nSee [Tactical Candidate Scanning](../docs/TACTICAL_SCANNING.md) for the API, score semantics, and limitations. The scanner is a forcing-move candidate generator, not a substitute for Stockfish search.\n\n## Position-based variation matching
 
 Opening-anchor recognition identifies curated opening anchors. The position-based variation matcher goes further: after a move history or FEN has been validated by `OpeningRecognizer`, it checks the position against every node in each eligible reviewed opening tree and returns the deepest matching line, SAN sequence, and variation labels.
 
