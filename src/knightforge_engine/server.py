@@ -70,15 +70,41 @@ class SessionStore:
 store = SessionStore()
 app = FastAPI(title="KnightForge Chess Sessions", version="0.1.0")
 
-def state_for(record: SessionRecord) -> dict:
-    payload = coach_state_payload(record.coach.prompt())
-    payload["mode"] = record.mode
+def apply_mode_policy(payload: dict, record: SessionRecord) -> dict:
+    """Enforce hint disclosure on every session response, not only the UI."""
+    state = payload.get("state", payload)
+    state["mode"] = record.mode
+    coach = state["coach"]
+    engine = state["engine"]
+    expected = record.coach.prompt().expected_uci
+    coach["hints_available"] = expected is not None and record.mode != "mastery"
+
+    if record.mode in {"practice", "mastery"}:
+        # Do not leak the lesson answer through prompt text, SAN/UCI fields,
+        # explanation, arrows, or engine candidate payloads.
+        instruction = (
+            "Find the strongest move for this position. Request a hint if you need help."
+            if record.mode == "practice"
+            else "Mastery test: choose your move without hints."
+        )
+        coach["text"] = instruction
+        coach["voice_script"] = instruction
+        coach["explanation"] = ""
+        coach["expected_move"] = None
+        coach["highlighted_squares"] = []
+        engine["recommendation"] = None
+        engine["recommendation_arrow"] = None
+
     if record.mode == "mastery":
-        payload["coach"]["active_hint"] = None
-        payload["engine"]["recommendation_arrow"] = None
+        coach["active_hint"] = None
+        coach["hints_available"] = False
     elif record.mode == "practice" and record.hint_level == 0:
-        payload["coach"]["active_hint"] = None
+        coach["active_hint"] = None
     return payload
+
+
+def state_for(record: SessionRecord) -> dict:
+    return apply_mode_policy(coach_state_payload(record.coach.prompt()), record)
 
 class CreateSessionRequest(BaseModel):
     mode: Mode = "guided"
@@ -115,12 +141,7 @@ def submit_move(session_id: str, request: MoveRequest) -> dict:
             raise HTTPException(status_code=422, detail=str(exc)) from exc
         if result.submission.applied and record.mode == "practice":
             record.hint_level = 0
-        payload = submission_payload(result)
-        payload["state"]["mode"] = record.mode
-        if record.mode == "mastery":
-            payload["state"]["coach"]["active_hint"] = None
-            payload["state"]["engine"]["recommendation_arrow"] = None
-        return payload
+        return apply_mode_policy(submission_payload(result), record)
 
 @app.post("/api/sessions/{session_id}/hints")
 def reveal_hint(session_id: str, request: HintRequest) -> dict:
