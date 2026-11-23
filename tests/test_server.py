@@ -206,3 +206,85 @@ def test_opening_explorer_detail_contains_san_fen_and_selectable_variations():
     assert all(node["path_uci"][-1] == node["uci"] for node in nodes)
     assert client.get("/api/openings/not-a-real-opening").status_code == 404
 
+
+
+def test_opening_training_practice_hides_answer_and_accepts_only_stored_moves():
+    created = client.post("/api/training", json={
+        "opening_id": "italian-game", "mode": "practice",
+    })
+    assert created.status_code == 200
+    payload = created.json()
+    training_id = payload["training_id"]
+    state = payload["state"]
+    assert state["turn"] == "white"
+    assert state["expected_move"] is None
+    assert state["hints_available"] is True
+
+    wrong = client.post(f"/api/training/{training_id}/moves", json={"uci": "d2d4"})
+    assert wrong.status_code == 200
+    assert wrong.json()["applied"] is False
+    assert wrong.json()["state"]["fen"] == state["fen"]
+
+    correct = client.post(f"/api/training/{training_id}/moves", json={"uci": "e2e4"})
+    assert correct.status_code == 200
+    next_state = correct.json()["state"]
+    assert correct.json()["applied"] is True
+    assert next_state["turn"] == "white"  # Black's stored e5 reply was automatic.
+    assert next_state["progress"]["correct_moves"] == 1
+    assert next_state["expected_move"] is None
+    assert client.get(f"/api/training/{training_id}").json()["state"] == next_state
+
+
+def test_opening_training_black_side_auto_plays_white_and_supports_hints():
+    created = client.post("/api/training", json={
+        "opening_id": "open-sicilian", "mode": "practice",
+    })
+    assert created.status_code == 200
+    training_id = created.json()["training_id"]
+    state = created.json()["state"]
+    assert state["learner_color"] == "black"
+    assert state["turn"] == "black"
+    assert state["fen"].split()[0] != chess.STARTING_FEN.split()[0]
+
+    hint = client.post(f"/api/training/{training_id}/hints", json={"level": 1})
+    assert hint.status_code == 200
+    assert hint.json()["state"]["hint"]["level"] == 1
+    move = client.post(f"/api/training/{training_id}/moves", json={"uci": "c7c5"})
+    assert move.status_code == 200
+    assert move.json()["applied"] is True
+
+
+def test_opening_training_mastery_redacts_answers_and_disables_hints():
+    created = client.post("/api/training", json={
+        "opening_id": "italian-game", "mode": "mastery",
+    })
+    assert created.status_code == 200
+    training_id = created.json()["training_id"]
+    state = created.json()["state"]
+    assert state["expected_move"] is None
+    assert state["hint"] is None
+    assert state["hints_available"] is False
+    assert client.post(
+        f"/api/training/{training_id}/hints", json={"level": 1}
+    ).status_code == 403
+
+
+def test_opening_training_undo_restart_and_validation():
+    assert client.post("/api/training", json={"opening_id": "missing"}).status_code == 404
+    assert client.post("/api/training", json={
+        "opening_id": "italian-game", "learner_color": "black",
+    }).status_code == 422
+
+    created = client.post("/api/training", json={
+        "opening_id": "italian-game", "mode": "guided",
+    }).json()
+    training_id = created["training_id"]
+    assert created["state"]["expected_move"] == "e2e4"
+    client.post(f"/api/training/{training_id}/moves", json={"uci": "e2e4"})
+    undone = client.post(f"/api/training/{training_id}/undo")
+    assert undone.status_code == 200
+    assert undone.json()["state"]["fen"] == created["state"]["fen"]
+    assert undone.json()["state"]["progress"]["correct_moves"] == 0
+    restarted = client.post(f"/api/training/{training_id}/restart")
+    assert restarted.status_code == 200
+    assert restarted.json()["state"]["fen"] == created["state"]["fen"]
