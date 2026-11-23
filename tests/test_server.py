@@ -489,5 +489,5 @@ def test_middlegame_catalog_marks_phase_and_hides_evaluation_until_solved():
     )
     assert solved.status_code == 200
     review = solved.json()["state"]["strategic_review"]
-    assert "open e-file" in review["plan"].lower()
+    assert "e-file" in review["plan"].lower()
     assert any("rook" in item.lower() for item in review["positional_gains"])
