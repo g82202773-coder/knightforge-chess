@@ -52,3 +52,30 @@ def test_catalog_rejects_invalid_side():
             "schema_version": "1.0.0",
             "families": [{"id": "a", "name": "A", "side": "invalid", "systems": []}],
         })
+
+
+def test_catalog_exposes_browseable_family_system_variation_hierarchy():
+    catalog = OpeningCatalog.load("data/openings/opening_taxonomy.json")
+    families = catalog.families()
+    assert len(families) == 7
+    london = catalog.get_system_detail("london-system")
+    assert london is not None
+    assert london.name == "London System"
+    assert "Jobava London" in london.variations
+    queen_pawn = catalog.get_family("queens-pawn-openings")
+    assert queen_pawn is not None
+    assert any(system.system_id == "london-system" for system in queen_pawn.systems)
+
+
+def test_catalog_rejects_duplicate_variation_names_case_insensitively():
+    with pytest.raises(ValueError, match="Duplicate variation"):
+        OpeningCatalog.from_dict({
+            "schema_version": "1.0.0",
+            "families": [{
+                "id": "open", "name": "Open Games", "side": "white",
+                "systems": [{
+                    "id": "test-opening", "name": "Test Opening",
+                    "variations": ["Main Line", "main line"],
+                }],
+            }],
+        })
