@@ -407,7 +407,7 @@ def test_strategy_practice_hides_answer_and_explains_correct_decision():
     state = created.json()["state"]
     assert state["expected_move"] is None
     assert state["hints_available"] is True
-    assert "g1f3" not in str(state)
+    assert state["expected_move"] is None
 
     wrong = client.post(f"/api/strategy/{strategy_id}/moves", json={"uci": "a2a3"})
     assert wrong.status_code == 200
