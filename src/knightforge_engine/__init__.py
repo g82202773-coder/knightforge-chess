@@ -15,6 +15,7 @@ from .opening_recognition import OpeningMatch, OpeningRecognition, OpeningRecogn
 from .opening_repository import OpeningRepository
 from .opening_tree import OpeningTree, VariationNode
 from .position import MoveOption, PositionInspector, SquareState
+from .tactics import TacticalCandidate, TacticalScan, TacticalScanner
 from .variation_matching import (
     PositionBasedVariationMatcher,
     VariationMatchResult,
@@ -44,6 +45,9 @@ __all__ = [
     "PositionBasedVariationMatcher",
     "PositionInspector",
     "SquareState",
+    "TacticalCandidate",
+    "TacticalScan",
+    "TacticalScanner",
     "VariationMatchResult",
     "VariationNode",
     "VariationPositionMatch",
