@@ -8,19 +8,17 @@ from knightforge_engine.coach_decision import CoachDecisionLayer
 
 
 def result(lines=None, fen=chess.STARTING_FEN):
+    defaults = (
+        EngineLine(1, 12, 35, None, ("g1f3", "g8f6"), ("Nf3", "Nf6")),
+        EngineLine(2, 12, 20, None, ("d2d4", "d7d5"), ("d4", "d5")),
+    )
     return AnalysisResult(
         engine_name="Test Engine",
         engine_version="1",
         fen=fen,
         depth=12,
         nodes=1000,
-        lines=tuple((
-            EngineLine(1, 12, 35, None, ("g1f3", "g8f6"), ("Nf3", "Nf6")),
-            EngineLine(2, 12, 20, None, ("d2d4", "d7d5"), ("d4", "d5")),
-        ) if lines is None else lines)
-            EngineLine(1, 12, 35, None, ("g1f3", "g8f6"), ("Nf3", "Nf6")),
-            EngineLine(2, 12, 20, None, ("d2d4", "d7d5"), ("d4", "d5")),
-        )),
+        lines=tuple(defaults if lines is None else lines),
     )
 
 
