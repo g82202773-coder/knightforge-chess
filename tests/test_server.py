@@ -289,3 +289,81 @@ def test_opening_training_undo_restart_and_validation():
     restarted = client.post(f"/api/training/{training_id}/restart")
     assert restarted.status_code == 200
     assert restarted.json()["state"]["fen"] == created["state"]["fen"]
+
+
+def test_tactics_catalog_contains_legally_validated_mate_in_one_puzzles():
+    from knightforge_engine.tactics_training import PUZZLES
+
+    response = client.get("/api/tactics")
+    assert response.status_code == 200
+    assert response.json()["count"] == len(PUZZLES) == 3
+    assert response.json()["themes"] == ["checkmate"]
+    for puzzle in PUZZLES:
+        board = chess.Board(puzzle.fen)
+        assert board.is_valid()
+        move = chess.Move.from_uci(puzzle.solution_uci)
+        assert move in board.legal_moves
+        board.push(move)
+        assert board.is_checkmate()
+
+
+def test_tactics_practice_hides_answer_validates_move_and_reveals_solution():
+    created = client.post("/api/tactics", json={
+        "puzzle_id": "queen-mate-f8", "mode": "practice",
+    })
+    assert created.status_code == 200
+    tactics_id = created.json()["tactics_id"]
+    state = created.json()["state"]
+    assert state["expected_move"] is None
+    assert state["hints_available"] is True
+    assert state["theme"] == "checkmate"
+
+    wrong = client.post(f"/api/tactics/{tactics_id}/moves", json={"uci": "f7e7"})
+    assert wrong.status_code == 200
+    assert wrong.json()["correct"] is False
+    assert wrong.json()["state"]["fen"] == state["fen"]
+
+    for level in (1, 2, 3):
+        hint = client.post(f"/api/tactics/{tactics_id}/hints", json={"level": level})
+        assert hint.status_code == 200
+        if level < 3:
+            assert hint.json()["state"]["expected_move"] is None
+    assert hint.json()["state"]["expected_move"] == "f7f8"
+
+    solved = client.post(f"/api/tactics/{tactics_id}/moves", json={"uci": "f7f8"})
+    assert solved.status_code == 200
+    assert solved.json()["correct"] is True
+    assert solved.json()["state"]["solved"] is True
+    assert solved.json()["state"]["explanation"]
+    assert solved.json()["state"]["progress"]["attempts"] == 2
+
+
+def test_tactics_mastery_disables_hints_and_hides_solution():
+    created = client.post("/api/tactics", json={
+        "puzzle_id": "queen-mate-g7", "mode": "mastery",
+    })
+    assert created.status_code == 200
+    tactics_id = created.json()["tactics_id"]
+    state = created.json()["state"]
+    assert state["expected_move"] is None
+    assert state["hint"] is None
+    assert state["hints_available"] is False
+    assert client.post(
+        f"/api/tactics/{tactics_id}/hints", json={"level": 1}
+    ).status_code == 403
+
+
+def test_tactics_filters_restart_and_unknown_ids():
+    assert client.get("/api/tactics?theme=pin").json()["count"] == 0
+    assert client.get("/api/tactics?theme=checkmate").json()["count"] == 3
+    assert client.post("/api/tactics", json={"puzzle_id": "missing"}).status_code == 404
+    created = client.post("/api/tactics", json={
+        "puzzle_id": "queen-mate-b7", "mode": "practice",
+    }).json()
+    tactics_id = created["tactics_id"]
+    client.post(f"/api/tactics/{tactics_id}/hints", json={"level": 1})
+    restarted = client.post(f"/api/tactics/{tactics_id}/restart")
+    assert restarted.status_code == 200
+    assert restarted.json()["state"]["hint_level"] == 0
+    assert restarted.json()["state"]["progress"]["attempts"] == 0
+    assert client.get("/api/tactics/unknown").status_code == 404
