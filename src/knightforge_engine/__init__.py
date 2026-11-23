@@ -2,8 +2,8 @@
 
 from .adaptive_coach import AdaptiveOpeningCoach, OpeningCoachState, OpeningCoachSubmission
 from .analysis import AnalysisResult, EngineLine, StockfishAnalyzer
-from .core import ChessGame, GameStatus, MoveResult
 from .coach_decision import CoachDecisionLayer, CoachHint, EngineRecommendation, MoveComparison
+from .core import ChessGame, GameStatus, MoveResult
 from .guided_learning import (
     CoachPrompt,
     GuidedLesson,
