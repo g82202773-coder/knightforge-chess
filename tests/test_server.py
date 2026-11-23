@@ -78,6 +78,41 @@ def test_practice_and_mastery_do_not_leak_the_lesson_answer():
     mastery = client.post("/api/sessions", json={"mode": "mastery"}).json()
     assert mastery["state"]["coach"]["hints_available"] is False
 
+
+def test_test_modes_redact_best_move_from_comparison_feedback(tmp_path):
+    from knightforge_engine.coach_decision import MoveComparison
+    from knightforge_engine.server import apply_mode_policy, store
+
+    for mode in ("practice", "mastery"):
+        _, record = store.create(mode)
+        feedback = {
+            "played_uci": "d2d4",
+            "played_san": "d4",
+            "best_uci": "e2e4",
+            "best_san": "e4",
+            "engine_top_choice": "e4",
+            "matched_candidate_rank": None,
+            "is_engine_top_choice": False,
+            "explanation": "Legal move, not among returned candidates.",
+            "analysis_fen": "starting-position",
+            "comparison_scope": "candidate-list membership only",
+        }
+        payload = {
+            "state": {
+                "board": {"highlighted_squares": []},
+                "coach": {"text": "", "voice_script": "", "explanation": "",
+                          "expected_move": None, "active_hint": None},
+                "engine": {"recommendation": None, "recommendation_arrow": None},
+                "feedback": feedback.copy(),
+            }
+        }
+        result = apply_mode_policy(payload, record)
+        redacted = result["state"]["feedback"]
+        assert redacted["best_uci"] is None
+        assert redacted["best_san"] is None
+        assert redacted["engine_top_choice"] is None
+        assert redacted["played_uci"] == "d2d4"
+
 def test_undo_and_restart():
     session_id = client.post("/api/sessions", json={}).json()["session_id"]
     client.post(f"/api/sessions/{session_id}/moves", json={"uci": "e2e4"})
