@@ -63,6 +63,20 @@ def test_practice_hint_endpoint_works_without_stockfish():
     assert hint.status_code == 200
     assert hint.json()["state"]["coach"]["active_hint"]["level"] == 1
 
+
+def test_practice_and_mastery_do_not_leak_the_lesson_answer():
+    for mode in ("practice", "mastery"):
+        created = client.post("/api/sessions", json={"mode": mode}).json()
+        coach = created["state"]["coach"]
+        assert coach["expected_move"] is None
+        assert "E2" not in coach["text"]
+        assert "e2e4" not in str(created["state"])
+        assert created["state"]["engine"]["recommendation"] is None
+    practice = client.post("/api/sessions", json={"mode": "practice"}).json()
+    assert practice["state"]["coach"]["hints_available"] is True
+    mastery = client.post("/api/sessions", json={"mode": "mastery"}).json()
+    assert mastery["state"]["coach"]["hints_available"] is False
+
 def test_undo_and_restart():
     session_id = client.post("/api/sessions", json={}).json()["session_id"]
     client.post(f"/api/sessions/{session_id}/moves", json={"uci": "e2e4"})
