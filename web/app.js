@@ -130,7 +130,7 @@ function renderTrainingBoard(){
     button.addEventListener("click",()=>trainingClick(sq,entry&&entry.p));
     root.append(button);
   }
-  const uci=s.expected_move||(s.hint&&s.hint.arrow_uci);
+  const uci=trainingState.expected_move||(trainingState.hint&&trainingState.hint.arrow_uci);
   if(uci&&uci.length>=4){
     const pos=sq=>({x:(FILES.indexOf(sq[0])+.5)*12.5,y:(8-Number(sq[1])+.5)*12.5});
     const p=pos(uci.slice(0,2)),q=pos(uci.slice(2,4));
