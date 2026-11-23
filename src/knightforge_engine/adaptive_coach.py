@@ -97,8 +97,12 @@ class AdaptiveOpeningCoach:
         self.state = self._build_state()
 
     def prompt(self) -> OpeningCoachState:
-        """Return the latest board-aware coach and cached engine guidance."""
-        self.state = self._build_state()
+        """Return the latest snapshot without resetting progressive hint state.
+
+        State is rebuilt only after a position-changing or analysis operation.
+        Rebuilding on every read would silently reset a learner's revealed hint
+        back to level one whenever an API handler serialized the session.
+        """
         return self.state
 
     def submit_uci(self, uci: str) -> OpeningCoachSubmission:
