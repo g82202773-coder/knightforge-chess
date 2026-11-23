@@ -46,7 +46,7 @@ __all__ = [
     "SquareState",
     "VariationMatchResult",
     "VariationNode",
-  "VariationPositionMatch",
+    "VariationPositionMatch",
     "analyze_opening_coverage",
     "import_openings",
     "parse_opening_import",
