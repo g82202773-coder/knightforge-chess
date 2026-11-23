@@ -1,10 +1,13 @@
 """FastAPI session server for the KnightForge browser board."""
 from __future__ import annotations
-import os, secrets, threading
+
+import os
+import secrets
+import threading
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Literal
-import chess
+
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
