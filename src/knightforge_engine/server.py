@@ -275,10 +275,14 @@ def list_openings(query: str = "", side: str | None = None) -> dict:
     for opening in store.study_openings.values():
         if side and opening.side not in {side, "both"}:
             continue
-        if term and not any(
-            term in value.casefold()
-            for value in (opening.name, opening.opening_id, *opening.aliases)
-        ):
+        def variation_labels(nodes):
+            for node in nodes:
+                yield node.label
+                yield from variation_labels(node.children)
+
+        searchable = (opening.name, opening.opening_id, *opening.aliases,
+                      *tuple(variation_labels(opening.roots)))
+        if term and not any(term in value.casefold() for value in searchable):
             continue
         system = (
             store.opening_catalog.get_system_detail(opening.opening_id)
