@@ -307,7 +307,7 @@
                           ]
                         },
                         {
-                          "move_uci": "d4e5",
+                          "move_uci": "e4d5",
                           "children": [
                             {
                               "move_uci": "c6d5",
