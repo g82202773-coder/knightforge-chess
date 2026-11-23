@@ -42,3 +42,49 @@ print(comparison.explanation)
 For an accurate move-quality loss estimate, analyse both the original position
 and the position after the learner's move under a comparable engine limit.
 That is a separate operation and is intentionally not approximated here.
+
+
+## AdaptiveOpeningCoach integration
+
+Pass a configured `StockfishAnalyzer` to `AdaptiveOpeningCoach` to enable
+automatic position guidance. The coach analyses the starting position and
+refreshes the bounded analysis after every applied move. The cached analysis
+from the *pre-move* position is used to compare the submitted move; the
+post-move analysis is then ready for the next prompt.
+
+```python
+from knightforge_engine import AdaptiveOpeningCoach, StockfishAnalyzer
+
+coach = AdaptiveOpeningCoach(lesson, repository, analyzer=StockfishAnalyzer())
+
+# The current state already contains the best engine candidate and first hint.
+state = coach.state
+print(state.recommendation.san)
+print(state.active_hint.text)
+
+# Submit a move. The result includes the comparison and guidance for the
+# resulting position, without a separate analysis request.
+result = coach.submit_uci("e2e4")
+print(result.state.move_comparison.explanation)
+print(result.state.recommendation.san)
+print(result.state.recommendation_arrow)
+
+# Reveal progressively stronger hints for the current recommendation.
+state = coach.reveal_hint(2)  # source-square clue
+state = coach.reveal_hint(3)  # source-to-target arrow
+state = coach.reveal_hint(4)  # full move
+```
+
+`OpeningCoachState.recommendation` contains validated engine facts and PV;
+`active_hint` begins at level 1; `recommendation_arrow` exposes the complete
+candidate arrow for clients that choose to render it. A client can render
+`active_hint.arrow_from` / `active_hint.arrow_to` to preserve progressive
+disclosure. `move_comparison` refers to the move just submitted and the
+analysis of its exact pre-move FEN. If analysis is unavailable or invalid,
+`analysis_error` explains why and lesson execution remains usable.
+
+Automatic analysis is enabled only when an analyzer is supplied. Its default
+budget is 1 second and MultiPV 3; callers can set bounded
+`analysis_time_limit`, `analysis_depth`, and `analysis_multipv` at
+construction. Each applied ply triggers one new analysis, so deployments
+should configure the Stockfish executable and resource budget deliberately.
