@@ -91,7 +91,7 @@ def apply_mode_policy(payload: dict, record: SessionRecord) -> dict:
         coach["voice_script"] = instruction
         coach["explanation"] = ""
         coach["expected_move"] = None
-        coach["highlighted_squares"] = []
+        state["board"]["highlighted_squares"] = []
         engine["recommendation"] = None
         engine["recommendation_arrow"] = None
 
