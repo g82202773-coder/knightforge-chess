@@ -134,4 +134,17 @@
   </div>
   <p class="study-provenance">Content status: editorial draft. Positional recommendations are curated teaching examples, not Stockfish evaluations. More varied middlegame positions and reviewed exercise alternatives will be added in later increments.</p>
 </section>
+<section class="positional-analyzer" aria-labelledby="positional-analysis-title">
+  <div class="explorer-heading"><div><span class="eyebrow">POSITIONAL ANALYSIS LAB</span><h2 id="positional-analysis-title">Deeper positional analyzer</h2><p>Inspect pawn weaknesses, passed pawns, outpost squares, rook files, and compare legal candidate moves.</p></div><span class="review-tag">EXPLAINABLE HEURISTICS</span></div>
+  <div class="strategy-lesson-card">
+    <label for="analysis-fen">Position FEN</label>
+    <textarea id="analysis-fen" rows="2" spellcheck="false">rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1</textarea>
+    <label for="analysis-candidates">Candidate moves (optional, UCI, comma-separated; blank = all legal moves)</label>
+    <input id="analysis-candidates" type="text" placeholder="e2e4, d2d4, g1f3">
+    <button id="analysis-run" class="button hint-button">Analyze position</button>
+    <div id="analysis-feedback" class="feedback" aria-live="polite">Analysis is local to this KnightForge server.</div>
+    <div id="analysis-results" class="analysis-results"></div>
+  </div>
+  <p class="study-provenance">Important: scores are heuristic points, not centipawns. Backward-pawn labels and opponent replies are approximate. Stockfish integration for independent verification is a later step.</p>
+</section>
 <footer><span>KNIGHTFORGE ENGINE</span><span>Legal moves · Reviewed lesson knowledge · Optional engine analysis</span></footer></main><script src="/assets/app.js" defer></script></body></html>
