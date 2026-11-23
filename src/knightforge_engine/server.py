@@ -35,6 +35,7 @@ class SessionRecord:
     coach: AdaptiveOpeningCoach
     mode: Mode
     lock: threading.RLock
+    hint_level: int = 0
 
 class SessionStore:
     """Thread-safe, process-local session registry for single-worker deployments."""
@@ -75,6 +76,8 @@ def state_for(record: SessionRecord) -> dict:
     if record.mode == "mastery":
         payload["coach"]["active_hint"] = None
         payload["engine"]["recommendation_arrow"] = None
+    elif record.mode == "practice" and record.hint_level == 0:
+        payload["coach"]["active_hint"] = None
     return payload
 
 class CreateSessionRequest(BaseModel):
@@ -110,6 +113,8 @@ def submit_move(session_id: str, request: MoveRequest) -> dict:
             result = record.coach.submit_uci(request.uci)
         except (ValueError, RuntimeError) as exc:
             raise HTTPException(status_code=422, detail=str(exc)) from exc
+        if result.submission.applied and record.mode == "practice":
+            record.hint_level = 0
         payload = submission_payload(result)
         payload["state"]["mode"] = record.mode
         if record.mode == "mastery":
@@ -125,6 +130,7 @@ def reveal_hint(session_id: str, request: HintRequest) -> dict:
     with record.lock:
         try:
             record.coach.reveal_hint(request.level)
+            record.hint_level = request.level
         except (ValueError, RuntimeError) as exc:
             raise HTTPException(status_code=409, detail=str(exc)) from exc
         return {"state": state_for(record)}
@@ -135,6 +141,7 @@ def undo(session_id: str) -> dict:
     with record.lock:
         try:
             record.coach.undo()
+            record.hint_level = 0
         except ValueError as exc:
             raise HTTPException(status_code=409, detail=str(exc)) from exc
         return {"state": state_for(record)}
@@ -144,6 +151,7 @@ def restart(session_id: str) -> dict:
     record = store.get(session_id)
     with record.lock:
         record.coach.restart()
+        record.hint_level = 0
         return {"state": state_for(record)}
 
 WEB_ROOT = Path(__file__).resolve().parents[2] / "web"
