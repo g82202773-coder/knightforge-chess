@@ -127,3 +127,28 @@ def test_root_serves_browser_app():
     response = client.get("/")
     assert response.status_code == 200
     assert "KnightForge" in response.text
+
+def test_test_modes_keep_answer_hidden_after_move_and_state_refresh():
+    for mode in ("practice", "mastery"):
+        created = client.post("/api/sessions", json={"mode": mode}).json()
+        session_id = created["session_id"]
+
+        # A legal but off-lesson learner move must not expose the curated answer.
+        moved = client.post(
+            f"/api/sessions/{session_id}/moves",
+            json={"uci": "d2d4"},
+        )
+        assert moved.status_code == 200
+        payload = moved.json()
+        assert payload["move"]["applied"] is False
+        assert payload["state"]["coach"]["expected_move"] is None
+        assert "e2e4" not in str(payload["state"])
+        assert payload["state"]["board"]["highlighted_squares"] == []
+        assert payload["state"]["engine"]["recommendation"] is None
+
+        # A separate GET must apply the same privacy policy.
+        refreshed = client.get(f"/api/sessions/{session_id}")
+        assert refreshed.status_code == 200
+        assert refreshed.json()["state"]["coach"]["expected_move"] is None
+        assert "e2e4" not in str(refreshed.json()["state"])
+
