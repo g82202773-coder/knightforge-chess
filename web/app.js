@@ -134,7 +134,7 @@ function renderTrainingBoard(){
 function applyTrainingState(s){
   trainingState=s;trainingSelected=null;trainingTargets=[];
   renderTrainingBoard();
-  $("study-line").textContent=s.prompt;
+  $("study-line").textContent=s.mode==="guided"&&s.expected_san?s.prompt+" Play "+s.expected_san+".":s.prompt;
   $("study-ply").textContent=s.progress.plies_played+" plies";
   $("study-family").textContent=s.learner_color.toUpperCase()+" · "+s.mode.toUpperCase();
   $("study-branches").textContent=s.complete?"COMPLETE":s.turn.toUpperCase()+" TO MOVE";
