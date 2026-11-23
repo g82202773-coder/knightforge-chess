@@ -23,6 +23,7 @@ from .opening_catalog import OpeningCatalog
 from .opening_import import parse_opening_import
 from .opening_repository import OpeningRepository
 from .opening_tree import OpeningTree, VariationNode
+from .opening_training import OpeningTrainingSession, TrainingMode
 
 Mode = Literal["guided", "practice", "mastery"]
 
@@ -50,6 +51,7 @@ class SessionStore:
     """Thread-safe, process-local session registry for single-worker deployments."""
     def __init__(self) -> None:
         self._sessions: dict[str, SessionRecord] = {}
+        self._training_sessions: dict[str, tuple[OpeningTrainingSession, threading.RLock]] = {}
         self._lock = threading.RLock()
         self.repository = OpeningRepository.load(Path(os.environ.get("KNIGHTFORGE_OPENINGS_PATH", "data/openings/repository.json")))
         data_root = Path(__file__).resolve().parents[2] / "data" / "openings"
@@ -145,6 +147,11 @@ class MoveRequest(BaseModel):
 
 class HintRequest(BaseModel):
     level: int = Field(ge=1, le=4)
+
+class CreateTrainingRequest(BaseModel):
+    opening_id: str = Field(min_length=1, max_length=100)
+    mode: TrainingMode = "practice"
+    learner_color: Literal["white", "black"] | None = None
 
 @app.get("/api/health")
 def health() -> dict:
@@ -262,6 +269,82 @@ def _opening_detail_payload(opening: OpeningTree, catalog: OpeningCatalog | None
             for node in opening.roots
         ],
     }
+
+
+
+@app.post("/api/training")
+def create_training(request: CreateTrainingRequest) -> dict:
+    opening = store.study_openings.get(request.opening_id)
+    if opening is None:
+        raise HTTPException(status_code=404, detail="Opening study not found.")
+    learner_color = request.learner_color or (
+        opening.side if opening.side in {"white", "black"} else "white"
+    )
+    try:
+        training = OpeningTrainingSession(opening, learner_color, request.mode)
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+    session_id = secrets.token_urlsafe(18)
+    lock = threading.RLock()
+    with store._lock:
+        store._training_sessions[session_id] = (training, lock)
+    return {"training_id": session_id, "state": training.state()}
+
+
+def _training_record(training_id: str) -> tuple[OpeningTrainingSession, threading.RLock]:
+    with store._lock:
+        record = store._training_sessions.get(training_id)
+    if record is None:
+        raise HTTPException(status_code=404, detail="Opening training session not found or expired.")
+    return record
+
+
+@app.get("/api/training/{training_id}")
+def get_training(training_id: str) -> dict:
+    training, lock = _training_record(training_id)
+    with lock:
+        return {"state": training.state()}
+
+
+@app.post("/api/training/{training_id}/moves")
+def submit_training_move(training_id: str, request: MoveRequest) -> dict:
+    training, lock = _training_record(training_id)
+    with lock:
+        try:
+            return training.submit(request.uci)
+        except ValueError as exc:
+            raise HTTPException(status_code=422, detail=str(exc)) from exc
+        except RuntimeError as exc:
+            raise HTTPException(status_code=409, detail=str(exc)) from exc
+
+
+@app.post("/api/training/{training_id}/hints")
+def training_hint(training_id: str, request: HintRequest) -> dict:
+    training, lock = _training_record(training_id)
+    with lock:
+        try:
+            return {"state": training.reveal_hint(request.level)}
+        except PermissionError as exc:
+            raise HTTPException(status_code=403, detail=str(exc)) from exc
+        except (ValueError, RuntimeError) as exc:
+            raise HTTPException(status_code=409, detail=str(exc)) from exc
+
+
+@app.post("/api/training/{training_id}/undo")
+def undo_training(training_id: str) -> dict:
+    training, lock = _training_record(training_id)
+    with lock:
+        try:
+            return {"state": training.undo()}
+        except ValueError as exc:
+            raise HTTPException(status_code=409, detail=str(exc)) from exc
+
+
+@app.post("/api/training/{training_id}/restart")
+def restart_training(training_id: str) -> dict:
+    training, lock = _training_record(training_id)
+    with lock:
+        return {"state": training.restart()}
 
 
 @app.get("/api/openings")
