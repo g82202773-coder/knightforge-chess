@@ -263,3 +263,109 @@ $("tactics-restart").addEventListener("click",async()=>{
   catch(error){tacticsMessage(error.message,false);}
 });
 loadTacticsCatalog();
+
+
+// Strategy lessons and positional decision exercises -----------------------
+let strategyId=null,strategyState=null,strategySelected=null,strategyTargets=[];
+function strategyMessage(message,good=true){
+  const el=$("strategy-feedback");el.textContent=message;el.className="feedback"+(good?"":" bad");
+}
+async function loadStrategyLessons(){
+  try{
+    const result=await api("/api/strategy/lessons");
+    const filter=$("strategy-theme");
+    result.themes.forEach(theme=>{const option=document.createElement("option");option.value=theme;option.textContent=theme.replaceAll("_"," ");filter.append(option);});
+    renderStrategyLessonList(result.items);
+    if(result.items.length)loadStrategyLesson(result.items[0].lesson_id);
+  }catch(error){$("strategy-lesson-list").textContent="Strategy lessons unavailable: "+error.message;}
+}
+function renderStrategyLessonList(items){
+  const root=$("strategy-lesson-list");root.innerHTML="";
+  items.forEach(item=>{
+    const button=document.createElement("button");button.type="button";button.className="strategy-lesson-button";
+    button.textContent=item.title+" · "+item.level;
+    button.addEventListener("click",()=>loadStrategyLesson(item.lesson_id));
+    root.append(button);
+  });
+}
+async function loadStrategyLesson(id){
+  try{
+    const lesson=await api("/api/strategy/lessons/"+encodeURIComponent(id));
+    $("strategy-level").textContent=lesson.theme.replaceAll("_"," ").toUpperCase()+" · "+lesson.level.toUpperCase();
+    $("strategy-lesson-title").textContent=lesson.title;
+    $("strategy-principle").textContent=lesson.principle;
+    $("strategy-why").textContent=lesson.why_it_matters;
+    $("strategy-checklist").innerHTML="";
+    lesson.checklist.forEach(item=>{const li=document.createElement("li");li.textContent=item;$("strategy-checklist").append(li);});
+    $("strategy-example").textContent="Example plan: "+lesson.example_plan;
+  }catch(error){strategyMessage(error.message,false);}
+}
+async function loadStrategyExercises(){
+  try{
+    const result=await api("/api/strategy/exercises");$("strategy-exercise").innerHTML="";
+    result.items.forEach(item=>{const option=document.createElement("option");option.value=item.exercise_id;option.textContent=item.title+" · "+item.theme.replaceAll("_"," ");$("strategy-exercise").append(option);});
+  }catch(error){strategyMessage("Could not load positional exercises: "+error.message,false);}
+}
+function renderStrategyBoard(){
+  if(!strategyState)return;
+  const root=$("strategy-board");root.innerHTML="";
+  const cells=parseFen(strategyState.fen),legal=strategyState.legal_moves_uci||[];
+  for(let rank=8;rank>=1;rank--)for(let file=0;file<8;file++){
+    const square=FILES[file]+rank,entry=cells.find(x=>x.sq===square),button=document.createElement("button");
+    button.type="button";button.className="tactics-square "+(((file+rank)%2===0)?"light":"dark");
+    if(square===strategySelected)button.classList.add("selected");
+    if(strategyTargets.some(move=>move.slice(2,4)===square))button.classList.add("legal");
+    if(entry&&entry.p){const piece=document.createElement("span");piece.className="piece "+(entry.p===entry.p.toUpperCase()?"white":"black");piece.textContent=PIECES[entry.p];button.append(piece);}
+    button.disabled=strategyState.solved;
+    button.addEventListener("click",()=>strategySquareClick(square,entry&&entry.p));
+    root.append(button);
+  }
+}
+function applyStrategyState(s){
+  strategyState=s;strategySelected=null;strategyTargets=[];renderStrategyBoard();
+  $("strategy-turn").textContent=s.solved?"DECISION COMPLETE":s.turn.toUpperCase()+" TO MOVE";
+  $("strategy-exercise-title").textContent=s.title;$("strategy-prompt").textContent=s.prompt;
+  $("strategy-progress").textContent=s.progress.solved+" completed · "+s.progress.attempts+" attempts · "+s.progress.accuracy_percent+"% accuracy";
+  $("strategy-hint").disabled=!s.hints_available;
+  $("strategy-hint").textContent=s.hint_level>=3?"All hints revealed":"Reveal hint "+(s.hint_level+1);
+  $("strategy-restart").disabled=false;
+  $("strategy-hint-text").textContent=s.hint||"Hints help you identify the strategic idea.";
+  $("strategy-explanation").textContent=s.explanation||"";
+  if(s.solved)strategyMessage("Decision recorded. Read the explanation and identify the positional gains.",true);
+}
+function strategySquareClick(square,piece){
+  if(!strategyState||strategyState.solved)return;
+  if(strategySelected){
+    const move=strategyTargets.find(uci=>uci.slice(2,4)===square);
+    if(move){submitStrategyMove(move);return;}
+    if(strategySelected===square){strategySelected=null;strategyTargets=[];renderStrategyBoard();return;}
+  }
+  if(piece&&((strategyState.turn==="white"&&piece===piece.toUpperCase())||(strategyState.turn==="black"&&piece===piece.toLowerCase()))){
+    strategySelected=square;strategyTargets=(strategyState.legal_moves_uci||[]).filter(uci=>uci.slice(0,2)===square);renderStrategyBoard();
+  }
+}
+async function submitStrategyMove(uci){
+  try{const result=await api("/api/strategy/"+strategyId+"/moves",{method:"POST",body:JSON.stringify({uci})});
+    applyStrategyState(result.state);strategyMessage(result.message,result.correct);
+  }catch(error){strategyMessage(error.message,false);}
+}
+$("strategy-theme").addEventListener("change",async()=>{
+  try{const result=await api("/api/strategy/lessons"+($("strategy-theme").value?"?theme="+encodeURIComponent($("strategy-theme").value):""));renderStrategyLessonList(result.items);}
+  catch(error){strategyMessage(error.message,false);}
+});
+$("strategy-start").addEventListener("click",async()=>{
+  try{const result=await api("/api/strategy",{method:"POST",body:JSON.stringify({exercise_id:$("strategy-exercise").value,mode:$("strategy-mode").value})});
+    strategyId=result.strategy_id;applyStrategyState(result.state);strategyMessage("Exercise started. Choose a move and explain the plan to yourself.",true);
+  }catch(error){strategyMessage(error.message,false);}
+});
+$("strategy-hint").addEventListener("click",async()=>{
+  if(!strategyId||!strategyState)return;
+  try{const result=await api("/api/strategy/"+strategyId+"/hints",{method:"POST",body:JSON.stringify({level:strategyState.hint_level+1})});applyStrategyState(result.state);}
+  catch(error){strategyMessage(error.message,false);}
+});
+$("strategy-restart").addEventListener("click",async()=>{
+  if(!strategyId)return;
+  try{const result=await api("/api/strategy/"+strategyId+"/restart",{method:"POST"});applyStrategyState(result.state);strategyMessage("Exercise restarted.",true);}
+  catch(error){strategyMessage(error.message,false);}
+});
+loadStrategyLessons();loadStrategyExercises();
