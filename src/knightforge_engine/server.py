@@ -24,7 +24,7 @@ from .opening_import import parse_opening_import
 from .opening_repository import OpeningRepository
 from .opening_training import OpeningTrainingSession, TrainingMode
 from .opening_tree import OpeningTree, VariationNode
-from .tactics_training import PUZZLES, TacticsSession, TacticsMode
+from .tactics_training import PUZZLES, TacticsMode, TacticsSession
 
 Mode = Literal["guided", "practice", "mastery"]
 
