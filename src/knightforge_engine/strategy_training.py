@@ -80,6 +80,12 @@ class StrategyExercise:
     solution_uci: str
     explanation: str
     hints: tuple[str, str, str]
+    strategic_plan: str = ""
+    positional_gains: tuple[str, ...] = ()
+    concessions: tuple[str, ...] = ()
+    opponent_plan: str = ""
+    candidate_comparison: str = ""
+    evaluation_basis: str = "Human-authored positional explanation; no engine score is asserted."
 
 
 _START = chess.STARTING_FEN
@@ -109,6 +115,56 @@ EXERCISES: tuple[StrategyExercise, ...] = (
         "g1f3",
         "Nf3 attacks e5 while developing. It adds pressure to the centre and supports future central play; development and threats work together.",
         ("Find a developing move that also attacks a central pawn.", "The king's knight can attack e5.", "Play Ng1-f3.")
+    ),
+
+    StrategyExercise(
+        "middlegame-outpost", "Establish a protected knight outpost", "outposts", "intermediate",
+        "2r3k1/pp3ppp/8/8/2P2N2/8/PP3PPP/R3R1K1 w - - 0 20",
+        "f4d5",
+        "Nd5 installs the knight on a protected central outpost. The c4-pawn supports d5, and Black has no c- or e-pawn available to chase the knight away. The knight restricts Black and eyes useful central and kingside squares.",
+        ("Look for a square in enemy territory that a pawn cannot challenge.", "Check whether one of your pawns can support that square.", "Move the f4-knight to d5."),
+        "Place the knight on d5, then use its central control to restrict Black's pieces and consider pressure against c7 and e7.",
+        ("A durable central outpost for the knight.", "More control over c7, e7, f6, and b6.", "A piece that is difficult to exchange or drive away with a pawn."),
+        ("The knight leaves f4, so it no longer influences e2 and g2.", "The outpost is valuable only while it remains tactically safe; watch for piece exchanges."),
+        "Black should challenge the knight with pieces, consider ...Ne7 or ...Rd8, and avoid allowing White to consolidate without counterplay.",
+        "A developing move such as Ne2 is playable but less ambitious: it retreats the knight and gives up the chance to occupy the protected outpost immediately.",
+    ),
+    StrategyExercise(
+        "middlegame-open-file", "Take control of the open e-file", "open_files", "intermediate",
+        "2r3k1/pp3ppp/2p5/3p4/3P4/2P5/PP3QPP/R2R2K1 w - - 0 20",
+        "d1e1",
+        "Re1 places the rook on the completely pawn-free e-file. The queen on f2 protects e1, so the rook is not simply hanging to a file invasion. White gains a route for lateral coordination and can contest entry squares.",
+        ("Identify a file with no pawns.", "Before occupying it, check whether the rook can be captured or exchanged unfavourably.", "Move the d1-rook to e1."),
+        "Occupy the e-file, coordinate the queen and rooks, and look for a safe route to the seventh rank if Black cannot contest the file.",
+        ("A rook becomes active on an open file.", "The queen supports the rook on e1.", "White can contest central entry squares and improve rook coordination."),
+        ("The rook leaves the d-file, reducing immediate pressure there.", "Black may challenge the file with ...Re8 or seek a trade; do not assume an open file automatically guarantees an invasion."),
+        "Black should contest the e-file, trade the active rook if favourable, or create counterplay on the queenside.",
+        "A quiet pawn move leaves the open file unoccupied. Re1 is more purposeful because it improves a major piece while maintaining protection.",
+    ),
+    StrategyExercise(
+        "middlegame-prophylaxis", "Prevent a useful bishop pin and give the king luft", "king_safety", "intermediate",
+        "r4rk1/pp3ppp/2p1b3/3p4/3P4/2P1PN2/PP3PPP/R2Q1RK1 w - - 0 18",
+        "h2h3",
+        "h3 is a useful prophylactic move: it controls g4, making ...Bg4 less comfortable against the knight on f3, and gives the king a potential luft square on h2. It is a modest improvement rather than a forced attack.",
+        ("Look for an opponent's useful developing move or pin.", "Check whether a pawn move can remove that square without weakening your king excessively.", "Play h2-h3."),
+        "Reduce the opponent's easy kingside piece activity, preserve the f3-knight's flexibility, and keep h2 available as a king escape square.",
+        ("Controls g4 and discourages ...Bg4.", "Creates a possible luft square for the king.", "Improves the position without committing a central pawn."),
+        ("The h-pawn advances and can become a target later.", "The move does not create an immediate threat; White must continue improving pieces."),
+        "Black can seek counterplay with central breaks or reroute the bishop; the move does not stop every kingside plan.",
+        "A forcing move is not required. h3 addresses a concrete positional detail and reduces Black's convenient options.",
+    ),
+    StrategyExercise(
+        "middlegame-centralization", "Centralize the knight on a supported square", "development", "intermediate",
+        "r4rk1/pp3ppp/2p1b3/3p4/3P4/2P1PN2/PP1B1PPP/R2Q1RK1 w - - 0 18",
+        "f3e5",
+        "Ne5 centralizes the knight on a square protected by the d4-pawn. From e5 it gains influence over c6, f7, g6, and d7 while increasing pressure on Black's position. The point is not merely moving forward: the square is supported and difficult for a pawn to challenge.",
+        ("Find a central square your pawn structure can support.", "Check whether an enemy pawn can drive the knight away.", "Play Nf3-e5."),
+        "Use the supported e5-square as a strong post, then coordinate queen and rooks around central or kingside targets.",
+        ("A more active knight with central influence.", "The knight attacks c6 and f7 and controls important entry squares.", "White increases pressure without changing the pawn structure."),
+        ("The knight leaves f3, so the kingside has one fewer defender near the king.", "Black may exchange the knight with a piece; assess whether the resulting structure favours White."),
+        "Black should consider exchanging the centralized knight or challenging the centre with a timely pawn break.",
+        "A routine rook move does not exploit the available central square. Ne5 improves the least active minor piece and creates a stable point of pressure.",
+    ),
     ),
 )
 
@@ -140,6 +196,7 @@ class StrategySession:
             "theme": self.exercise.theme,
             "difficulty": self.exercise.difficulty,
             "mode": self.mode,
+            "position_phase": "middlegame" if self.exercise.exercise_id.startswith("middlegame-") else "opening",
             "fen": self.board.fen(),
             "turn": "white" if self.board.turn else "black",
             "legal_moves_uci": sorted(move.uci() for move in self.board.legal_moves),
@@ -149,6 +206,14 @@ class StrategySession:
             "hints_available": not self.solved and self.mode == "practice" and self.hint_level < 3,
             "expected_move": self.exercise.solution_uci if reveal else None,
             "explanation": self.exercise.explanation if self.solved else None,
+            "strategic_review": ({
+                "plan": self.exercise.strategic_plan,
+                "positional_gains": list(self.exercise.positional_gains),
+                "concessions": list(self.exercise.concessions),
+                "opponent_plan": self.exercise.opponent_plan,
+                "candidate_comparison": self.exercise.candidate_comparison,
+                "evaluation_basis": self.exercise.evaluation_basis,
+            } if self.solved else None),
             "solved": self.solved,
             "progress": {
                 "attempts": self.attempts,
