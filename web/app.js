@@ -189,3 +189,77 @@ $("training-restart").addEventListener("click",async()=>{
   try{const result=await api("/api/training/"+trainingId+"/restart",{method:"POST"});applyTrainingState(result.state);trainingFeedback("Training restarted.",true);}
   catch(error){trainingFeedback(error.message,false);}
 });
+
+
+// Tactical puzzle trainer ---------------------------------------------------
+let tacticsId=null,tacticsState=null,tacticsSelected=null,tacticsTargets=[];
+function tacticsMessage(message,good=true){
+  const el=$("tactics-feedback");el.textContent=message;el.className="feedback"+(good?"":" bad");
+}
+function renderTacticsBoard(){
+  if(!tacticsState)return;
+  const root=$("tactics-board");root.innerHTML="";
+  const cells=parseFen(tacticsState.fen),legal=tacticsState.legal_moves_uci||[];
+  for(let rank=8;rank>=1;rank--)for(let file=0;file<8;file++){
+    const square=FILES[file]+rank,entry=cells.find(x=>x.sq===square),button=document.createElement("button");
+    button.type="button";button.className="tactics-square "+(((file+rank)%2===0)?"light":"dark");
+    if(square===tacticsSelected)button.classList.add("selected");
+    if(tacticsTargets.some(move=>move.slice(2,4)===square))button.classList.add("legal");
+    if(entry&&entry.p){const piece=document.createElement("span");piece.className="piece "+(entry.p===entry.p.toUpperCase()?"white":"black");piece.textContent=PIECES[entry.p];button.append(piece);}
+    button.disabled=tacticsState.solved;
+    button.addEventListener("click",()=>tacticsSquareClick(square,entry&&entry.p));
+    root.append(button);
+  }
+}
+function applyTacticsState(s){
+  tacticsState=s;tacticsSelected=null;tacticsTargets=[];renderTacticsBoard();
+  $("tactics-theme").textContent=s.theme.toUpperCase()+" · "+s.difficulty.toUpperCase();
+  $("tactics-name").textContent=s.title;$("tactics-prompt").textContent=s.prompt;
+  $("tactics-progress").textContent=s.progress.solved+" solved · "+s.progress.attempts+" attempts · "+s.progress.accuracy_percent+"% accuracy";
+  $("tactics-hint").disabled=!s.hints_available;
+  $("tactics-restart").disabled=false;
+  $("tactics-hint").textContent=s.hint_level>=3?"All hints revealed":"Reveal hint "+(s.hint_level+1);
+  $("tactics-hint-text").textContent=s.hint||"Hints will appear here.";
+  $("tactics-explanation").textContent=s.explanation||"";
+  if(s.solved)tacticsMessage("Excellent calculation — puzzle solved!",true);
+}
+function tacticsSquareClick(square,piece){
+  if(!tacticsState||tacticsState.solved)return;
+  if(tacticsSelected){
+    const move=tacticsTargets.find(uci=>uci.slice(2,4)===square);
+    if(move){submitTacticsMove(move);return;}
+    if(tacticsSelected===square){tacticsSelected=null;tacticsTargets=[];renderTacticsBoard();return;}
+  }
+  if(piece&&((tacticsState.turn==="white"&&piece===piece.toUpperCase())||(tacticsState.turn==="black"&&piece===piece.toLowerCase()))){
+    tacticsSelected=square;tacticsTargets=(tacticsState.legal_moves_uci||[]).filter(uci=>uci.slice(0,2)===square);renderTacticsBoard();
+  }
+}
+async function submitTacticsMove(uci){
+  try{
+    const result=await api("/api/tactics/"+tacticsId+"/moves",{method:"POST",body:JSON.stringify({uci})});
+    applyTacticsState(result.state);tacticsMessage(result.message,result.correct);
+  }catch(error){tacticsMessage(error.message,false);}
+}
+async function loadTacticsCatalog(){
+  try{
+    const result=await api("/api/tactics");$("tactics-puzzle").innerHTML="";
+    result.items.forEach(puzzle=>{const option=document.createElement("option");option.value=puzzle.puzzle_id;option.textContent=puzzle.title+" · "+puzzle.difficulty; $("tactics-puzzle").append(option);});
+  }catch(error){tacticsMessage("Could not load puzzles: "+error.message,false);}
+}
+$("tactics-start").addEventListener("click",async()=>{
+  try{
+    const result=await api("/api/tactics",{method:"POST",body:JSON.stringify({puzzle_id:$("tactics-puzzle").value,mode:$("tactics-mode").value})});
+    tacticsId=result.tactics_id;applyTacticsState(result.state);tacticsMessage("Puzzle started. Find the forcing move.",true);
+  }catch(error){tacticsMessage(error.message,false);}
+});
+$("tactics-hint").addEventListener("click",async()=>{
+  if(!tacticsId||!tacticsState)return;
+  try{const result=await api("/api/tactics/"+tacticsId+"/hints",{method:"POST",body:JSON.stringify({level:tacticsState.hint_level+1})});applyTacticsState(result.state);}
+  catch(error){tacticsMessage(error.message,false);}
+});
+$("tactics-restart").addEventListener("click",async()=>{
+  if(!tacticsId)return;
+  try{const result=await api("/api/tactics/"+tacticsId+"/restart",{method:"POST"});applyTacticsState(result.state);tacticsMessage("Puzzle restarted.",true);}
+  catch(error){tacticsMessage(error.message,false);}
+});
+loadTacticsCatalog();
