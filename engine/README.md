@@ -99,4 +99,15 @@ See [Position-Based Variation Matching](../docs/POSITION_BASED_VARIATION_MATCHIN
 ## Coach decision layer
 
 See [Coach Decision Layer](../docs/COACH_DECISION_LAYER.md) for legal candidate validation, same-position move comparison, progressive hints, and the separation between engine scores and reviewed chess principles.
-\n## Coach client payloads\n\nSee [Coach Client Contract](../docs/COACH_CLIENT_CONTRACT.md) for the JSON payload helpers, board rendering responsibilities, hint-mode policy, and proposed API boundary. The helpers are transport-neutral; a FastAPI server and web/Android UI are not yet implemented.\n
+\n## Coach client payloads\n\nSee [Coach Client Contract](../docs/COACH_CLIENT_CONTRACT.md) for the JSON payload helpers, board rendering responsibilities, hint-mode policy, and proposed API boundary. The helpers are transport-neutral and are consumed by the FastAPI browser session server. The responsive browser board is available in the repository's `web/` directory.\n
+
+## Browser chessboard and session API
+
+Run the responsive browser board and FastAPI server locally:
+
+```bash
+python -m pip install -e ".[dev,server]"
+uvicorn knightforge_engine.server:app --reload
+```
+
+Open http://127.0.0.1:8000. See [Browser Chessboard and FastAPI Server](../docs/WEB_CHESSBOARD.md) for the UI, endpoints, optional Stockfish setup, and deployment limitations. The demo lesson covers only 1.e4 e5 2.Nf3 Nc6 3.Bb5; session storage is process-local and intended for a single-worker development deployment.
