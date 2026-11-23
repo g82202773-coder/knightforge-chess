@@ -176,7 +176,7 @@ def test_opening_explorer_lists_curated_studies_with_review_status():
         "queens-gambit", "london", "kings-gambit", "english",
     }
     assert all(item["review_status"] == "in_review" for item in payload["items"])
-    assert client.get("/api/openings?query=najdorf").json()["count"] == 0
+    assert client.get("/api/openings?query=najdorf").json()["items"][0]["opening_id"] == "open-sicilian"
     assert client.get("/api/openings?query=sicilian").json()["items"][0]["opening_id"] == "open-sicilian"
     assert all(item["side"] == "white" for item in client.get("/api/openings?side=white").json()["items"])
     assert client.get("/api/openings?side=invalid").status_code == 422
