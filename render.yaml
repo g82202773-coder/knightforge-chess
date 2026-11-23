@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: knightforge-chess-test
+    runtime: python
+    plan: free
+    region: singapore
+    branch: fix/test-mode-answer-privacy
+    buildCommand: pip install -e ".[server]"
+    startCommand: uvicorn knightforge_engine.server:app --host 0.0.0.0 --port $PORT --workers 1
+    healthCheckPath: /api/health
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.10
