@@ -12,6 +12,7 @@ from fastapi import FastAPI, HTTPException
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
+
 from .adaptive_coach import AdaptiveOpeningCoach
 from .analysis import StockfishAnalyzer
 from .coach_presentation import coach_state_payload, submission_payload
