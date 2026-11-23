@@ -14,7 +14,10 @@ def result(lines=None, fen=chess.STARTING_FEN):
         fen=fen,
         depth=12,
         nodes=1000,
-        lines=tuple(lines or (
+        lines=tuple((
+            EngineLine(1, 12, 35, None, ("g1f3", "g8f6"), ("Nf3", "Nf6")),
+            EngineLine(2, 12, 20, None, ("d2d4", "d7d5"), ("d4", "d5")),
+        ) if lines is None else lines)
             EngineLine(1, 12, 35, None, ("g1f3", "g8f6"), ("Nf3", "Nf6")),
             EngineLine(2, 12, 20, None, ("d2d4", "d7d5"), ("d4", "d5")),
         )),
