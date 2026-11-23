@@ -14,6 +14,7 @@ This package is the shared chess foundation for KnightForge. It is designed to b
 - An opening coverage analyzer that compares taxonomy systems and named variations against stored, legally validated move trees and reports missing content, provenance gaps, review state, move-node totals, and transpositions.\n- A rules-backed tactical candidate scanner for immediate checks, captures, promotions, and mate-in-one, with an explicitly heuristic capture-ordering score.
 - A position-aware guided lesson session engine that validates branching lesson trees, emits voice-ready coaching text and arrow coordinates, checks learner moves, follows actual opponent replies, and pauses safely on unknown opponent deviations.
 - An adaptive opening-coach orchestrator that combines live lesson prompts with reviewed opening recognition and deepest position-based variation matching.
+- An evidence-grounded coach decision layer that validates engine candidate lines, compares moves from the same pre-move position, and provides progressive hints.
 
 ## Important boundaries
 
@@ -93,3 +94,8 @@ See [Adaptive Opening Coach](../docs/ADAPTIVE_OPENING_COACH.md) for the orchestr
 Opening-anchor recognition identifies curated opening anchors. The position-based variation matcher goes further: after a move history or FEN has been validated by `OpeningRecognizer`, it checks the position against every node in each eligible reviewed opening tree and returns the deepest matching line, SAN sequence, and variation labels.
 
 See [Position-Based Variation Matching](../docs/POSITION_BASED_VARIATION_MATCHING.md) for matching semantics and an example. FEN can identify a position but cannot establish the move order; its transposition field is therefore `None`.
+
+
+## Coach decision layer
+
+See [Coach Decision Layer](../docs/COACH_DECISION_LAYER.md) for legal candidate validation, same-position move comparison, progressive hints, and the separation between engine scores and reviewed chess principles.
