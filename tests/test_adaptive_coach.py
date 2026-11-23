@@ -88,5 +88,7 @@ def test_coach_undo_refreshes_position_knowledge(tmp_path):
     coach.submit_uci("e2e4")
     coach.submit_uci("e7e5")
     undone = coach.undo()
-    assert undone.fen == chess.Board().fen()
-    assert undone.prompt.expected_uci == "e2e4"
+    board_after_e4 = chess.Board()
+    board_after_e4.push_uci("e2e4")
+    assert undone.fen == board_after_e4.fen()
+    assert undone.prompt.expected_uci == "e7e5"
