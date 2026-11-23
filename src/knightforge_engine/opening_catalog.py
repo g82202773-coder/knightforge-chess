@@ -13,6 +13,15 @@ from typing import Any
 
 
 @dataclass(frozen=True, slots=True)
+class OpeningVariation:
+    """A named variation node with optional narrower subvariations."""
+
+    variation_id: str
+    name: str
+    children: tuple[OpeningVariation, ...] = ()
+
+
+@dataclass(frozen=True, slots=True)
 class OpeningSystem:
     """A browseable opening system and its named variation labels."""
 
@@ -22,6 +31,7 @@ class OpeningSystem:
     family_name: str
     side: str
     variations: tuple[str, ...]
+    variation_tree: tuple[OpeningVariation, ...] = ()
 
 
 @dataclass(frozen=True, slots=True)
@@ -124,10 +134,19 @@ class OpeningCatalog:
                     raise ValueError(f"variations must be non-empty strings for {system_id}.")
                 if len({item.casefold() for item in variations}) != len(variations):
                     raise ValueError(f"Duplicate variation name for {system_id}.")
+                variation_tree = cls._parse_variation_tree(
+                    system.get("variation_tree", []), system_id
+                )
+                if variation_tree:
+                    tree_names = tuple(
+                        name for node in variation_tree for name in cls._walk_variation_names(node)
+                    )
+                    if set(map(str.casefold, tree_names)) != set(map(str.casefold, variations)):
+                        raise ValueError(f"variation_tree names must match variations for {system_id}.")
                 browse_systems.append(
                     OpeningSystem(
                         system_id, system_name, family_id, family_name, side,
-                        tuple(item.strip() for item in variations),
+                        tuple(item.strip() for item in variations), variation_tree,
                     )
                 )
                 for variation in variations:
@@ -140,6 +159,37 @@ class OpeningCatalog:
                 OpeningFamily(family_id, family_name, side, tuple(browse_systems))
             )
         return cls(version, tuple(references), tuple(browse_families))
+
+
+    @classmethod
+    def _parse_variation_tree(cls, nodes: Any, system_id: str) -> tuple[OpeningVariation, ...]:
+        """Parse an optional nested variation tree with stable local IDs."""
+        if not isinstance(nodes, list):
+            raise TypeError(f"variation_tree must be an array for {system_id}.")
+        seen_ids: set[str] = set()
+
+        def parse(items: list[Any], parent: str) -> tuple[OpeningVariation, ...]:
+            parsed: list[OpeningVariation] = []
+            for index, item in enumerate(items):
+                if not isinstance(item, dict):
+                    raise TypeError(f"Variation node {index} in {parent} must be an object.")
+                node_id = cls._required_text(item, "id", parent)
+                name = cls._required_text(item, "name", node_id)
+                if node_id in seen_ids:
+                    raise ValueError(f"Duplicate variation id {node_id} in {system_id}.")
+                seen_ids.add(node_id)
+                children = item.get("children", [])
+                parsed.append(OpeningVariation(node_id, name, parse(children, node_id)))
+            return tuple(parsed)
+
+        return parse(nodes, system_id)
+
+    @staticmethod
+    def _walk_variation_names(node: OpeningVariation) -> tuple[str, ...]:
+        return (node.name,) + tuple(
+            name for child in node.children
+            for name in OpeningCatalog._walk_variation_names(child)
+        )
 
     @staticmethod
     def _required_text(item: dict[str, Any], key: str, context: str) -> str:
