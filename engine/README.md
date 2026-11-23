@@ -99,3 +99,4 @@ See [Position-Based Variation Matching](../docs/POSITION_BASED_VARIATION_MATCHIN
 ## Coach decision layer
 
 See [Coach Decision Layer](../docs/COACH_DECISION_LAYER.md) for legal candidate validation, same-position move comparison, progressive hints, and the separation between engine scores and reviewed chess principles.
+\n## Coach client payloads\n\nSee [Coach Client Contract](../docs/COACH_CLIENT_CONTRACT.md) for the JSON payload helpers, board rendering responsibilities, hint-mode policy, and proposed API boundary. The helpers are transport-neutral; a FastAPI server and web/Android UI are not yet implemented.\n
