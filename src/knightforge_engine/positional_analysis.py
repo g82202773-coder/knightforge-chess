@@ -71,7 +71,7 @@ def _pawn_report(board: chess.Board, color: chess.Color) -> dict:
 
 def _weak_squares(board: chess.Board, color: chess.Color) -> list[str]:
     """Central squares in enemy territory that enemy pawns cannot challenge."""
-    enemy_half = range(4, 8) if color else range(0, 4)
+    enemy_half = range(4, 8) if color else range(4)
     return [
         chess.square_name(square) for square in chess.SQUARES
         if chess.square_rank(square) in enemy_half
@@ -83,7 +83,7 @@ def _weak_squares(board: chess.Board, color: chess.Color) -> list[str]:
 
 def _weak_squares(board: chess.Board, color: chess.Color) -> list[str]:
     """Central squares in enemy territory that enemy pawns cannot challenge."""
-    enemy_half = range(4, 8) if color else range(0, 4)
+    enemy_half = range(4, 8) if color else range(4)
     return [
         chess.square_name(square) for square in chess.SQUARES
         if chess.square_rank(square) in enemy_half
@@ -95,7 +95,7 @@ def _weak_squares(board: chess.Board, color: chess.Color) -> list[str]:
 
 def _outposts(board: chess.Board, color: chess.Color) -> list[str]:
     result = []
-    enemy_half = range(4, 8) if color else range(0, 4)
+    enemy_half = range(4, 8) if color else range(4)
     for square in chess.SQUARES:
         if chess.square_rank(square) not in enemy_half:
             continue
@@ -138,8 +138,6 @@ def _features(board: chess.Board) -> dict:
     return {
         "white_pawns": _pawn_report(board, chess.WHITE),
         "black_pawns": _pawn_report(board, chess.BLACK),
-        "white_weak_squares": _weak_squares(board, chess.WHITE),
-        "black_weak_squares": _weak_squares(board, chess.BLACK),
         "white_weak_squares": _weak_squares(board, chess.WHITE),
         "black_weak_squares": _weak_squares(board, chess.BLACK),
         "white_outpost_squares": _outposts(board, chess.WHITE),
