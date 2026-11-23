@@ -54,7 +54,8 @@ class SessionStore:
     def __init__(self) -> None:
         self._sessions: dict[str, SessionRecord] = {}
         self._training_sessions: dict[str, tuple[OpeningTrainingSession, threading.RLock]] = {}
-        self._tactics_sessions: dict[str, tuple[TacticsSession, threading.RLock]] = {}\n        self._strategy_sessions: dict[str, tuple[StrategySession, threading.RLock]] = {}
+        self._tactics_sessions: dict[str, tuple[TacticsSession, threading.RLock]] = {}
+        self._strategy_sessions: dict[str, tuple[StrategySession, threading.RLock]] = {}
         self._lock = threading.RLock()
         self.repository = OpeningRepository.load(Path(os.environ.get("KNIGHTFORGE_OPENINGS_PATH", "data/openings/repository.json")))
         data_root = Path(__file__).resolve().parents[2] / "data" / "openings"
@@ -159,6 +160,10 @@ class CreateTrainingRequest(BaseModel):
 class CreateTacticsRequest(BaseModel):
     puzzle_id: str = Field(min_length=1, max_length=100)
     mode: TacticsMode = "practice"
+
+class CreateStrategyRequest(BaseModel):
+    exercise_id: str = Field(min_length=1, max_length=100)
+    mode: StrategyMode = "practice"
 
 @app.get("/api/health")
 def health() -> dict:
@@ -360,6 +365,116 @@ def restart_tactics_session(session_id: str) -> dict:
     with lock:
         return {"state": session.restart()}
 
+
+
+@app.get("/api/strategy/lessons")
+def list_strategy_lessons(theme: str | None = None) -> dict:
+    items = [lesson for lesson in LESSONS if theme is None or lesson.theme == theme]
+    return {
+        "items": [
+            {"lesson_id": item.lesson_id, "title": item.title,
+             "theme": item.theme, "level": item.level}
+            for item in items
+        ],
+        "count": len(items),
+        "themes": sorted({item.theme for item in LESSONS}),
+        "content_status": "editorial_draft",
+    }
+
+
+@app.get("/api/strategy/lessons/{lesson_id}")
+def get_strategy_lesson(lesson_id: str) -> dict:
+    lesson = next((item for item in LESSONS if item.lesson_id == lesson_id), None)
+    if lesson is None:
+        raise HTTPException(status_code=404, detail="Strategy lesson not found.")
+    return {
+        "lesson_id": lesson.lesson_id, "title": lesson.title,
+        "theme": lesson.theme, "level": lesson.level,
+        "principle": lesson.principle, "why_it_matters": lesson.why_it_matters,
+        "checklist": list(lesson.checklist), "example_plan": lesson.example_plan,
+        "content_status": "editorial_draft",
+    }
+
+
+@app.get("/api/strategy/exercises")
+def list_strategy_exercises(theme: str | None = None, difficulty: str | None = None) -> dict:
+    items = [
+        item for item in EXERCISES
+        if (theme is None or item.theme == theme)
+        and (difficulty is None or item.difficulty == difficulty)
+    ]
+    return {
+        "items": [
+            {"exercise_id": item.exercise_id, "title": item.title,
+             "theme": item.theme, "difficulty": item.difficulty}
+            for item in items
+        ],
+        "count": len(items),
+        "themes": sorted({item.theme for item in EXERCISES}),
+        "difficulties": sorted({item.difficulty for item in EXERCISES}),
+        "content_status": "editorial_draft",
+    }
+
+
+@app.post("/api/strategy")
+def create_strategy_session(request: CreateStrategyRequest) -> dict:
+    exercise = next((item for item in EXERCISES if item.exercise_id == request.exercise_id), None)
+    if exercise is None:
+        raise HTTPException(status_code=404, detail="Strategy exercise not found.")
+    try:
+        session = StrategySession(exercise, request.mode)
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+    session_id = secrets.token_urlsafe(18)
+    with store._lock:
+        store._strategy_sessions[session_id] = (session, threading.RLock())
+    return {"strategy_id": session_id, "state": session.state()}
+
+
+def _strategy_record(session_id: str) -> tuple[StrategySession, threading.RLock]:
+    with store._lock:
+        record = store._strategy_sessions.get(session_id)
+    if record is None:
+        raise HTTPException(status_code=404, detail="Strategy session not found or expired.")
+    return record
+
+
+@app.get("/api/strategy/{session_id}")
+def get_strategy_session(session_id: str) -> dict:
+    session, lock = _strategy_record(session_id)
+    with lock:
+        return {"state": session.state()}
+
+
+@app.post("/api/strategy/{session_id}/moves")
+def submit_strategy_move(session_id: str, request: MoveRequest) -> dict:
+    session, lock = _strategy_record(session_id)
+    with lock:
+        try:
+            return session.submit(request.uci)
+        except ValueError as exc:
+            raise HTTPException(status_code=422, detail=str(exc)) from exc
+        except RuntimeError as exc:
+            raise HTTPException(status_code=409, detail=str(exc)) from exc
+
+
+@app.post("/api/strategy/{session_id}/hints")
+def reveal_strategy_hint(session_id: str, request: HintRequest) -> dict:
+    session, lock = _strategy_record(session_id)
+    with lock:
+        try:
+            return {"state": session.reveal_hint(request.level)}
+        except PermissionError as exc:
+            raise HTTPException(status_code=403, detail=str(exc)) from exc
+        except (ValueError, RuntimeError) as exc:
+            raise HTTPException(status_code=409, detail=str(exc)) from exc
+
+
+@app.post("/api/strategy/{session_id}/restart")
+def restart_strategy_session(session_id: str) -> dict:
+    session, lock = _strategy_record(session_id)
+    with lock:
+        return {"state": session.restart()}
 
 @app.post("/api/training")
 def create_training(request: CreateTrainingRequest) -> dict:
