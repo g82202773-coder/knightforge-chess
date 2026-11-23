@@ -24,6 +24,7 @@ from .opening_import import parse_opening_import
 from .opening_repository import OpeningRepository
 from .opening_training import OpeningTrainingSession, TrainingMode
 from .opening_tree import OpeningTree, VariationNode
+from .positional_analysis import analyze_position
 from .strategy_training import EXERCISES, LESSONS, StrategyMode, StrategySession
 from .tactics_training import PUZZLES, TacticsMode, TacticsSession
 
@@ -164,6 +165,10 @@ class CreateTacticsRequest(BaseModel):
 class CreateStrategyRequest(BaseModel):
     exercise_id: str = Field(min_length=1, max_length=100)
     mode: StrategyMode = "practice"
+
+class PositionalAnalysisRequest(BaseModel):
+    fen: str = Field(min_length=15, max_length=120)
+    candidate_uci: list[str] | None = Field(default=None, max_length=12)
 
 @app.get("/api/health")
 def health() -> dict:
@@ -415,6 +420,14 @@ def list_strategy_exercises(theme: str | None = None, difficulty: str | None = N
         "difficulties": sorted({item.difficulty for item in EXERCISES}),
         "content_status": "editorial_draft",
     }
+
+
+@app.post("/api/strategy/analyze")
+def analyze_strategy_position(request: PositionalAnalysisRequest) -> dict:
+    try:
+        return analyze_position(request.fen, request.candidate_uci)
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
 
 
 @app.post("/api/strategy")
