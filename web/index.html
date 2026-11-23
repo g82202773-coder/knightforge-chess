@@ -51,4 +51,32 @@
     </div>
   </div>
 </section>
+
+<section class="tactics-trainer" aria-labelledby="tactics-title">
+  <div class="explorer-heading">
+    <div><span class="eyebrow">CALCULATION LAB</span><h2 id="tactics-title">Chess tactics training</h2>
+      <p>Find the forcing move. Start with beginner checkmate puzzles; solutions stay hidden until you solve or request the final hint.</p></div>
+    <span class="review-tag">3 BEGINNER PUZZLES</span>
+  </div>
+  <div class="tactics-layout">
+    <div class="tactics-board-panel">
+      <div class="tactics-toolbar">
+        <select id="tactics-puzzle" aria-label="Choose tactical puzzle"></select>
+        <select id="tactics-mode" aria-label="Tactics mode"><option value="practice">Practice · hints available</option><option value="mastery">Mastery · no hints</option></select>
+        <button id="tactics-start" class="button hint-button">Start puzzle</button>
+      </div>
+      <div id="tactics-board" class="tactics-board" role="grid" aria-label="Tactical puzzle chessboard"></div>
+      <div id="tactics-feedback" class="feedback" aria-live="polite">Choose a puzzle and find the best move.</div>
+    </div>
+    <aside class="tactics-info">
+      <span id="tactics-theme" class="eyebrow">TACTICAL THEME</span>
+      <h3 id="tactics-name">Select a puzzle</h3>
+      <p id="tactics-prompt">Look for checks, captures, and forcing moves.</p>
+      <div class="tactics-progress" id="tactics-progress">No attempt yet</div>
+      <div class="study-nav"><button id="tactics-hint" class="button secondary" disabled>Reveal hint</button><button id="tactics-restart" class="button secondary" disabled>Restart</button></div>
+      <p id="tactics-hint-text" class="study-comment">Hints reveal progressively. Mastery mode has no hints.</p>
+      <p id="tactics-explanation" class="study-comment"></p>
+    </aside>
+  </div>
+</section>
 <footer><span>KNIGHTFORGE ENGINE</span><span>Legal moves · Reviewed lesson knowledge · Optional engine analysis</span></footer></main><script src="/assets/app.js" defer></script></body></html>
