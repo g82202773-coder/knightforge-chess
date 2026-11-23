@@ -3,6 +3,7 @@
 from .adaptive_coach import AdaptiveOpeningCoach, OpeningCoachState, OpeningCoachSubmission
 from .analysis import AnalysisResult, EngineLine, StockfishAnalyzer
 from .coach_decision import CoachDecisionLayer, CoachHint, EngineRecommendation, MoveComparison
+from .coach_presentation import coach_state_payload, submission_payload
 from .core import ChessGame, GameStatus, MoveResult
 from .guided_learning import (
     CoachPrompt,
@@ -39,6 +40,7 @@ __all__ = [
     "CoachDecisionLayer",
     "CoachHint",
     "CoachPrompt",
+    "coach_state_payload",
     "EngineLine",
     "EngineRecommendation",
     "GameStatus",
@@ -79,4 +81,5 @@ __all__ = [
     "analyze_opening_coverage",
     "import_openings",
     "parse_opening_import",
+    "submission_payload",
 ]
