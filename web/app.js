@@ -6,7 +6,7 @@ function parseFen(fen){const rows=fen.split(" ")[0].split("/"),out=[];rows.forEa
 function parseUci(u){return {from:u.slice(0,2),to:u.slice(2,4),promotion:u[4]||null};}
 function legalFrom(sq){return (state.board.legal_moves_uci||[]).filter(u=>u.slice(0,2)===sq).map(parseUci);}
 function arrow(){if(mode==="mastery")return null;const h=state.coach.active_hint;if(h&&h.arrow_from&&h.arrow_to)return {from:h.arrow_from,to:h.arrow_to};const a=state.coach.expected_move&&state.coach.expected_move.arrow;return mode==="guided"&&a&&a.from&&a.to?a:null;}
-function render(){if(!state)return;const root=$("board");root.innerHTML="";const cells=parseFen(state.board.fen),a=arrow();for(let rank=8;rank>=1;rank--)for(let file=0;file<8;file++){const sq=FILES[file]+rank,entry=cells.find(x=>x.sq===sq),b=document.createElement("button");b.type="button";b.className="square "+(((file+rank)%2===0)?"light":"dark");if(sq===selected)b.classList.add("selected");if(lastMove&&lastMove.includes(sq))b.classList.add("last-move");const target=targets.find(x=>x.to===sq);if(target)b.classList.add(entry&&entry.p?"capture":"legal");if(entry&&entry.p){const span=document.createElement("span");span.className="piece "+(entry.p===entry.p.toUpperCase()?"white":"black");span.textContent=PIECES[entry.p];b.append(span);}b.setAttribute("aria-label",sq+(entry&&entry.p?" "+entry.p:" empty"));b.addEventListener("click",()=>clickSquare(sq,entry&&entry.p));root.append(b);}
+function render(){if(!state)return;const root=$("board");root.innerHTML="";const cells=parseFen(state.board.fen),a=arrow();const ranks=fullGameFlipped?[1,2,3,4,5,6,7,8]:[8,7,6,5,4,3,2,1],files=fullGameFlipped?[...FILES].reverse():FILES;for(const rank of ranks)for(const file of files){const sq=FILES[file]+rank,entry=cells.find(x=>x.sq===sq),b=document.createElement("button");b.type="button";b.className="square "+(((file+rank)%2===0)?"light":"dark");if(sq===selected)b.classList.add("selected");if(lastMove&&lastMove.includes(sq))b.classList.add("last-move");const target=targets.find(x=>x.to===sq);if(target)b.classList.add(entry&&entry.p?"capture":"legal");if(entry&&entry.p){const span=document.createElement("span");span.className="piece "+(entry.p===entry.p.toUpperCase()?"white":"black");span.textContent=PIECES[entry.p];b.append(span);}b.setAttribute("aria-label",sq+(entry&&entry.p?" "+entry.p:" empty"));b.addEventListener("click",()=>clickSquare(sq,entry&&entry.p));root.append(b);}
 if(a){const pos=s=>({x:(FILES.indexOf(s[0])+.5)*12.5,y:(8-Number(s[1])+.5)*12.5}),p=pos(a.from),q=pos(a.to),svg=document.createElementNS("http://www.w3.org/2000/svg","svg");svg.setAttribute("viewBox","0 0 100 100");svg.setAttribute("class","board-arrow");svg.innerHTML='<defs><marker id="arrowhead" markerUnits="userSpaceOnUse" markerWidth="3.2" markerHeight="3.2" refX="2.8" refY="1.6" orient="auto"><path d="M0 0 L3.2 1.6 L0 3.2Z" fill="#d7f18a"/></marker></defs>';const line=document.createElementNS("http://www.w3.org/2000/svg","line");line.setAttribute("x1",p.x);line.setAttribute("y1",p.y);line.setAttribute("x2",q.x);line.setAttribute("y2",q.y);line.setAttribute("stroke-width","2.4");svg.append(line);root.append(svg);}}
 function clickSquare(sq,piece){if(busy)return;if(selected){const move=targets.find(x=>x.to===sq);if(move){sendMove(selected+sq+(move.promotion||""));return;}if(selected===sq){selected=null;targets=[];render();return;}}if(piece){selected=sq;targets=legalFrom(sq);render();}else{selected=null;targets=[];render();}}
 async function sendMove(uci){setBusy(true);try{const result=await api("/api/sessions/"+sessionId+"/moves",{method:"POST",body:JSON.stringify({uci})});if(result.move.applied){lastMove=[uci.slice(0,2),uci.slice(2,4)];history.push(result.move.actual_san||uci);feedback(result.move.message||"Move accepted.",result.move.correct!==false);}else feedback(result.move.message||"Try again.",false);selected=null;targets=[];apply(result.state);}catch(e){feedback(e.message,false);}finally{setBusy(false);}}
@@ -216,7 +216,7 @@ function renderTacticsBoard(){
   const root=$("tactics-board");root.innerHTML="";
   const cells=parseFen(tacticsState.fen),legal=tacticsState.legal_moves_uci||[];
   for(let rank=8;rank>=1;rank--)for(let file=0;file<8;file++){
-    const square=FILES[file]+rank,entry=cells.find(x=>x.sq===square),button=document.createElement("button");
+    const square=file+rank,entry=cells.find(x=>x.sq===square),button=document.createElement("button");
     button.type="button";button.className="tactics-square "+(((file+rank)%2===0)?"light":"dark");
     if(square===tacticsSelected)button.classList.add("selected");
     if(tacticsTargets.some(move=>move.slice(2,4)===square))button.classList.add("legal");
@@ -417,7 +417,7 @@ $("analysis-run").addEventListener("click",async()=>{
 loadStrategyLessons();loadStrategyExercises();
 
 /* Full game arena: independent from the short guided lesson session. */
-let fullGameId=null,fullGameState=null,fullGameSelected=null,fullGameTargets=[],fullGameBusy=false;
+let fullGameId=null,fullGameState=null,fullGameSelected=null,fullGameTargets=[],fullGameBusy=false,fullGameFlipped=false;
 function renderFullGame(){
   if(!fullGameState)return;
   const root=$("full-game-board");root.innerHTML="";
@@ -459,8 +459,7 @@ async function fullGameClick(square,piece){
       const candidates=fullGameState.legal_moves_uci.filter(uci=>uci.slice(0,2)===fullGameSelected&&uci.slice(2,4)===square);
       let move=candidates[0];
       if(candidates.length>1){
-        const choice=(window.prompt("Promote pawn to: Q (queen), R (rook), B (bishop), or N (knight)","q")||"q").trim().toLowerCase();
-        const suffix=["q","r","b","n"].includes(choice)?choice:"q";
+        const suffix=await choosePromotion();if(!suffix)return;
         move=candidates.find(uci=>uci[4]===suffix)||candidates[0];
       }
       await submitFullGameMove(move);return;
@@ -490,3 +489,4 @@ $("full-game-restart").addEventListener("click",async()=>{
   finally{fullGameBusy=false;renderFullGame();}
 });
 loadFullGame();
+function choosePromotion(){const modal=$("promotion-modal");modal.hidden=false;return new Promise(resolve=>{const cancel=()=>finish(null),finish=value=>{modal.hidden=true;modal.querySelectorAll("[data-promotion]").forEach(b=>b.removeEventListener("click",b._choose));$("promotion-cancel").removeEventListener("click",cancel);resolve(value);};modal.querySelectorAll("[data-promotion]").forEach(b=>{b._choose=()=>finish(b.dataset.promotion);b.addEventListener("click",b._choose,{once:true});});$("promotion-cancel").addEventListener("click",cancel,{once:true});});}$("full-game-flip").addEventListener("click",()=>{fullGameFlipped=!fullGameFlipped;renderFullGame();});
