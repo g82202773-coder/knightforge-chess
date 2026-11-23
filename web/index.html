@@ -79,4 +79,50 @@
     </aside>
   </div>
 </section>
+<section class="strategy-trainer" aria-labelledby="strategy-title">
+  <div class="explorer-heading">
+    <div><span class="eyebrow">POSITIONAL THINKING LAB</span><h2 id="strategy-title">Chess strategy &amp; positional understanding</h2>
+      <p>Learn the long-term ideas behind a move: improve pieces, understand pawn structures, use open files, protect your king, and build a plan.</p></div>
+    <span class="review-tag">EDITORIAL DRAFT · 6 LESSONS</span>
+  </div>
+  <div class="strategy-layout">
+    <aside class="strategy-lessons">
+      <label for="strategy-theme">Filter lessons</label>
+      <select id="strategy-theme"><option value="">All strategic themes</option></select>
+      <div id="strategy-lesson-list" class="strategy-lesson-list">Loading strategy lessons…</div>
+      <div class="strategy-exercise-picker">
+        <label for="strategy-exercise">Positional exercise</label>
+        <select id="strategy-exercise"></select>
+        <select id="strategy-mode" aria-label="Strategy training mode"><option value="practice">Practice · hints</option><option value="mastery">Mastery · no hints</option></select>
+        <button id="strategy-start" class="button hint-button">Start exercise</button>
+      </div>
+    </aside>
+    <div class="strategy-content">
+      <article class="strategy-lesson-card">
+        <span id="strategy-level" class="eyebrow">SELECT A LESSON</span>
+        <h3 id="strategy-lesson-title">Think beyond the next move</h3>
+        <p id="strategy-principle">Choose a lesson to study a strategic principle.</p>
+        <p id="strategy-why" class="study-comment"></p>
+        <h4>Thinking checklist</h4><ul id="strategy-checklist"></ul>
+        <p id="strategy-example" class="study-comment"></p>
+      </article>
+      <div class="strategy-exercise">
+        <div class="strategy-board-panel">
+          <div class="strategy-board-heading"><span class="eyebrow">POSITIONAL DECISION</span><span id="strategy-turn" class="turn-pill">NO ACTIVE EXERCISE</span></div>
+          <div id="strategy-board" class="tactics-board" role="grid" aria-label="Positional exercise chessboard"></div>
+          <div id="strategy-feedback" class="feedback" aria-live="polite">Start an exercise to make a strategic decision.</div>
+        </div>
+        <aside class="strategy-info">
+          <h3 id="strategy-exercise-title">Your plan, your move</h3>
+          <p id="strategy-prompt">Select a lesson and start its related exercise.</p>
+          <div id="strategy-progress" class="tactics-progress">No attempt yet</div>
+          <div class="study-nav"><button id="strategy-hint" class="button secondary" disabled>Reveal hint</button><button id="strategy-restart" class="button secondary" disabled>Restart</button></div>
+          <p id="strategy-hint-text" class="study-comment"></p>
+          <p id="strategy-explanation" class="study-comment"></p>
+        </aside>
+      </div>
+    </div>
+  </div>
+  <p class="study-provenance">Content status: editorial draft. Positional recommendations are curated teaching examples, not Stockfish evaluations. More varied middlegame positions and reviewed exercise alternatives will be added in later increments.</p>
+</section>
 <footer><span>KNIGHTFORGE ENGINE</span><span>Legal moves · Reviewed lesson knowledge · Optional engine analysis</span></footer></main><script src="/assets/app.js" defer></script></body></html>
