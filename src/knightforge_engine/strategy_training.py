@@ -165,7 +165,6 @@ EXERCISES: tuple[StrategyExercise, ...] = (
         "Black should consider exchanging the centralized knight or challenging the centre with a timely pawn break.",
         "A routine rook move does not exploit the available central square. Ne5 improves the least active minor piece and creates a stable point of pressure.",
     ),
-    ),
 )
 
 
