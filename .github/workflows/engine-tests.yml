@@ -2,7 +2,7 @@ name: KnightForge Engine Tests
 
 on:
   push:
-    branches: [main, fix/test-mode-answer-privacy]
+    branches: [main, fix/test-mode-answer-privacy, feature/full-game-play-mode]
   pull_request:
     branches: [main]
   workflow_dispatch:
@@ -17,14 +17,14 @@ jobs:
           python-version: "3.11"
           cache: pip
       - name: Install package
-        run: python -m pip install -e ".[dev]"
+        run: python -m pip install -e ".[dev,server]"
       - name: Lint
         run: ruff check src tests
       - name: Test
         run: pytest --cov=knightforge_engine --cov-report=term-missing
 
   browser-e2e:
-    if: github.event_name == 'pull_request' || github.ref == 'refs/heads/fix/test-mode-answer-privacy'
+    if: github.event_name == 'pull_request' || github.ref == 'refs/heads/fix/test-mode-answer-privacy' || github.ref == 'refs/heads/feature/full-game-play-mode'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
