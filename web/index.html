@@ -30,6 +30,14 @@
       <div class="study-board-row">
         <div id="study-board" class="study-board" role="img" aria-label="Opening study position"></div>
         <div class="study-controls">
+          <div class="training-controls">
+            <label for="training-mode">Train this opening</label>
+            <select id="training-mode"><option value="guided">Guided · show move</option><option value="practice" selected>Practice · hints</option><option value="mastery">Mastery · no hints</option></select>
+            <button id="training-start" class="button hint-button">Start training</button>
+            <div id="training-feedback" class="feedback hidden" aria-live="polite"></div>
+            <div id="training-progress" class="move-count">No training session active</div>
+            <div class="study-nav"><button id="training-hint" class="button secondary" disabled>Hint</button><button id="training-undo" class="button secondary" disabled>Undo</button><button id="training-restart" class="button secondary" disabled>Restart</button></div>
+          </div>
           <span class="eyebrow">SELECTED LINE</span>
           <div id="study-line" class="study-line">Choose an opening to begin.</div>
           <div class="study-nav"><button id="study-prev" class="button secondary" disabled>← Previous</button><button id="study-next" class="button secondary" disabled>Next →</button></div>
