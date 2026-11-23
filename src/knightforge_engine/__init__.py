@@ -15,6 +15,11 @@ from .opening_recognition import OpeningMatch, OpeningRecognition, OpeningRecogn
 from .opening_repository import OpeningRepository
 from .opening_tree import OpeningTree, VariationNode
 from .position import MoveOption, PositionInspector, SquareState
+from .variation_matching import (
+    PositionBasedVariationMatcher,
+    VariationMatchResult,
+    VariationPositionMatch,
+)
 
 __all__ = [
     "ChessGame",
@@ -36,9 +41,12 @@ __all__ = [
     "OpeningSystem",
     "OpeningTree",
     "OpeningVariation",
+    "PositionBasedVariationMatcher",
     "PositionInspector",
     "SquareState",
+    "VariationMatchResult",
     "VariationNode",
+  "VariationPositionMatch",
     "analyze_opening_coverage",
     "import_openings",
     "parse_opening_import",
