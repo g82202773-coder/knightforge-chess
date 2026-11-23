@@ -19,3 +19,91 @@ $("hint-btn").addEventListener("click",async()=>{try{const r=await api("/api/ses
 $("undo-btn").addEventListener("click",async()=>{try{const r=await api("/api/sessions/"+sessionId+"/undo",{method:"POST"});history.pop();lastMove=null;apply(r.state);$("feedback").className="feedback hidden";}catch(e){feedback(e.message,false);}});
 $("restart-btn").addEventListener("click",async()=>{try{const r=await api("/api/sessions/"+sessionId+"/restart",{method:"POST"});history=[];lastMove=null;apply(r.state);$("feedback").className="feedback hidden";}catch(e){feedback(e.message,false);}});
 $("mode-select").addEventListener("change",createSession);$("speak-btn").addEventListener("click",()=>state&&speak(state.coach.voice_script||state.coach.text));$("voice-toggle").addEventListener("change",e=>{if(!e.target.checked&&window.speechSynthesis)window.speechSynthesis.cancel();else if(state)speak(state.coach.voice_script||state.coach.text);});createSession();
+
+// Opening study explorer -----------------------------------------------------
+let openingItems=[], activeOpening=null, selectedStudyPath=[];
+const studyPieceGlyph=PIECES;
+function studyNodeAtPath(nodes,path){
+  let current=nodes,node=null;
+  for(const uci of path){node=current.find(item=>item.uci===uci);if(!node)return null;current=node.children;}
+  return node;
+}
+function allStudyNodes(nodes,result=[]){
+  for(const node of nodes){result.push(node);allStudyNodes(node.children,result);}
+  return result;
+}
+function studySanLine(path){
+  const nodes=allStudyNodes(activeOpening.roots);
+  return path.map(uci=>nodes.find(n=>n.uci===uci)?.san||uci);
+}
+function renderStudyBoard(fen){
+  const root=$("study-board");root.innerHTML="";
+  const cells=parseFen(fen);
+  for(let rank=8;rank>=1;rank--)for(let file=0;file<8;file++){
+    const sq=FILES[file]+rank,entry=cells.find(x=>x.sq===sq),cell=document.createElement("div");
+    cell.className="study-square "+(((file+rank)%2===0)?"light":"dark");
+    if(entry&&entry.p){const piece=document.createElement("span");piece.className="piece "+(entry.p===entry.p.toUpperCase()?"white":"black");piece.textContent=studyPieceGlyph[entry.p];cell.append(piece);}
+    root.append(cell);
+  }
+}
+function renderStudyPosition(){
+  if(!activeOpening)return;
+  const node=studyNodeAtPath(activeOpening.roots,selectedStudyPath);
+  const fen=node?node.fen_after:activeOpening.starting_fen;
+  renderStudyBoard(fen);
+  const sans=studySanLine(selectedStudyPath);
+  $("study-line").textContent=sans.length?sans.map((san,i)=>Math.floor(i/2)+1+(i%2?". ":"... ")+san).join("  "):"Starting position";
+  $("study-ply").textContent=selectedStudyPath.length+" ply";
+  $("study-prev").disabled=selectedStudyPath.length===0;
+  const canNext=!!(node&&node.children.length);
+  $("study-next").disabled=!canNext;
+  const notes=node?[node.explanation,node.white_plan?"White plan: "+node.white_plan:"",node.black_plan?"Black plan: "+node.black_plan:""].filter(Boolean).join(" "):"Starting position. Select a move to inspect its resulting position and plans.";
+  $("study-notes").textContent=notes||"No editorial notes have been added for this position yet.";
+  $("study-variation").textContent=node&&node.label?node.label:"Main line / unnamed continuation";
+  $("study-name").textContent=activeOpening.name;
+  $("study-family").textContent=activeOpening.family_name+" · "+activeOpening.side+" to move";
+  $("study-branches").textContent=activeOpening.branch_count+" move nodes";
+  $("study-provenance").textContent="Content status: "+activeOpening.review_status+". Source: "+activeOpening.source_name+". "+activeOpening.license_name+".";
+  document.querySelectorAll(".variation-move").forEach(button=>button.classList.toggle("active",button.dataset.path===JSON.stringify(selectedStudyPath)));
+}
+function buildVariationTree(nodes,container){
+  for(const node of nodes){
+    const branch=document.createElement("div");branch.className="variation-branch";
+    const button=document.createElement("button");button.type="button";button.className="variation-move";
+    button.dataset.path=JSON.stringify(node.path_uci);
+    button.textContent=node.san+(node.label?" · "+node.label:"");
+    button.addEventListener("click",()=>{selectedStudyPath=[...node.path_uci];renderStudyPosition();});
+    branch.append(button);
+    if(node.children.length){const children=document.createElement("div");children.className="variation-children";buildVariationTree(node.children,children);branch.append(children);}
+    container.append(branch);
+  }
+}
+async function loadOpeningList(){
+  const query=$("opening-search").value.trim(),side=$("opening-side").value;
+  const params=new URLSearchParams();if(query)params.set("query",query);if(side)params.set("side",side);
+  try{
+    const result=await api("/api/openings?"+params.toString());openingItems=result.items;
+    const root=$("opening-list");root.innerHTML="";
+    if(!openingItems.length){root.textContent="No matching study trees yet.";return;}
+    openingItems.forEach(item=>{
+      const button=document.createElement("button");button.type="button";button.className="opening-card";
+      if(activeOpening&&activeOpening.opening_id===item.opening_id)button.classList.add("active");
+      const name=document.createElement("strong");name.textContent=item.name;
+      const meta=document.createElement("span");meta.textContent=item.family_name+" · "+item.branch_count+" moves";
+      const status=document.createElement("small");status.textContent="IN REVIEW";
+      button.append(name,meta,status);button.addEventListener("click",()=>loadOpening(item.opening_id));root.append(button);
+    });
+  }catch(error){$("opening-list").textContent="Opening library unavailable: "+error.message;}
+}
+async function loadOpening(openingId){
+  try{
+    activeOpening=await api("/api/openings/"+encodeURIComponent(openingId));selectedStudyPath=[];
+    $("variation-tree").innerHTML="";buildVariationTree(activeOpening.roots,$("variation-tree"));
+    renderStudyPosition();await loadOpeningList();
+  }catch(error){$("study-name").textContent="Could not load opening";$("study-notes").textContent=error.message;}
+}
+$("opening-search").addEventListener("input",loadOpeningList);
+$("opening-side").addEventListener("change",loadOpeningList);
+$("study-prev").addEventListener("click",()=>{if(selectedStudyPath.length){selectedStudyPath.pop();renderStudyPosition();}});
+$("study-next").addEventListener("click",()=>{if(!activeOpening)return;const node=studyNodeAtPath(activeOpening.roots,selectedStudyPath);if(node&&node.children.length){selectedStudyPath.push(node.children[0].uci);renderStudyPosition();}});
+loadOpeningList();
