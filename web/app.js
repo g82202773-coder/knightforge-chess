@@ -378,4 +378,25 @@ $("strategy-restart").addEventListener("click",async()=>{
   try{const result=await api("/api/strategy/"+strategyId+"/restart",{method:"POST"});applyStrategyState(result.state);strategyMessage("Exercise restarted.",true);}
   catch(error){strategyMessage(error.message,false);}
 });
+
+function renderPositionalAnalysis(result){
+  const root=$("analysis-results");root.innerHTML="";
+  const features=result.position_features;
+  const section=(title,lines)=>{const h=document.createElement("h4");h.textContent=title;root.append(h);const p=document.createElement("p");p.textContent=lines.join(" · ")||"None detected";root.append(p);};
+  ["white","black"].forEach(color=>{
+    const pawn=features[color+"_pawns"],rook=features[color+"_rooks"];
+    section(color.toUpperCase()+" pawn structure",["Isolated: "+(pawn.isolated.join(", ")||"none"),"Doubled: "+(pawn.doubled.join(", ")||"none"),"Backward candidates: "+(pawn.backward_candidates.join(", ")||"none"),"Passed: "+(pawn.passed.join(", ")||"none")]);
+    section(color.toUpperCase()+" outposts and rooks",["Outpost squares: "+(features[color+"_outpost_squares"].join(", ")||"none"),"Open files: "+(rook.open_files.join(", ")||"none"),"Half-open files: "+(rook.half_open_files.join(", ")||"none"),"Active rooks: "+(rook.rooks_on_open_or_half_open_files.join(", ")||"none"),"Seventh rank: "+(rook.rooks_on_seventh_rank.join(", ")||"none")]);
+  });
+  const heading=document.createElement("h4");heading.textContent="Candidate move comparison";root.append(heading);
+  result.candidates.forEach(candidate=>{const card=document.createElement("article");card.className="analysis-candidate";const title=document.createElement("strong");title.textContent=candidate.san+" · heuristic "+candidate.heuristic_score_white+" (Δ "+candidate.score_change_white+")";card.append(title);const reply=candidate.opponent_practical_reply;const p=document.createElement("p");p.textContent=reply?"Practical reply: "+reply.san+" — "+reply.selection_basis:"No legal reply (terminal position).";card.append(p);root.append(card);});
+  const note=document.createElement("p");note.className="study-provenance";note.textContent=result.methodology.limitations.join(" ");root.append(note);
+}
+$("analysis-run").addEventListener("click",async()=>{
+  const button=$("analysis-run");button.disabled=true;$("analysis-feedback").textContent="Analyzing legal candidates…";
+  try{const raw=$("analysis-candidates").value.trim();const payload={fen:$("analysis-fen").value.trim(),candidate_uci:raw?raw.split(",").map(x=>x.trim()).filter(Boolean):null};const result=await api("/api/strategy/analyze",{method:"POST",body:JSON.stringify(payload)});renderPositionalAnalysis(result);$("analysis-feedback").textContent="Analysis complete · "+result.candidates.length+" candidate moves compared.";}
+  catch(error){$("analysis-feedback").textContent=error.message;$("analysis-results").innerHTML="";}
+  finally{button.disabled=false;}
+});
+
 loadStrategyLessons();loadStrategyExercises();
