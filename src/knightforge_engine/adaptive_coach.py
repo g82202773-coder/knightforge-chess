@@ -9,6 +9,7 @@ from dataclasses import dataclass
 
 import chess
 
+from .analysis import AnalysisResult, StockfishAnalyzer
 from .guided_learning import CoachPrompt, GuidedLesson, GuidedLessonSession, MoveSubmission
 from .opening_recognition import OpeningRecognition, OpeningRecognizer
 from .opening_repository import OpeningRepository
@@ -43,11 +44,17 @@ class AdaptiveOpeningCoach:
     manufacturing an explanation or continuation.
     """
 
-    def __init__(self, lesson: GuidedLesson, repository: OpeningRepository) -> None:
+    def __init__(
+        self,
+        lesson: GuidedLesson,
+        repository: OpeningRepository,
+        analyzer: StockfishAnalyzer | None = None,
+    ) -> None:
         if not isinstance(repository, OpeningRepository):
             raise TypeError("repository must be an OpeningRepository.")
         self.session = GuidedLessonSession(lesson)
         self.repository = repository
+        self.analyzer = analyzer
         self.recognizer = OpeningRecognizer(repository)
         self.matcher = PositionBasedVariationMatcher(repository)
         self.state = self._build_state()
@@ -63,6 +70,29 @@ class AdaptiveOpeningCoach:
         state = self._build_state()
         self.state = state
         return OpeningCoachSubmission(result, state)
+
+    def analyze_deviation(
+        self,
+        *,
+        time_limit: float = 1.0,
+        depth: int | None = None,
+        multipv: int = 3,
+    ) -> AnalysisResult:
+        """Analyse an unexpected opponent position without treating engine lines as theory.
+
+        This is deliberately opt-in: the caller chooses when to spend engine
+        resources. The Stockfish adapter enforces bounded time, depth and MultiPV.
+        """
+        if self.session.prompt().kind != "opponent_deviation":
+            raise RuntimeError("Stockfish analysis is only available after an opponent deviation.")
+        if self.analyzer is None:
+            raise RuntimeError("No Stockfish analyzer configured for this coach.")
+        return self.analyzer.analyse(
+            self.session.game.fen,
+            time_limit=time_limit,
+            depth=depth,
+            multipv=multipv,
+        )
 
     def undo(self) -> OpeningCoachState:
         self.session.undo()
