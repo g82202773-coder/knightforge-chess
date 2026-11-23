@@ -87,7 +87,7 @@ class TacticsSession:
             "progress": {
                 "attempts": self.attempts,
                 "solved": int(self.solved),
-                "accuracy_percent": 100 if self.solved and self.attempts else 0,
+                "accuracy_percent": round(100 / self.attempts) if self.solved and self.attempts else 0,
             },
         }
 
