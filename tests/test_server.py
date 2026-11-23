@@ -161,6 +161,7 @@ def test_test_modes_keep_answer_hidden_after_move_and_state_refresh():
         _assert_test_mode_answer_hidden(payload["state"])
 
         # Legal move options remain visible so the board can operate normally.
+        # Regression: legal move options are not answer leakage.
         assert "e2e4" in payload["state"]["board"]["legal_moves_uci"]
 
         # A separate GET must apply the same privacy policy.
