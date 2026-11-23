@@ -80,3 +80,10 @@ pytest
 ```
 
 Set `STOCKFISH_PATH` to the Stockfish executable when running analysis. Do not expose arbitrary executable paths or unrestricted engine settings through a public API.
+
+
+## Position-based variation matching
+
+Opening-anchor recognition identifies curated opening anchors. The position-based variation matcher goes further: after a move history or FEN has been validated by `OpeningRecognizer`, it checks the position against every node in each eligible reviewed opening tree and returns the deepest matching line, SAN sequence, and variation labels.
+
+See [Position-Based Variation Matching](../docs/POSITION_BASED_VARIATION_MATCHING.md) for matching semantics and an example. FEN can identify a position but cannot establish the move order; its transposition field is therefore `None`.
