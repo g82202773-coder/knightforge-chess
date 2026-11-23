@@ -238,7 +238,7 @@ class OpeningRecognizer:
         if selected == "san":
             cleaned: list[str] = []
             for token in tokens:
-                token = re.sub(r"^\d+\.(\.\.)?", "", token)
+                token = re.sub(r"^\d+\.(\.\.)?", "", token).strip()
                 if token and token not in {"...", "1-0", "0-1", "1/2-1/2", "*"}:
                     cleaned.append(token)
             tokens = cleaned
