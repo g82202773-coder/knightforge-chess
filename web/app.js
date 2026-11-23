@@ -130,6 +130,17 @@ function renderTrainingBoard(){
     button.addEventListener("click",()=>trainingClick(sq,entry&&entry.p));
     root.append(button);
   }
+  const uci=s.expected_move||(s.hint&&s.hint.arrow_uci);
+  if(uci&&uci.length>=4){
+    const pos=sq=>({x:(FILES.indexOf(sq[0])+.5)*12.5,y:(8-Number(sq[1])+.5)*12.5});
+    const p=pos(uci.slice(0,2)),q=pos(uci.slice(2,4));
+    const svg=document.createElementNS("http://www.w3.org/2000/svg","svg");
+    svg.setAttribute("viewBox","0 0 100 100");svg.setAttribute("class","study-board-arrow");
+    svg.innerHTML='<defs><marker id="study-arrowhead" markerWidth="5" markerHeight="5" refX="3.8" refY="2.5" orient="auto"><path d="M0 0 L5 2.5 L0 5Z" fill="#d7f18a"/></marker></defs>';
+    const line=document.createElementNS("http://www.w3.org/2000/svg","line");
+    line.setAttribute("x1",p.x);line.setAttribute("y1",p.y);line.setAttribute("x2",q.x);line.setAttribute("y2",q.y);
+    svg.append(line);root.append(svg);
+  }
 }
 function applyTrainingState(s){
   trainingState=s;trainingSelected=null;trainingTargets=[];
@@ -144,6 +155,10 @@ function applyTrainingState(s){
   $("training-restart").disabled=false;
   if(s.hint)trainingFeedback(s.hint.text,true);
   if(s.complete)trainingFeedback("Opening line complete. Restart to practise again.",true);
+  if($("voice-toggle").checked){
+    const spoken=s.voice_script||(s.mode==="guided"&&s.expected_san?s.prompt+" Play "+s.expected_san+".":s.hint?s.hint.text:s.prompt);
+    speak(spoken);
+  }
 }
 function trainingClick(square,piece){
   if(!trainingState||trainingState.complete)return;
