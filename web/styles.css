@@ -113,3 +113,5 @@
 .strategy-review ul{margin:4px 0;padding-left:18px}
 
 .positional-analyzer{margin:34px 0;padding:26px;background:var(--panel);border:1px solid var(--line);border-radius:18px}.positional-analyzer textarea,.positional-analyzer input{display:block;width:100%;margin:8px 0 16px;padding:12px;border:1px solid var(--line);border-radius:9px;background:#101714;color:var(--text);font:13px 'DM Mono',monospace}.analysis-results{display:grid;gap:10px;margin-top:18px}.analysis-results h4{margin:10px 0 0;color:var(--accent);font:700 13px Manrope,sans-serif}.analysis-results p{margin:4px 0;color:var(--muted);font-size:13px;line-height:1.6}.analysis-candidate{padding:13px;border:1px solid var(--line);border-radius:10px;background:#121b17}.analysis-candidate strong{color:var(--text)}.analysis-candidate p{margin-bottom:0}
+
+.study-board{position:relative}.study-board-arrow{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:4}.study-board-arrow line{stroke:#d7f18a;stroke-width:7;stroke-linecap:round;opacity:.9;marker-end:url(#study-arrowhead)}
