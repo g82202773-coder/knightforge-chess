@@ -2,51 +2,66 @@
 
 **Chess education · AI coaching · Opening mastery**
 
-KnightForge is a chess-learning platform for beginners through advanced players. Its goal is to teach not only which move to play, but *why* it works—then turn each learner's mistakes into a focused training plan.
+KnightForge is a chess-learning platform in development for beginners through advanced players. Its goal is to teach not only which move to play, but *why* it works—and turn each learner's mistakes into focused training.
 
-> Project status: **Engine foundation in progress**. The Python package now contains a standard-chess rules wrapper, opening taxonomy and variation-tree validation, provenance-aware knowledge records, and a bounded Stockfish UCI adapter. There is still no playable app, deployed API, bundled Stockfish executable, persistent opening repository, or complete opening/puzzle library.
+> Project status: **Early playable web demo; not an MVP or production release.** The repository contains a Python chess engine foundation, a FastAPI session server, and a responsive browser chessboard with one short guided lesson. The demo supports legal move selection, Guided/Practice/Mastery modes, progressive lesson hints, undo, restart, and optional Stockfish integration. It does not yet contain a complete curriculum, a comprehensive opening encyclopedia, a curated puzzle trainer, accounts, saved progress, or a deployed public service.
 
 ## Product pillars
 
 - **Chess Academy:** structured lessons in rules, tactics, strategy, openings, calculation, and endgames.
-- **Opening Encyclopedia:** organized opening families, move trees, named variations, plans, tactical themes, and practice positions.
-- **AI Chess Coach:** engine-grounded move analysis and explanations. The engine supplies legal moves and evaluations; the language model explains them.
-- **Tactics Trainer:** validated puzzles, hints, solution lines, and spaced repetition.
-- **Progress & Personalization:** skill assessment, mistake patterns, accuracy, and adaptive daily plans.
+- **Opening Encyclopedia:** organized opening families, legal move trees, named variations, plans, tactical themes, and practice positions.
+- **AI Chess Coach:** engine-grounded move analysis and explanations. The engine supplies legal moves and evaluations; explanations must remain grounded in that output.
+- **Tactics Trainer:** validated puzzles, progressive hints, solution lines, and spaced repetition.
+- **Progress & Personalization:** skill assessment, mistake patterns, accuracy, and adaptive training plans.
 - **Practice Arena:** legal chess games, adjustable opponents, and themed positions.
 
-## Initial product scope (MVP)
+## Current runnable demo
 
-1. Responsive interactive chessboard with complete legal move handling.
-2. Beginner learning path and core chess-rules lessons.
-3. Tactics trainer with a curated, validated puzzle set.
-4. Lesson and puzzle progress tracking.
-5. Stockfish-backed position analysis.
-6. Explanations grounded in engine output—not invented variations.
-7. Responsive web app, designed so an Android client can share the same backend.
+The current browser demo is a narrow vertical slice, not the complete product:
 
-The opening encyclopedia will grow in verified, reviewable batches. We will not claim to contain every possible opening branch until coverage is measured and validated.
+- Responsive 8×8 board with server-authoritative legal moves.
+- One curated lesson: Open Game / Ruy Lopez introduction (1.e4 e5 2.Nf3 Nc6 3.Bb5).
+- Guided, Practice, and Mastery modes.
+- Progressive hints, undo, restart, and optional browser speech synthesis.
+- FastAPI JSON endpoints for session creation, state, moves, hints, undo, and restart.
+- Optional bounded Stockfish analysis when a separately installed executable is configured.
+
+### Run locally
+
+Requires Python 3.11 or newer.
+
+```bash
+python -m pip install -e ".[dev,server]"
+uvicorn knightforge_engine.server:app --reload
+```
+
+Open http://127.0.0.1:8000.
+
+For Stockfish, install a compatible executable separately and set `STOCKFISH_PATH` before starting the server. Without it, the lesson and legal board still work; engine recommendations are unavailable.
+
+See [docs/WEB_CHESSBOARD.md](docs/WEB_CHESSBOARD.md) for API routes and current operational limitations.
 
 ## Proposed technology
 
 | Layer | Initial direction |
 |---|---|
-| Web client | Next.js + TypeScript |
+| Web client | Responsive browser client (current demo); evaluate Next.js + TypeScript for product-scale frontend |
 | Android client | Kotlin + Jetpack Compose (later client) |
 | API | Python + FastAPI |
-| Data | PostgreSQL |
-| Chess rules / PGN | python-chess on the API; a tested client rules library where needed |
-| Engine | Stockfish via UCI |
-| AI explanations | LLM grounded in structured engine analysis |
-| Tests | Unit, integration, legal-position, and regression tests |
-
-These are proposed defaults, not implemented dependencies yet. We will confirm the first runnable client before generating application code.
+| Data | PostgreSQL (not yet implemented) |
+| Chess rules / PGN | python-chess |
+| Engine | Stockfish via UCI (adapter implemented; live binary integration not verified in CI) |
+| Tests | Unit, API, legal-position, regression, and browser end-to-end tests |
 
 ## Repository map
 
-- `docs/PRODUCT_SPEC.md` — product scope, modules, MVP acceptance criteria.
+- `docs/PRODUCT_SPEC.md` — product scope and acceptance criteria.
 - `docs/ARCHITECTURE.md` — system boundaries, data flow, and technical decisions.
 - `docs/ROADMAP.md` — staged build and verification plan.
+- `docs/WEB_CHESSBOARD.md` — current browser demo, API, and run instructions.
+- `src/knightforge_engine/` — chess rules, opening knowledge, coach, analysis, and API.
+- `web/` — current browser client.
+- `tests/` — automated engine and API tests.
 
 ## Development principles
 
@@ -58,21 +73,31 @@ These are proposed defaults, not implemented dependencies yet. We will confirm t
 
 ## Current status
 
-- [x] Public GitHub repository created.
-- [x] Product, architecture, and roadmap documented.
-- [x] Python engine package scaffolded with CI, linting, and automated tests.
-- [x] Standard-chess game-state wrapper implemented on python-chess.
-- [x] Opening taxonomy reader and legal variation-tree model implemented.
-- [x] Versioned opening-tree serialization and position/transposition index implemented.
-- [x] Persistent versioned JSON opening repository with atomic writes, validated load, duplicate protection, and ID/name/ECO/alias search.
-- [x] Provenance-aware knowledge record model implemented.
-- [x] Bounded Stockfish UCI adapter implemented; executable setup and live integration tests remain outstanding.\n- [x] Rules-backed tactical candidate scanner for immediate checks, captures, promotions, and mate-in-one; full tactical search remains a Stockfish responsibility.
-- [ ] Add PostgreSQL-backed opening storage when the API/database layer is introduced.
-- [x] Add a curated opening import/export workflow with provenance and review checks.
-- [ ] Expand rule-edge-case, draw-claim, and Stockfish adapter tests.
-- [ ] Select and scaffold the first runnable client and API.
-- [ ] Build the first beginner lesson and validated puzzle flow.
-- [ ] Add accounts, synchronization, and subscriptions after the core learning loop works.
+- [x] Public GitHub repository and product/architecture/roadmap documentation.
+- [x] Python engine package, linting, and automated CI.
+- [x] Standard-chess game-state wrapper using python-chess.
+- [x] Opening taxonomy, legal variation-tree model, serialization, and transposition index.
+- [x] Persistent versioned JSON opening repository with atomic writes and validation.
+- [x] Provenance-aware knowledge records and curated opening import/export workflow.
+- [x] Bounded Stockfish UCI adapter; a real Stockfish executable has not yet been verified in CI.
+- [x] Rules-backed immediate tactical candidate scanner; not a full tactical search.
+- [x] FastAPI session API and early browser chessboard demo.
+- [x] Guided, Practice, and Mastery hint-disclosure policies with API regression tests.
+- [ ] Browser end-to-end tests on desktop and mobile.
+- [ ] Persistent, expiring sessions and production-grade storage.
+- [ ] Expand chess-rule edge-case and draw-claim coverage.
+- [ ] Complete beginner rules curriculum and knowledge checks.
+- [ ] Curated, validated tactics/puzzle trainer.
+- [ ] Expand opening coverage with deeply nested, reviewed variations.
+- [ ] Middlegame, calculation, endgame, and checkmate-pattern courses.
+- [ ] Saved games, learner progress, diagnostic assessment, and adaptive plans.
+- [ ] Game analysis and practice against a computer.
+- [ ] Production security, accessibility, performance, and deployment review.
+- [ ] Android client after the web learning loop is validated.
+
+## Release discipline
+
+A green CI run means the automated checks in that workflow passed; it does not mean the product is complete, deployed, or verified on real phones. Features are only marked complete after implementation and appropriate tests. The current server uses an in-memory, process-local session store and is intended for local development only. Do not expose it as a public multi-user service without session expiry, shared storage, authentication, rate limiting, and a security review.
 
 ## License
 
