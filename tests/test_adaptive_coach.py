@@ -11,7 +11,7 @@ from knightforge_engine import (
 )
 
 
-def reviewed_repository():
+def reviewed_repository(tmp_path):
     tree = OpeningTree(
         opening_id="open-game",
         name="Open Game",
@@ -31,7 +31,7 @@ def reviewed_repository():
             ),),
         ),),
     )
-    repository = OpeningRepository()
+    repository = OpeningRepository.load(tmp_path / "openings.json")
     repository.add(tree)
     return repository
 
@@ -55,8 +55,8 @@ def lesson():
     )
 
 
-def test_coach_connects_lesson_to_reviewed_opening_and_variation():
-    coach = AdaptiveOpeningCoach(lesson(), reviewed_repository())
+def test_coach_connects_lesson_to_reviewed_opening_and_variation(tmp_path):
+    coach = AdaptiveOpeningCoach(lesson(), reviewed_repository(tmp_path))
     initial = coach.prompt()
     assert initial.prompt.expected_uci == "e2e4"
     assert initial.knowledge_status == "no_reviewed_match"
@@ -74,8 +74,8 @@ def test_coach_connects_lesson_to_reviewed_opening_and_variation():
     assert after_knight.prompt.expected_uci is None
 
 
-def test_coach_reports_unreviewed_deviation_without_inventing_theory():
-    coach = AdaptiveOpeningCoach(lesson(), reviewed_repository())
+def test_coach_reports_unreviewed_deviation_without_inventing_theory(tmp_path):
+    coach = AdaptiveOpeningCoach(lesson(), reviewed_repository(tmp_path))
     coach.submit_uci("e2e4")
     deviation = coach.submit_uci("d7d5").state
     assert deviation.prompt.kind == "opponent_deviation"
@@ -83,8 +83,8 @@ def test_coach_reports_unreviewed_deviation_without_inventing_theory():
     assert not deviation.variation_match.matches
 
 
-def test_coach_undo_refreshes_position_knowledge():
-    coach = AdaptiveOpeningCoach(lesson(), reviewed_repository())
+def test_coach_undo_refreshes_position_knowledge(tmp_path):
+    coach = AdaptiveOpeningCoach(lesson(), reviewed_repository(tmp_path))
     coach.submit_uci("e2e4")
     coach.submit_uci("e7e5")
     undone = coach.undo()
