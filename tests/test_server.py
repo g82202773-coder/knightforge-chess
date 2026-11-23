@@ -38,6 +38,12 @@ def test_illegal_move_and_unknown_session_are_rejected():
 
 
 def test_hints_and_mastery_mode_policy():
+    practice = client.post("/api/sessions", json={"mode": "practice"}).json()
+    practice_id = practice["session_id"]
+    assert practice["state"]["coach"]["active_hint"] is None
+    first_hint = client.post(f"/api/sessions/{practice_id}/hints", json={"level": 1})
+    assert first_hint.status_code == 200
+    assert first_hint.json()["state"]["coach"]["active_hint"]["level"] == 1
     guided = client.post("/api/sessions", json={"mode": "guided"}).json()
     hint = client.post(f"/api/sessions/{guided['session_id']}/hints", json={"level": 2})
     assert hint.status_code == 200
