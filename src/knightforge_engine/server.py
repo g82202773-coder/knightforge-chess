@@ -24,6 +24,7 @@ from .opening_import import parse_opening_import
 from .opening_repository import OpeningRepository
 from .opening_training import OpeningTrainingSession, TrainingMode
 from .opening_tree import OpeningTree, VariationNode
+from .tactics_training import PUZZLES, TacticsSession, TacticsMode
 
 Mode = Literal["guided", "practice", "mastery"]
 
@@ -52,6 +53,7 @@ class SessionStore:
     def __init__(self) -> None:
         self._sessions: dict[str, SessionRecord] = {}
         self._training_sessions: dict[str, tuple[OpeningTrainingSession, threading.RLock]] = {}
+        self._tactics_sessions: dict[str, tuple[TacticsSession, threading.RLock]] = {}
         self._lock = threading.RLock()
         self.repository = OpeningRepository.load(Path(os.environ.get("KNIGHTFORGE_OPENINGS_PATH", "data/openings/repository.json")))
         data_root = Path(__file__).resolve().parents[2] / "data" / "openings"
@@ -152,6 +154,10 @@ class CreateTrainingRequest(BaseModel):
     opening_id: str = Field(min_length=1, max_length=100)
     mode: TrainingMode = "practice"
     learner_color: Literal["white", "black"] | None = None
+
+class CreateTacticsRequest(BaseModel):
+    puzzle_id: str = Field(min_length=1, max_length=100)
+    mode: TacticsMode = "practice"
 
 @app.get("/api/health")
 def health() -> dict:
@@ -270,6 +276,88 @@ def _opening_detail_payload(opening: OpeningTree, catalog: OpeningCatalog | None
         ],
     }
 
+
+
+@app.get("/api/tactics")
+def list_tactical_puzzles(theme: str | None = None, difficulty: str | None = None) -> dict:
+    puzzles = [
+        puzzle for puzzle in PUZZLES
+        if (theme is None or puzzle.theme == theme)
+        and (difficulty is None or puzzle.difficulty == difficulty)
+    ]
+    return {
+        "items": [
+            {"puzzle_id": puzzle.puzzle_id, "title": puzzle.title,
+             "theme": puzzle.theme, "difficulty": puzzle.difficulty}
+            for puzzle in puzzles
+        ],
+        "count": len(puzzles),
+        "themes": sorted({puzzle.theme for puzzle in PUZZLES}),
+        "difficulties": sorted({puzzle.difficulty for puzzle in PUZZLES}),
+    }
+
+
+@app.post("/api/tactics")
+def create_tactics_session(request: CreateTacticsRequest) -> dict:
+    puzzle = next((item for item in PUZZLES if item.puzzle_id == request.puzzle_id), None)
+    if puzzle is None:
+        raise HTTPException(status_code=404, detail="Tactical puzzle not found.")
+    try:
+        session = TacticsSession(puzzle, request.mode)
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+    session_id = secrets.token_urlsafe(18)
+    with store._lock:
+        store._tactics_sessions[session_id] = (session, threading.RLock())
+    return {"tactics_id": session_id, "state": session.state()}
+
+
+def _tactics_record(session_id: str) -> tuple[TacticsSession, threading.RLock]:
+    with store._lock:
+        record = store._tactics_sessions.get(session_id)
+    if record is None:
+        raise HTTPException(status_code=404, detail="Tactics session not found or expired.")
+    return record
+
+
+@app.get("/api/tactics/{session_id}")
+def get_tactics_session(session_id: str) -> dict:
+    session, lock = _tactics_record(session_id)
+    with lock:
+        return {"state": session.state()}
+
+
+@app.post("/api/tactics/{session_id}/moves")
+def submit_tactics_move(session_id: str, request: MoveRequest) -> dict:
+    session, lock = _tactics_record(session_id)
+    with lock:
+        try:
+            return session.submit(request.uci)
+        except ValueError as exc:
+            raise HTTPException(status_code=422, detail=str(exc)) from exc
+        except RuntimeError as exc:
+            raise HTTPException(status_code=409, detail=str(exc)) from exc
+
+
+@app.post("/api/tactics/{session_id}/hints")
+def reveal_tactics_hint(session_id: str, request: HintRequest) -> dict:
+    session, lock = _tactics_record(session_id)
+    with lock:
+        try:
+            return {"state": session.reveal_hint(request.level)}
+        except PermissionError as exc:
+            raise HTTPException(status_code=403, detail=str(exc)) from exc
+        except ValueError as exc:
+            raise HTTPException(status_code=409, detail=str(exc)) from exc
+        except RuntimeError as exc:
+            raise HTTPException(status_code=409, detail=str(exc)) from exc
+
+
+@app.post("/api/tactics/{session_id}/restart")
+def restart_tactics_session(session_id: str) -> dict:
+    session, lock = _tactics_record(session_id)
+    with lock:
+        return {"state": session.restart()}
 
 
 @app.post("/api/training")
