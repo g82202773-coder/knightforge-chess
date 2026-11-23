@@ -80,9 +80,9 @@ def test_recognizes_transposed_position(tmp_path):
     repository = _repository(tmp_path)
     # The anchor position after 1.e4 c5 2.Nf3 d6 is also reached by this
     # different move order only if the exact board state is the same.
-    result = OpeningRecognizer(repository).recognize("1.e4 c5 2.Nf3 d6 3.d4")
+    result = OpeningRecognizer(repository).recognize("1.Nf3 c5 2.e4 d6")
     assert result.matches[0].matched_ply == 4
-    assert result.matches[0].matched_via_transposition is False
+    assert result.matches[0].matched_via_transposition is True
 
 
 def test_does_not_recognize_unreviewed_openings(tmp_path):
