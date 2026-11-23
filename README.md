@@ -66,9 +66,9 @@ These are proposed defaults, not implemented dependencies yet. We will confirm t
 - [x] Versioned opening-tree serialization and position/transposition index implemented.
 - [x] Persistent versioned JSON opening repository with atomic writes, validated load, duplicate protection, and ID/name/ECO/alias search.
 - [x] Provenance-aware knowledge record model implemented.
-- [x] Bounded Stockfish UCI adapter implemented; executable setup and live integration tests remain outstanding.
+- [x] Bounded Stockfish UCI adapter implemented; executable setup and live integration tests remain outstanding.\n- [x] Rules-backed tactical candidate scanner for immediate checks, captures, promotions, and mate-in-one; full tactical search remains a Stockfish responsibility.
 - [ ] Add PostgreSQL-backed opening storage when the API/database layer is introduced.
-- [ ] Add a curated opening import/export workflow with provenance and review checks.
+- [x] Add a curated opening import/export workflow with provenance and review checks.
 - [ ] Expand rule-edge-case, draw-claim, and Stockfish adapter tests.
 - [ ] Select and scaffold the first runnable client and API.
 - [ ] Build the first beginner lesson and validated puzzle flow.
