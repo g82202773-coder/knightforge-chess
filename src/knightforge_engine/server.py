@@ -243,7 +243,6 @@ def _opening_node_payload(
 
 def _opening_detail_payload(opening: OpeningTree, catalog: OpeningCatalog | None) -> dict:
     system = catalog.get_system_detail(opening.opening_id) if catalog else None
-    board = chess.Board(opening.starting_fen)
     return {
         "opening_id": opening.opening_id,
         "name": opening.name,
