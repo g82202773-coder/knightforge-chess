@@ -29,12 +29,13 @@ def test_knight_legal_destinations_are_rules_backed():
 
 def test_capture_metadata():
     game = ChessGame()
-    for move in ("e4", "d5", "exd5", "Qxd5"):
-        game.push_san(move)
-    options = PositionInspector(game).legal_moves_from("d8")
-    queen_capture = next(move for move in options if move.to_square == "d5")
-    assert queen_capture.is_capture
-    assert queen_capture.captured_piece == "pawn"
+    game.push_san("e4")
+    game.push_san("d5")
+    options = PositionInspector(game).legal_moves_from("e4")
+    capture = next(move for move in options if move.to_square == "d5")
+    assert capture.san == "exd5"
+    assert capture.is_capture
+    assert capture.captured_piece == "pawn"
 
 
 def test_invalid_square_is_rejected():
