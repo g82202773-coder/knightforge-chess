@@ -1,4 +1,5 @@
 """HTTP and session lifecycle tests for the KnightForge browser server."""
+import chess
 from fastapi.testclient import TestClient
 
 from knightforge_engine.server import app
