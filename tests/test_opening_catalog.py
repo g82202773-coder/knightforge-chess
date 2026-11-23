@@ -79,3 +79,50 @@ def test_catalog_rejects_duplicate_variation_names_case_insensitively():
                 }],
             }],
         })
+
+
+def test_catalog_exposes_nested_london_variations():
+    catalog = OpeningCatalog.load("data/openings/opening_taxonomy.json")
+    london = catalog.get_system_detail("london")
+    assert london is not None
+    jobava = next(node for node in london.variation_tree if node.variation_id == "jobava-london")
+    assert jobava.name == "Jobava London"
+    assert [child.name for child in jobava.children] == [
+        "Jobava London: Early Nc3 Setup",
+        "Jobava London: Queenside Expansion",
+    ]
+    classical = next(node for node in london.variation_tree if node.variation_id == "classical-london")
+    assert len(classical.children) == 2
+
+
+def test_catalog_rejects_duplicate_nested_variation_ids():
+    with pytest.raises(ValueError, match="Duplicate variation id"):
+        OpeningCatalog.from_dict({
+            "schema_version": "1.1.0",
+            "families": [{
+                "id": "open", "name": "Open Games", "side": "white",
+                "systems": [{
+                    "id": "test-opening", "name": "Test Opening",
+                    "variations": ["Main", "Sub"],
+                    "variation_tree": [
+                        {"id": "same", "name": "Main"},
+                        {"id": "same", "name": "Sub"}
+                    ]
+                }]
+            }]
+        })
+
+
+def test_catalog_rejects_nested_tree_that_disagrees_with_flat_index():
+    with pytest.raises(ValueError, match="must match variations"):
+        OpeningCatalog.from_dict({
+            "schema_version": "1.1.0",
+            "families": [{
+                "id": "open", "name": "Open Games", "side": "white",
+                "systems": [{
+                    "id": "test-opening", "name": "Test Opening",
+                    "variations": ["Main"],
+                    "variation_tree": [{"id": "sub", "name": "Different"}]
+                }]
+            }]
+        })
