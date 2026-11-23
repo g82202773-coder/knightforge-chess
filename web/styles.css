@@ -103,3 +103,11 @@
 .strategy-info .button{font-size:10px;padding:8px}
 @media(max-width:850px){.strategy-layout{grid-template-columns:1fr}.strategy-lesson-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.strategy-exercise{grid-template-columns:1fr}}
 @media(max-width:560px){.strategy-trainer{padding:14px}.strategy-lesson-list{grid-template-columns:1fr 1fr}.strategy-lesson-button{font-size:10px;padding:8px}.strategy-exercise{grid-template-columns:1fr}.strategy-board-panel .tactics-board{max-width:100%}}
+
+
+.strategy-review{margin-top:14px;padding:13px;background:#19251e;border:1px solid #52664e;border-radius:10px}
+.strategy-review[hidden]{display:none}
+.strategy-review h4{font:700 13px Manrope,sans-serif;margin:0 0 12px;color:#e4eee0}
+.strategy-review h5{font:700 10px Manrope,sans-serif;text-transform:uppercase;letter-spacing:.06em;color:#b9d0b8;margin:12px 0 4px}
+.strategy-review p,.strategy-review li{font-size:11px;line-height:1.65;color:#d7e2d5}
+.strategy-review ul{margin:4px 0;padding-left:18px}
