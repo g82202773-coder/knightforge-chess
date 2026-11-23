@@ -102,13 +102,12 @@ def test_empty_placeholder_tree_does_not_count_as_playable_coverage(tmp_path):
     assert report.system_coverage_ratio == 0.0
 
 
-def test_legal_but_unrelated_tree_does_not_claim_opening_coverage(tmp_path):
+def test_legal_tree_without_reviewed_anchor_does_not_claim_opening_coverage(tmp_path):
     repository = OpeningRepository.load(tmp_path / "openings.json")
     repository.add(OpeningTree(
         opening_id="ruy-lopez", name="Ruy Lopez", side="white",
         source_name="Licensed source", license_name="CC BY 4.0",
         review_status="reviewed", roots=(VariationNode("d2d4"),),
-        anchor_uci=("d2d4",),
     ))
 
     report = analyze_opening_coverage(_catalog(), repository)
