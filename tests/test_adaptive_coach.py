@@ -204,6 +204,21 @@ def test_progressive_hint_reveal_updates_arrow_without_reanalysing(tmp_path):
     assert len(analyzer.calls) == calls_before
 
 
+
+def test_progressive_lesson_hints_work_without_stockfish(tmp_path):
+    coach = AdaptiveOpeningCoach(lesson(), reviewed_repository(tmp_path))
+    first = coach.reveal_hint(1)
+    assert first.active_hint.text == "Look for a useful move with your pawn."
+    source = coach.reveal_hint(2)
+    assert source.active_hint.arrow_from == "e2"
+    assert source.active_hint.arrow_to is None
+    destination = coach.reveal_hint(3)
+    assert (destination.active_hint.arrow_from, destination.active_hint.arrow_to) == (
+        "e2", "e4"
+    )
+    answer = coach.reveal_hint(4)
+    assert answer.active_hint.reveal_uci == "e2e4"
+
 def test_wrong_lesson_move_keeps_position_decision_and_returns_comparison(tmp_path):
     coach = AdaptiveOpeningCoach(
         lesson(), reviewed_repository(tmp_path), analyzer=FakeAnalyzer()
