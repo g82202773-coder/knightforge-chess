@@ -4,7 +4,7 @@ from knightforge_engine import ChessGame, TacticalScanner
 
 
 def test_finds_legal_checking_moves_and_mate_in_one():
-    game = ChessGame("7k/6pp/5KQ1/8/8/8/8/8 w - - 0 1")
+    game = ChessGame("7k/8/5KQ1/8/8/8/8/8 w - - 0 1")
     scan = TacticalScanner(game).scan()
     mate = next(candidate for candidate in scan.candidates if candidate.san == "Qg7#")
     assert mate.is_checkmate
