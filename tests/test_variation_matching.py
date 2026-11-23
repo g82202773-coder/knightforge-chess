@@ -100,3 +100,29 @@ def test_does_not_match_unreviewed_tree(tmp_path):
     recognition = OpeningRecognizer(repository).recognize("1. e4")
     result = PositionBasedVariationMatcher(repository).match(recognition)
     assert result.matches == ()
+
+
+def test_does_not_classify_before_curated_anchor_is_reached(tmp_path):
+    repository = OpeningRepository(tmp_path / "branches.json")
+    opening = OpeningTree(
+        opening_id="sicilian-anchor-guard",
+        name="Sicilian anchor guard",
+        side="black",
+        source_name="Curated test source",
+        license_name="CC BY 4.0",
+        review_status="reviewed",
+        roots=(VariationNode("e2e4", children=(
+            VariationNode("e7e5", label="Unrelated open game branch"),
+            VariationNode("c7c5", children=(
+                VariationNode("g1f3", children=(
+                    VariationNode("d7d6", label="Sicilian anchor"),
+                )),
+            )),
+        )),),
+        anchor_uci=("e2e4", "c7c5", "g1f3", "d7d6"),
+    )
+    repository.add(opening)
+    recognition = OpeningRecognizer(repository).recognize("1. e4 e5 2. Nf3")
+    result = PositionBasedVariationMatcher(repository).match(recognition)
+
+    assert result.matches == ()
