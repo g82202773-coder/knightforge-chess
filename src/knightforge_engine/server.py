@@ -94,6 +94,13 @@ def apply_mode_policy(payload: dict, record: SessionRecord) -> dict:
         state["board"]["highlighted_squares"] = []
         engine["recommendation"] = None
         engine["recommendation_arrow"] = None
+        # Move-comparison payloads also contain the engine's best SAN/UCI move.
+        # Keep learner feedback, but never disclose the answer in test modes.
+        feedback = state.get("feedback")
+        if feedback is not None:
+            feedback["best_uci"] = None
+            feedback["best_san"] = None
+            feedback["engine_top_choice"] = None
 
     if record.mode == "mastery":
         coach["active_hint"] = None
