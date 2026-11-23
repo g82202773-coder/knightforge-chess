@@ -155,14 +155,18 @@ class PositionBasedVariationMatcher:
                     (*labels, node.label.strip()) if node.label.strip() else labels
                 )
                 next_san = (*san_path, san)
-                results.append(
-                    (
-                        OpeningTree._position_key(next_board),
-                        next_path,
-                        next_labels,
-                        next_san,
+                # Do not classify a position as this opening until the exact
+                # curated anchor path has been reached. Other legal branches
+                # in the same tree may be transpositions or unrelated systems.
+                if next_path[: len(opening.anchor_uci)] == opening.anchor_uci:
+                    results.append(
+                        (
+                            OpeningTree._position_key(next_board),
+                            next_path,
+                            next_labels,
+                            next_san,
+                        )
                     )
-                )
                 visit(next_board, node.children, next_path, next_labels, next_san)
 
         visit(start, opening.roots, (), (), ())
