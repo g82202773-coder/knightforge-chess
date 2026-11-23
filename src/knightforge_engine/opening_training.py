@@ -66,6 +66,7 @@ class OpeningTrainingSession:
                     if self.hint_level == 2 else
                     f"Move from {chess.square_name(move.from_square).upper()} to {chess.square_name(move.to_square).upper()}."
                 ),
+                "arrow_uci": move.uci() if self.hint_level >= 3 else None,
             }
         return {
             "opening_id": self.opening.opening_id,
