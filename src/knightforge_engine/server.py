@@ -406,7 +406,8 @@ def list_strategy_exercises(theme: str | None = None, difficulty: str | None = N
     return {
         "items": [
             {"exercise_id": item.exercise_id, "title": item.title,
-             "theme": item.theme, "difficulty": item.difficulty}
+             "theme": item.theme, "difficulty": item.difficulty,
+             "position_phase": "middlegame" if item.exercise_id.startswith("middlegame-") else "opening"}
             for item in items
         ],
         "count": len(items),
