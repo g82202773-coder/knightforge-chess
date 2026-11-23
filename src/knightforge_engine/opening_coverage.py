@@ -99,9 +99,16 @@ def analyze_opening_coverage(
 
     trees = repository.all()
     by_id = {tree.opening_id: tree for tree in trees}
-    # A taxonomy ID is covered only by a tree containing at least one legal move.
-    # Empty draft placeholders must remain visible as missing playable content.
-    playable_ids = {tree_id for tree_id, tree in by_id.items() if tree.roots}
+    # Count only reviewed, sourced trees with an explicit anchor path. A legal
+    # move tree alone does not prove that it represents the named opening.
+    playable_ids = {
+        tree_id for tree_id, tree in by_id.items()
+        if tree.roots
+        and tree.anchor_uci
+        and tree.review_status in {"reviewed", "published"}
+        and tree.source_name.strip()
+        and tree.license_name.strip()
+    }
     matched_system_ids = tuple(sorted(set(systems) & playable_ids))
     missing_system_ids = tuple(sorted(set(systems) - playable_ids))
 
@@ -109,7 +116,7 @@ def analyze_opening_coverage(
     missing_variations: list[str] = []
     for system_id in sorted(variations):
         tree = by_id.get(system_id)
-        labels = _labels(tree.roots) if tree is not None else set()
+        labels = _labels(tree.roots) if tree is not None and system_id in playable_ids else set()
         for variation in sorted(variations[system_id]):
             qualified = f"{system_id}:{variation}"
             (matched_variations if variation in labels else missing_variations).append(
