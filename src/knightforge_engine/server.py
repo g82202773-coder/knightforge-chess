@@ -80,7 +80,7 @@ def apply_mode_policy(payload: dict, record: SessionRecord) -> dict:
     state["mode"] = record.mode
     coach = state["coach"]
     engine = state["engine"]
-    expected = record.coach.prompt().expected_uci
+    expected = record.coach.prompt().prompt.expected_uci
     coach["hints_available"] = expected is not None and record.mode != "mastery"
 
     if record.mode in {"practice", "mastery"}:
