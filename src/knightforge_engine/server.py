@@ -1,6 +1,7 @@
 """FastAPI session server for the KnightForge browser board."""
 from __future__ import annotations
 
+import json
 import os
 import secrets
 import threading
@@ -8,6 +9,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Literal
 
+import chess
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
@@ -17,7 +19,14 @@ from .adaptive_coach import AdaptiveOpeningCoach
 from .analysis import StockfishAnalyzer
 from .coach_presentation import coach_state_payload, submission_payload
 from .guided_learning import GuidedLesson, LessonNode
+from .opening_catalog import OpeningCatalog
+from .opening_import import parse_opening_import
 from .opening_repository import OpeningRepository
+from .opening_training import OpeningTrainingSession, TrainingMode
+from .opening_tree import OpeningTree, VariationNode
+from .positional_analysis import analyze_position
+from .strategy_training import EXERCISES, LESSONS, StrategyMode, StrategySession
+from .tactics_training import PUZZLES, TacticsMode, TacticsSession
 
 Mode = Literal["guided", "practice", "mastery"]
 
@@ -45,8 +54,26 @@ class SessionStore:
     """Thread-safe, process-local session registry for single-worker deployments."""
     def __init__(self) -> None:
         self._sessions: dict[str, SessionRecord] = {}
+        self._training_sessions: dict[str, tuple[OpeningTrainingSession, threading.RLock]] = {}
+        self._tactics_sessions: dict[str, tuple[TacticsSession, threading.RLock]] = {}
+        self._strategy_sessions: dict[str, tuple[StrategySession, threading.RLock]] = {}
         self._lock = threading.RLock()
         self.repository = OpeningRepository.load(Path(os.environ.get("KNIGHTFORGE_OPENINGS_PATH", "data/openings/repository.json")))
+        data_root = Path(__file__).resolve().parents[2] / "data" / "openings"
+        self.study_openings: dict[str, OpeningTree] = {}
+        self.opening_catalog: OpeningCatalog | None = None
+        batch_path = data_root / "curated_batch_01.json"
+        taxonomy_path = data_root / "opening_taxonomy.json"
+        if batch_path.exists() and taxonomy_path.exists():
+            try:
+                batch = json.loads(batch_path.read_text(encoding="utf-8"))
+                records = parse_opening_import(batch)
+                self.study_openings = {record.opening_id: record for record in records}
+                self.opening_catalog = OpeningCatalog.load(taxonomy_path)
+            except (OSError, ValueError, TypeError, json.JSONDecodeError):
+                # Optional study content must not take down ordinary chess sessions.
+                self.study_openings = {}
+                self.opening_catalog = None
         self.analyzer: StockfishAnalyzer | None = None
         executable = os.environ.get("STOCKFISH_PATH")
         if executable:
@@ -126,6 +153,23 @@ class MoveRequest(BaseModel):
 class HintRequest(BaseModel):
     level: int = Field(ge=1, le=4)
 
+class CreateTrainingRequest(BaseModel):
+    opening_id: str = Field(min_length=1, max_length=100)
+    mode: TrainingMode = "practice"
+    learner_color: Literal["white", "black"] | None = None
+
+class CreateTacticsRequest(BaseModel):
+    puzzle_id: str = Field(min_length=1, max_length=100)
+    mode: TacticsMode = "practice"
+
+class CreateStrategyRequest(BaseModel):
+    exercise_id: str = Field(min_length=1, max_length=100)
+    mode: StrategyMode = "practice"
+
+class PositionalAnalysisRequest(BaseModel):
+    fen: str = Field(min_length=15, max_length=120)
+    candidate_uci: list[str] | None = Field(default=None, max_length=12)
+
 @app.get("/api/health")
 def health() -> dict:
     return {"status": "ok", "stockfish_available": store.analyzer is not None}
@@ -185,6 +229,386 @@ def restart(session_id: str) -> dict:
         record.coach.restart()
         record.hint_level = 0
         return {"state": state_for(record)}
+
+
+def _opening_mainline_san(opening: OpeningTree) -> list[str]:
+    board = chess.Board(opening.starting_fen)
+    moves: list[str] = []
+    for uci in opening.mainline_uci():
+        move = chess.Move.from_uci(uci)
+        moves.append(board.san(move))
+        board.push(move)
+    return moves
+
+
+def _opening_node_payload(
+    board: chess.Board, node: VariationNode, path: tuple[str, ...]
+) -> dict:
+    move = chess.Move.from_uci(node.move_uci)
+    san = board.san(move)
+    next_board = board.copy()
+    next_board.push(move)
+    next_path = (*path, node.move_uci)
+    return {
+        "uci": node.move_uci,
+        "san": san,
+        "label": node.label,
+        "explanation": node.explanation,
+        "white_plan": node.white_plan,
+        "black_plan": node.black_plan,
+        "path_uci": list(next_path),
+        "fen_after": next_board.fen(),
+        "children": [
+            _opening_node_payload(next_board, child, next_path)
+            for child in node.children
+        ],
+    }
+
+
+def _opening_detail_payload(opening: OpeningTree, catalog: OpeningCatalog | None) -> dict:
+    system = catalog.get_system_detail(opening.opening_id) if catalog else None
+    board = chess.Board(opening.starting_fen)
+    return {
+        "opening_id": opening.opening_id,
+        "name": opening.name,
+        "side": opening.side,
+        "aliases": list(opening.aliases),
+        "family_id": system.family_id if system else None,
+        "family_name": system.family_name if system else "Uncategorised",
+        "review_status": opening.review_status,
+        "source_name": opening.source_name,
+        "license_name": opening.license_name,
+        "starting_fen": opening.starting_fen,
+        "branch_count": opening.branch_count(),
+        "mainline_san": _opening_mainline_san(opening),
+        "roots": [
+            _opening_node_payload(board, node, ())
+            for node in opening.roots
+        ],
+    }
+
+
+
+@app.get("/api/tactics")
+def list_tactical_puzzles(theme: str | None = None, difficulty: str | None = None) -> dict:
+    puzzles = [
+        puzzle for puzzle in PUZZLES
+        if (theme is None or puzzle.theme == theme)
+        and (difficulty is None or puzzle.difficulty == difficulty)
+    ]
+    return {
+        "items": [
+            {"puzzle_id": puzzle.puzzle_id, "title": puzzle.title,
+             "theme": puzzle.theme, "difficulty": puzzle.difficulty}
+            for puzzle in puzzles
+        ],
+        "count": len(puzzles),
+        "themes": sorted({puzzle.theme for puzzle in PUZZLES}),
+        "difficulties": sorted({puzzle.difficulty for puzzle in PUZZLES}),
+    }
+
+
+@app.post("/api/tactics")
+def create_tactics_session(request: CreateTacticsRequest) -> dict:
+    puzzle = next((item for item in PUZZLES if item.puzzle_id == request.puzzle_id), None)
+    if puzzle is None:
+        raise HTTPException(status_code=404, detail="Tactical puzzle not found.")
+    try:
+        session = TacticsSession(puzzle, request.mode)
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+    session_id = secrets.token_urlsafe(18)
+    with store._lock:
+        store._tactics_sessions[session_id] = (session, threading.RLock())
+    return {"tactics_id": session_id, "state": session.state()}
+
+
+def _tactics_record(session_id: str) -> tuple[TacticsSession, threading.RLock]:
+    with store._lock:
+        record = store._tactics_sessions.get(session_id)
+    if record is None:
+        raise HTTPException(status_code=404, detail="Tactics session not found or expired.")
+    return record
+
+
+@app.get("/api/tactics/{session_id}")
+def get_tactics_session(session_id: str) -> dict:
+    session, lock = _tactics_record(session_id)
+    with lock:
+        return {"state": session.state()}
+
+
+@app.post("/api/tactics/{session_id}/moves")
+def submit_tactics_move(session_id: str, request: MoveRequest) -> dict:
+    session, lock = _tactics_record(session_id)
+    with lock:
+        try:
+            return session.submit(request.uci)
+        except ValueError as exc:
+            raise HTTPException(status_code=422, detail=str(exc)) from exc
+        except RuntimeError as exc:
+            raise HTTPException(status_code=409, detail=str(exc)) from exc
+
+
+@app.post("/api/tactics/{session_id}/hints")
+def reveal_tactics_hint(session_id: str, request: HintRequest) -> dict:
+    session, lock = _tactics_record(session_id)
+    with lock:
+        try:
+            return {"state": session.reveal_hint(request.level)}
+        except PermissionError as exc:
+            raise HTTPException(status_code=403, detail=str(exc)) from exc
+        except ValueError as exc:
+            raise HTTPException(status_code=409, detail=str(exc)) from exc
+        except RuntimeError as exc:
+            raise HTTPException(status_code=409, detail=str(exc)) from exc
+
+
+@app.post("/api/tactics/{session_id}/restart")
+def restart_tactics_session(session_id: str) -> dict:
+    session, lock = _tactics_record(session_id)
+    with lock:
+        return {"state": session.restart()}
+
+
+
+@app.get("/api/strategy/lessons")
+def list_strategy_lessons(theme: str | None = None) -> dict:
+    items = [lesson for lesson in LESSONS if theme is None or lesson.theme == theme]
+    return {
+        "items": [
+            {"lesson_id": item.lesson_id, "title": item.title,
+             "theme": item.theme, "level": item.level}
+            for item in items
+        ],
+        "count": len(items),
+        "themes": sorted({item.theme for item in LESSONS}),
+        "content_status": "editorial_draft",
+    }
+
+
+@app.get("/api/strategy/lessons/{lesson_id}")
+def get_strategy_lesson(lesson_id: str) -> dict:
+    lesson = next((item for item in LESSONS if item.lesson_id == lesson_id), None)
+    if lesson is None:
+        raise HTTPException(status_code=404, detail="Strategy lesson not found.")
+    return {
+        "lesson_id": lesson.lesson_id, "title": lesson.title,
+        "theme": lesson.theme, "level": lesson.level,
+        "principle": lesson.principle, "why_it_matters": lesson.why_it_matters,
+        "checklist": list(lesson.checklist), "example_plan": lesson.example_plan,
+        "content_status": "editorial_draft",
+    }
+
+
+@app.get("/api/strategy/exercises")
+def list_strategy_exercises(theme: str | None = None, difficulty: str | None = None) -> dict:
+    items = [
+        item for item in EXERCISES
+        if (theme is None or item.theme == theme)
+        and (difficulty is None or item.difficulty == difficulty)
+    ]
+    return {
+        "items": [
+            {"exercise_id": item.exercise_id, "title": item.title,
+             "theme": item.theme, "difficulty": item.difficulty,
+             "position_phase": "middlegame" if item.exercise_id.startswith("middlegame-") else "opening"}
+            for item in items
+        ],
+        "count": len(items),
+        "themes": sorted({item.theme for item in EXERCISES}),
+        "difficulties": sorted({item.difficulty for item in EXERCISES}),
+        "content_status": "editorial_draft",
+    }
+
+
+@app.post("/api/strategy/analyze")
+def analyze_strategy_position(request: PositionalAnalysisRequest) -> dict:
+    try:
+        return analyze_position(request.fen, request.candidate_uci)
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+
+
+@app.post("/api/strategy")
+def create_strategy_session(request: CreateStrategyRequest) -> dict:
+    exercise = next((item for item in EXERCISES if item.exercise_id == request.exercise_id), None)
+    if exercise is None:
+        raise HTTPException(status_code=404, detail="Strategy exercise not found.")
+    try:
+        session = StrategySession(exercise, request.mode)
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+    session_id = secrets.token_urlsafe(18)
+    with store._lock:
+        store._strategy_sessions[session_id] = (session, threading.RLock())
+    return {"strategy_id": session_id, "state": session.state()}
+
+
+def _strategy_record(session_id: str) -> tuple[StrategySession, threading.RLock]:
+    with store._lock:
+        record = store._strategy_sessions.get(session_id)
+    if record is None:
+        raise HTTPException(status_code=404, detail="Strategy session not found or expired.")
+    return record
+
+
+@app.get("/api/strategy/{session_id}")
+def get_strategy_session(session_id: str) -> dict:
+    session, lock = _strategy_record(session_id)
+    with lock:
+        return {"state": session.state()}
+
+
+@app.post("/api/strategy/{session_id}/moves")
+def submit_strategy_move(session_id: str, request: MoveRequest) -> dict:
+    session, lock = _strategy_record(session_id)
+    with lock:
+        try:
+            return session.submit(request.uci)
+        except ValueError as exc:
+            raise HTTPException(status_code=422, detail=str(exc)) from exc
+        except RuntimeError as exc:
+            raise HTTPException(status_code=409, detail=str(exc)) from exc
+
+
+@app.post("/api/strategy/{session_id}/hints")
+def reveal_strategy_hint(session_id: str, request: HintRequest) -> dict:
+    session, lock = _strategy_record(session_id)
+    with lock:
+        try:
+            return {"state": session.reveal_hint(request.level)}
+        except PermissionError as exc:
+            raise HTTPException(status_code=403, detail=str(exc)) from exc
+        except (ValueError, RuntimeError) as exc:
+            raise HTTPException(status_code=409, detail=str(exc)) from exc
+
+
+@app.post("/api/strategy/{session_id}/restart")
+def restart_strategy_session(session_id: str) -> dict:
+    session, lock = _strategy_record(session_id)
+    with lock:
+        return {"state": session.restart()}
+
+@app.post("/api/training")
+def create_training(request: CreateTrainingRequest) -> dict:
+    opening = store.study_openings.get(request.opening_id)
+    if opening is None:
+        raise HTTPException(status_code=404, detail="Opening study not found.")
+    learner_color = request.learner_color or (
+        opening.side if opening.side in {"white", "black"} else "white"
+    )
+    try:
+        training = OpeningTrainingSession(opening, learner_color, request.mode)
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+    session_id = secrets.token_urlsafe(18)
+    lock = threading.RLock()
+    with store._lock:
+        store._training_sessions[session_id] = (training, lock)
+    return {"training_id": session_id, "state": training.state()}
+
+
+def _training_record(training_id: str) -> tuple[OpeningTrainingSession, threading.RLock]:
+    with store._lock:
+        record = store._training_sessions.get(training_id)
+    if record is None:
+        raise HTTPException(status_code=404, detail="Opening training session not found or expired.")
+    return record
+
+
+@app.get("/api/training/{training_id}")
+def get_training(training_id: str) -> dict:
+    training, lock = _training_record(training_id)
+    with lock:
+        return {"state": training.state()}
+
+
+@app.post("/api/training/{training_id}/moves")
+def submit_training_move(training_id: str, request: MoveRequest) -> dict:
+    training, lock = _training_record(training_id)
+    with lock:
+        try:
+            return training.submit(request.uci)
+        except ValueError as exc:
+            raise HTTPException(status_code=422, detail=str(exc)) from exc
+        except RuntimeError as exc:
+            raise HTTPException(status_code=409, detail=str(exc)) from exc
+
+
+@app.post("/api/training/{training_id}/hints")
+def training_hint(training_id: str, request: HintRequest) -> dict:
+    training, lock = _training_record(training_id)
+    with lock:
+        try:
+            return {"state": training.reveal_hint(request.level)}
+        except PermissionError as exc:
+            raise HTTPException(status_code=403, detail=str(exc)) from exc
+        except (ValueError, RuntimeError) as exc:
+            raise HTTPException(status_code=409, detail=str(exc)) from exc
+
+
+@app.post("/api/training/{training_id}/undo")
+def undo_training(training_id: str) -> dict:
+    training, lock = _training_record(training_id)
+    with lock:
+        try:
+            return {"state": training.undo()}
+        except ValueError as exc:
+            raise HTTPException(status_code=409, detail=str(exc)) from exc
+
+
+@app.post("/api/training/{training_id}/restart")
+def restart_training(training_id: str) -> dict:
+    training, lock = _training_record(training_id)
+    with lock:
+        return {"state": training.restart()}
+
+
+@app.get("/api/openings")
+def list_openings(query: str = "", side: str | None = None) -> dict:
+    """List legally validated study trees, including editorial review status."""
+    if side not in {None, "white", "black", "both"}:
+        raise HTTPException(status_code=422, detail="side must be white, black, or both.")
+    term = query.strip().casefold()
+    items = []
+    for opening in store.study_openings.values():
+        if side and opening.side not in {side, "both"}:
+            continue
+        def variation_labels(nodes):
+            for node in nodes:
+                yield node.label
+                yield from variation_labels(node.children)
+
+        searchable = (opening.name, opening.opening_id, *opening.aliases,
+                      *tuple(variation_labels(opening.roots)))
+        if term and not any(term in value.casefold() for value in searchable):
+            continue
+        system = (
+            store.opening_catalog.get_system_detail(opening.opening_id)
+            if store.opening_catalog else None
+        )
+        items.append({
+            "opening_id": opening.opening_id,
+            "name": opening.name,
+            "side": opening.side,
+            "aliases": list(opening.aliases),
+            "family_name": system.family_name if system else "Uncategorised",
+            "review_status": opening.review_status,
+            "branch_count": opening.branch_count(),
+            "mainline_san": _opening_mainline_san(opening),
+        })
+    return {"items": items, "count": len(items), "content_status": "in_review"}
+
+
+@app.get("/api/openings/{opening_id}")
+def get_opening(opening_id: str) -> dict:
+    """Return a SAN/FEN annotated, legally validated opening variation tree."""
+    opening = store.study_openings.get(opening_id)
+    if opening is None:
+        raise HTTPException(status_code=404, detail="Opening study not found.")
+    return _opening_detail_payload(opening, store.opening_catalog)
+
 
 WEB_ROOT = Path(__file__).resolve().parents[2] / "web"
 @app.get("/", include_in_schema=False)

@@ -1,0 +1,569 @@
+{
+  "schema_version": 1,
+  "batch_id": "curated-opening-drafts-01",
+  "content_status": "in_review",
+  "provenance_note": "Original KnightForge-authored educational move-line drafts. The added repository test suite is designed to validate move legality against the rules engine. Named variation labels and explanations require editorial review before publication. Content license review is pending; do not redistribute these records as licensed material until review is complete.",
+  "openings": [
+    {
+      "schema_version": 1,
+      "opening_id": "italian-game",
+      "name": "Italian Game",
+      "side": "white",
+      "aliases": [
+        "Giuoco Piano",
+        "Italian Opening"
+      ],
+      "source_name": "KnightForge original editorial draft",
+      "license_name": "Pending project content license review",
+      "review_status": "in_review",
+      "anchor_uci": [
+        "e2e4",
+        "e7e5",
+        "g1f3",
+        "b8c6",
+        "f1c4",
+        "f8c5"
+      ],
+      "roots": [
+        {
+          "move_uci": "e2e4",
+          "children": [
+            {
+              "move_uci": "e7e5",
+              "children": [
+                {
+                  "move_uci": "g1f3",
+                  "children": [
+                    {
+                      "move_uci": "b8c6",
+                      "children": [
+                        {
+                          "move_uci": "f1c4",
+                          "children": [
+                            {
+                              "move_uci": "f8c5",
+                              "label": "Giuoco Piano",
+                              "explanation": "Both sides develop bishops toward active central squares."
+                            },
+                            {
+                              "move_uci": "g8f6",
+                              "label": "Two Knights Defence",
+                              "explanation": "Black develops a knight and immediately challenges White's centre."
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "schema_version": 1,
+      "opening_id": "open-sicilian",
+      "name": "Open Sicilian",
+      "side": "black",
+      "aliases": [
+        "Sicilian Defence"
+      ],
+      "source_name": "KnightForge original editorial draft",
+      "license_name": "Pending project content license review",
+      "review_status": "in_review",
+      "anchor_uci": [
+        "e2e4",
+        "c7c5",
+        "g1f3",
+        "d7d6",
+        "d2d4",
+        "c5d4",
+        "f3d4",
+        "g8f6",
+        "b1c3",
+        "a7a6"
+      ],
+      "roots": [
+        {
+          "move_uci": "e2e4",
+          "children": [
+            {
+              "move_uci": "c7c5",
+              "children": [
+                {
+                  "move_uci": "g1f3",
+                  "children": [
+                    {
+                      "move_uci": "d7d6",
+                      "children": [
+                        {
+                          "move_uci": "d2d4",
+                          "children": [
+                            {
+                              "move_uci": "c5d4",
+                              "children": [
+                                {
+                                  "move_uci": "f3d4",
+                                  "children": [
+                                    {
+                                      "move_uci": "g8f6",
+                                      "children": [
+                                        {
+                                          "move_uci": "b1c3",
+                                          "children": [
+                                            {
+                                              "move_uci": "a7a6",
+                                              "label": "Najdorf Variation"
+                                            },
+                                            {
+                                              "move_uci": "g7g6",
+                                              "label": "Dragon Variation"
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "move_uci": "b8c6",
+                      "children": [
+                        {
+                          "move_uci": "d2d4",
+                          "children": [
+                            {
+                              "move_uci": "c5d4",
+                              "children": [
+                                {
+                                  "move_uci": "f3d4",
+                                  "children": [
+                                    {
+                                      "move_uci": "g8f6",
+                                      "children": [
+                                        {
+                                          "move_uci": "b1c3",
+                                          "children": [
+                                            {
+                                              "move_uci": "e7e5",
+                                              "label": "Sveshnikov Variation"
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "schema_version": 1,
+      "opening_id": "french",
+      "name": "French Defence",
+      "side": "black",
+      "aliases": [
+        "French Defense"
+      ],
+      "source_name": "KnightForge original editorial draft",
+      "license_name": "Pending project content license review",
+      "review_status": "in_review",
+      "anchor_uci": [
+        "e2e4",
+        "e7e6",
+        "d2d4",
+        "d7d5",
+        "b1c3",
+        "f8b4"
+      ],
+      "roots": [
+        {
+          "move_uci": "e2e4",
+          "children": [
+            {
+              "move_uci": "e7e6",
+              "children": [
+                {
+                  "move_uci": "d2d4",
+                  "children": [
+                    {
+                      "move_uci": "d7d5",
+                      "children": [
+                        {
+                          "move_uci": "b1c3",
+                          "children": [
+                            {
+                              "move_uci": "f8b4",
+                              "label": "Winawer Variation"
+                            }
+                          ]
+                        },
+                        {
+                          "move_uci": "e4e5",
+                          "children": [
+                            {
+                              "move_uci": "c7c5",
+                              "label": "Advance Variation"
+                            }
+                          ]
+                        },
+                        {
+                          "move_uci": "b1d2",
+                          "children": [
+                            {
+                              "move_uci": "g8f6",
+                              "label": "Tarrasch Variation"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "schema_version": 1,
+      "opening_id": "caro-kann",
+      "name": "Caro-Kann Defence",
+      "side": "black",
+      "aliases": [
+        "Caro-Kann Defense"
+      ],
+      "source_name": "KnightForge original editorial draft",
+      "license_name": "Pending project content license review",
+      "review_status": "in_review",
+      "anchor_uci": [
+        "e2e4",
+        "c7c6",
+        "d2d4",
+        "d7d5",
+        "b1c3",
+        "d5e4",
+        "c3e4",
+        "c8f5"
+      ],
+      "roots": [
+        {
+          "move_uci": "e2e4",
+          "children": [
+            {
+              "move_uci": "c7c6",
+              "children": [
+                {
+                  "move_uci": "d2d4",
+                  "children": [
+                    {
+                      "move_uci": "d7d5",
+                      "children": [
+                        {
+                          "move_uci": "b1c3",
+                          "children": [
+                            {
+                              "move_uci": "d5e4",
+                              "children": [
+                                {
+                                  "move_uci": "c3e4",
+                                  "children": [
+                                    {
+                                      "move_uci": "c8f5",
+                                      "label": "Classical Variation"
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "move_uci": "e4e5",
+                          "children": [
+                            {
+                              "move_uci": "c8f5",
+                              "label": "Advance Variation"
+                            }
+                          ]
+                        },
+                        {
+                          "move_uci": "e4d5",
+                          "children": [
+                            {
+                              "move_uci": "c6d5",
+                              "label": "Exchange Variation"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "schema_version": 1,
+      "opening_id": "queens-gambit",
+      "name": "Queen's Gambit",
+      "side": "white",
+      "aliases": [
+        "Queen's Pawn Opening"
+      ],
+      "source_name": "KnightForge original editorial draft",
+      "license_name": "Pending project content license review",
+      "review_status": "in_review",
+      "anchor_uci": [
+        "d2d4",
+        "d7d5",
+        "c2c4",
+        "e7e6"
+      ],
+      "roots": [
+        {
+          "move_uci": "d2d4",
+          "children": [
+            {
+              "move_uci": "d7d5",
+              "children": [
+                {
+                  "move_uci": "c2c4",
+                  "children": [
+                    {
+                      "move_uci": "e7e6",
+                      "label": "Queen's Gambit Declined",
+                      "explanation": "Black supports the d5-pawn and maintains a central pawn structure."
+                    },
+                    {
+                      "move_uci": "d5c4",
+                      "label": "Queen's Gambit Accepted",
+                      "explanation": "Black accepts the c-pawn and temporarily gives up central control."
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "schema_version": 1,
+      "opening_id": "london",
+      "name": "London System",
+      "side": "white",
+      "aliases": [
+        "London"
+      ],
+      "source_name": "KnightForge original editorial draft",
+      "license_name": "Pending project content license review",
+      "review_status": "in_review",
+      "anchor_uci": [
+        "d2d4",
+        "d7d5",
+        "c1f4",
+        "g8f6",
+        "e2e3",
+        "e7e6"
+      ],
+      "roots": [
+        {
+          "move_uci": "d2d4",
+          "children": [
+            {
+              "move_uci": "d7d5",
+              "children": [
+                {
+                  "move_uci": "c1f4",
+                  "label": "Classical London",
+                  "children": [
+                    {
+                      "move_uci": "g8f6",
+                      "children": [
+                        {
+                          "move_uci": "e2e3",
+                          "children": [
+                            {
+                              "move_uci": "e7e6",
+                              "children": [
+                                {
+                                  "move_uci": "g1f3",
+                                  "children": [
+                                    {
+                                      "move_uci": "c7c5"
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "move_uci": "g8f6",
+              "children": [
+                {
+                  "move_uci": "b1c3",
+                  "label": "Jobava London",
+                  "children": [
+                    {
+                      "move_uci": "d7d5",
+                      "children": [
+                        {
+                          "move_uci": "c1f4",
+                          "children": [
+                            {
+                              "move_uci": "c7c5"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "schema_version": 1,
+      "opening_id": "kings-gambit",
+      "name": "King's Gambit",
+      "side": "white",
+      "aliases": [
+        "King's Gambit Opening"
+      ],
+      "source_name": "KnightForge original editorial draft",
+      "license_name": "Pending project content license review",
+      "review_status": "in_review",
+      "anchor_uci": [
+        "e2e4",
+        "e7e5",
+        "f2f4",
+        "e5f4"
+      ],
+      "roots": [
+        {
+          "move_uci": "e2e4",
+          "children": [
+            {
+              "move_uci": "e7e5",
+              "children": [
+                {
+                  "move_uci": "f2f4",
+                  "children": [
+                    {
+                      "move_uci": "e5f4",
+                      "label": "King's Gambit Accepted"
+                    },
+                    {
+                      "move_uci": "f8c5",
+                      "label": "King's Gambit Declined"
+                    },
+                    {
+                      "move_uci": "d7d5",
+                      "label": "Falkbeer Countergambit"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "schema_version": 1,
+      "opening_id": "english",
+      "name": "English Opening",
+      "side": "white",
+      "aliases": [
+        "English"
+      ],
+      "source_name": "KnightForge original editorial draft",
+      "license_name": "Pending project content license review",
+      "review_status": "in_review",
+      "anchor_uci": [
+        "c2c4",
+        "e7e5",
+        "b1c3",
+        "g8f6"
+      ],
+      "roots": [
+        {
+          "move_uci": "c2c4",
+          "children": [
+            {
+              "move_uci": "e7e5",
+              "label": "Reversed Sicilian",
+              "children": [
+                {
+                  "move_uci": "b1c3",
+                  "children": [
+                    {
+                      "move_uci": "g8f6",
+                      "children": [
+                        {
+                          "move_uci": "g2g3",
+                          "children": [
+                            {
+                              "move_uci": "d7d5"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "move_uci": "c7c5",
+              "label": "Symmetrical Variation",
+              "children": [
+                {
+                  "move_uci": "b1c3",
+                  "children": [
+                    {
+                      "move_uci": "b8c6"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

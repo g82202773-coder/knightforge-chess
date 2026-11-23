@@ -12,4 +12,139 @@
 <div class="coach-message"><span class="eyebrow">YOUR NEXT TASK</span><p id="coach-text">Loading your lesson…</p><p id="coach-explanation" class="explanation"></p></div><div id="feedback" class="feedback hidden" aria-live="polite"></div>
 <div class="hint-area"><div class="hint-title"><span class="eyebrow">PROGRESSIVE HINTS</span><span id="hint-level">LEVEL 1 / 4</span></div><p id="hint-text">Hints will appear here when available.</p><button id="hint-btn" class="button hint-button">Reveal next hint</button></div>
 <div class="coach-controls"><label class="toggle"><input id="voice-toggle" type="checkbox"><span>Read coach aloud</span></label><button id="speak-btn" class="icon-button" title="Read current instruction">🔊</button></div><div class="engine-note"><span class="engine-indicator"></span><span id="engine-status">Engine analysis is optional. The board works without Stockfish.</span></div></aside></section>
+
+<section class="opening-explorer" aria-labelledby="opening-explorer-title">
+  <div class="explorer-heading">
+    <div><span class="eyebrow">KNOWLEDGE LIBRARY</span><h2 id="opening-explorer-title">Opening explorer</h2>
+      <p>Browse validated move trees, choose a variation, and step through the position.</p></div>
+    <span class="review-tag">EDITORIAL REVIEW IN PROGRESS</span>
+  </div>
+  <div class="explorer-layout">
+    <aside class="opening-browser">
+      <input id="opening-search" type="search" placeholder="Search openings or variations…" aria-label="Search openings or variations">
+      <select id="opening-side" aria-label="Filter by playing side"><option value="">All sides</option><option value="white">White openings</option><option value="black">Black defences</option></select>
+      <div id="opening-list" class="opening-list" aria-live="polite">Loading opening library…</div>
+    </aside>
+    <div class="opening-study">
+      <div class="study-title"><div><span id="study-family" class="eyebrow">SELECT AN OPENING</span><h3 id="study-name">Choose a study from the library</h3></div><span id="study-branches" class="turn-pill">— branches</span></div>
+      <div class="study-board-row">
+        <div id="study-board" class="study-board" role="img" aria-label="Opening study position"></div>
+        <div class="study-controls">
+          <div class="training-controls">
+            <label for="training-mode">Train this opening</label>
+            <select id="training-mode"><option value="guided">Guided · show move</option><option value="practice" selected>Practice · hints</option><option value="mastery">Mastery · no hints</option></select>
+            <button id="training-start" class="button hint-button">Start training</button>
+            <div id="training-feedback" class="feedback hidden" aria-live="polite"></div>
+            <div id="training-progress" class="move-count">No training session active</div>
+            <div class="study-nav"><button id="training-hint" class="button secondary" disabled>Hint</button><button id="training-undo" class="button secondary" disabled>Undo</button><button id="training-restart" class="button secondary" disabled>Restart</button></div>
+          </div>
+          <span class="eyebrow">SELECTED LINE</span>
+          <div id="study-line" class="study-line">Choose an opening to begin.</div>
+          <div class="study-nav"><button id="study-prev" class="button secondary" disabled>← Previous</button><button id="study-next" class="button secondary" disabled>Next →</button></div>
+          <div class="study-comment"><span class="eyebrow">POSITION NOTES</span><p id="study-notes">Variation explanations and plans will appear here.</p></div>
+          <div class="study-comment"><span class="eyebrow">VARIATION LABEL</span><p id="study-variation">No variation selected.</p></div>
+        </div>
+      </div>
+      <div class="variation-heading"><span class="eyebrow">MOVE TREE · SELECT ANY MOVE</span><span id="study-ply" class="move-count">0 ply</span></div>
+      <div id="variation-tree" class="variation-tree">The move tree will appear here.</div>
+      <p id="study-provenance" class="study-provenance"></p>
+    </div>
+  </div>
+</section>
+
+<section class="tactics-trainer" aria-labelledby="tactics-title">
+  <div class="explorer-heading">
+    <div><span class="eyebrow">CALCULATION LAB</span><h2 id="tactics-title">Chess tactics training</h2>
+      <p>Find the forcing move. Start with beginner checkmate puzzles; solutions stay hidden until you solve or request the final hint.</p></div>
+    <span class="review-tag">3 BEGINNER PUZZLES</span>
+  </div>
+  <div class="tactics-layout">
+    <div class="tactics-board-panel">
+      <div class="tactics-toolbar">
+        <select id="tactics-puzzle" aria-label="Choose tactical puzzle"></select>
+        <select id="tactics-mode" aria-label="Tactics mode"><option value="practice">Practice · hints available</option><option value="mastery">Mastery · no hints</option></select>
+        <button id="tactics-start" class="button hint-button">Start puzzle</button>
+      </div>
+      <div id="tactics-board" class="tactics-board" role="grid" aria-label="Tactical puzzle chessboard"></div>
+      <div id="tactics-feedback" class="feedback" aria-live="polite">Choose a puzzle and find the best move.</div>
+    </div>
+    <aside class="tactics-info">
+      <span id="tactics-theme" class="eyebrow">TACTICAL THEME</span>
+      <h3 id="tactics-name">Select a puzzle</h3>
+      <p id="tactics-prompt">Look for checks, captures, and forcing moves.</p>
+      <div class="tactics-progress" id="tactics-progress">No attempt yet</div>
+      <div class="study-nav"><button id="tactics-hint" class="button secondary" disabled>Reveal hint</button><button id="tactics-restart" class="button secondary" disabled>Restart</button></div>
+      <p id="tactics-hint-text" class="study-comment">Hints reveal progressively. Mastery mode has no hints.</p>
+      <p id="tactics-explanation" class="study-comment"></p>
+    </aside>
+  </div>
+</section>
+<section class="strategy-trainer" aria-labelledby="strategy-title">
+  <div class="explorer-heading">
+    <div><span class="eyebrow">POSITIONAL THINKING LAB</span><h2 id="strategy-title">Chess strategy &amp; positional understanding</h2>
+      <p>Learn the long-term ideas behind a move: improve pieces, understand pawn structures, use open files, protect your king, and build a plan.</p></div>
+    <span class="review-tag">EDITORIAL DRAFT · 6 LESSONS</span>
+  </div>
+  <div class="strategy-layout">
+    <aside class="strategy-lessons">
+      <label for="strategy-theme">Filter lessons</label>
+      <select id="strategy-theme"><option value="">All strategic themes</option></select>
+      <div id="strategy-lesson-list" class="strategy-lesson-list">Loading strategy lessons…</div>
+      <div class="strategy-exercise-picker">
+        <label for="strategy-exercise">Positional exercise</label>
+        <select id="strategy-exercise"></select>
+        <select id="strategy-mode" aria-label="Strategy training mode"><option value="practice">Practice · hints</option><option value="mastery">Mastery · no hints</option></select>
+        <button id="strategy-start" class="button hint-button">Start exercise</button>
+      </div>
+    </aside>
+    <div class="strategy-content">
+      <article class="strategy-lesson-card">
+        <span id="strategy-level" class="eyebrow">SELECT A LESSON</span>
+        <h3 id="strategy-lesson-title">Think beyond the next move</h3>
+        <p id="strategy-principle">Choose a lesson to study a strategic principle.</p>
+        <p id="strategy-why" class="study-comment"></p>
+        <h4>Thinking checklist</h4><ul id="strategy-checklist"></ul>
+        <p id="strategy-example" class="study-comment"></p>
+      </article>
+      <div class="strategy-exercise">
+        <div class="strategy-board-panel">
+          <div class="strategy-board-heading"><span class="eyebrow">POSITIONAL DECISION</span><span id="strategy-turn" class="turn-pill">NO ACTIVE EXERCISE</span></div>
+          <div id="strategy-board" class="tactics-board" role="grid" aria-label="Positional exercise chessboard"></div>
+          <div id="strategy-feedback" class="feedback" aria-live="polite">Start an exercise to make a strategic decision.</div>
+        </div>
+        <aside class="strategy-info">
+          <h3 id="strategy-exercise-title">Your plan, your move</h3>
+          <p id="strategy-prompt">Select a lesson and start its related exercise.</p>
+          <div id="strategy-progress" class="tactics-progress">No attempt yet</div>
+          <div class="study-nav"><button id="strategy-hint" class="button secondary" disabled>Reveal hint</button><button id="strategy-restart" class="button secondary" disabled>Restart</button></div>
+          <p id="strategy-hint-text" class="study-comment"></p>
+          <p id="strategy-explanation" class="study-comment"></p>
+          <section id="strategy-review" class="strategy-review" hidden>
+            <h4>Strategic evaluation</h4>
+            <h5>Plan</h5><p id="strategy-plan"></p>
+            <h5>Positional gains</h5><ul id="strategy-gains"></ul>
+            <h5>Potential concessions</h5><ul id="strategy-concessions"></ul>
+            <h5>Opponent's best practical plan</h5><p id="strategy-opponent-plan"></p>
+            <h5>Candidate comparison</h5><p id="strategy-candidate-comparison"></p>
+            <p id="strategy-evaluation-basis" class="study-provenance"></p>
+          </section>
+        </aside>
+      </div>
+    </div>
+  </div>
+  <p class="study-provenance">Content status: editorial draft. Positional recommendations are curated teaching examples, not Stockfish evaluations. More varied middlegame positions and reviewed exercise alternatives will be added in later increments.</p>
+</section>
+<section class="positional-analyzer" aria-labelledby="positional-analysis-title">
+  <div class="explorer-heading"><div><span class="eyebrow">POSITIONAL ANALYSIS LAB</span><h2 id="positional-analysis-title">Deeper positional analyzer</h2><p>Inspect pawn weaknesses, passed pawns, outpost squares, rook files, and compare legal candidate moves.</p></div><span class="review-tag">EXPLAINABLE HEURISTICS</span></div>
+  <div class="strategy-lesson-card">
+    <label for="analysis-fen">Position FEN</label>
+    <textarea id="analysis-fen" rows="2" spellcheck="false">rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1</textarea>
+    <label for="analysis-candidates">Candidate moves (optional, UCI, comma-separated; blank = first 12 legal moves)</label>
+    <input id="analysis-candidates" type="text" placeholder="e2e4, d2d4, g1f3">
+    <button id="analysis-run" class="button hint-button">Analyze position</button>
+    <div id="analysis-feedback" class="feedback" aria-live="polite">Analysis is local to this KnightForge server.</div>
+    <div id="analysis-results" class="analysis-results"></div>
+  </div>
+  <p class="study-provenance">Important: scores are heuristic points, not centipawns. Backward-pawn labels and opponent replies are approximate. Stockfish integration for independent verification is a later step.</p>
+</section>
 <footer><span>KNIGHTFORGE ENGINE</span><span>Legal moves · Reviewed lesson knowledge · Optional engine analysis</span></footer></main><script src="/assets/app.js" defer></script></body></html>
