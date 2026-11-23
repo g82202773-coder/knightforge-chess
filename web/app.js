@@ -33,8 +33,9 @@ function allStudyNodes(nodes,result=[]){
   return result;
 }
 function studySanLine(path){
-  const nodes=allStudyNodes(activeOpening.roots);
-  return path.map(uci=>nodes.find(n=>n.uci===uci)?.san||uci);
+  let siblings=activeOpening.roots;const sans=[];
+  for(const uci of path){const node=siblings.find(item=>item.uci===uci);if(!node)break;sans.push(node.san);siblings=node.children;}
+  return sans;
 }
 function renderStudyBoard(fen){
   const root=$("study-board");root.innerHTML="";
