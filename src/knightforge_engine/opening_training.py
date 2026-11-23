@@ -44,7 +44,6 @@ class OpeningTrainingSession:
     def _advance_opponent(self) -> None:
         while self.board.turn != (self.learner_color == "white") and self.nodes:
             node = self.nodes[0]
-            self.history.append((self.board.fen(), self.nodes, self.hint_level))
             move = chess.Move.from_uci(node.move_uci)
             self.board.push(move)
             self.nodes = node.children
@@ -87,7 +86,6 @@ class OpeningTrainingSession:
                 "accuracy_percent": round(100 * self.correct_moves / self.attempts) if self.attempts else 0,
                 "plies_played": len(self.board.move_stack),
             },
-            "history_san": [self.board.san(move) for move in []],
         }
 
     def submit(self, uci: str) -> dict:
