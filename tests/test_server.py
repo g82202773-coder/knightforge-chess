@@ -80,7 +80,6 @@ def test_practice_and_mastery_do_not_leak_the_lesson_answer():
 
 
 def test_test_modes_redact_best_move_from_comparison_feedback(tmp_path):
-    from knightforge_engine.coach_decision import MoveComparison
     from knightforge_engine.server import apply_mode_policy, store
 
     for mode in ("practice", "mastery"):
