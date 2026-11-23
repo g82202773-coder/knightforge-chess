@@ -128,10 +128,22 @@ def test_root_serves_browser_app():
     assert response.status_code == 200
     assert "KnightForge" in response.text
 
+def _assert_test_mode_answer_hidden(state):
+    """Check answer-bearing fields without banning ordinary legal move options."""
+    assert state["coach"]["expected_move"] is None
+    assert "e2e4" not in str(state["coach"])
+    assert state["board"]["highlighted_squares"] == []
+    assert state["engine"]["recommendation"] is None
+    assert state["engine"]["recommendation_arrow"] is None
+    assert "e2e4" not in str(state["engine"])
+    assert "e4" not in str(state.get("feedback"))
+
+
 def test_test_modes_keep_answer_hidden_after_move_and_state_refresh():
     for mode in ("practice", "mastery"):
         created = client.post("/api/sessions", json={"mode": mode}).json()
         session_id = created["session_id"]
+        _assert_test_mode_answer_hidden(created["state"])
 
         # A legal but off-lesson learner move must not expose the curated answer.
         moved = client.post(
@@ -141,14 +153,13 @@ def test_test_modes_keep_answer_hidden_after_move_and_state_refresh():
         assert moved.status_code == 200
         payload = moved.json()
         assert payload["move"]["applied"] is False
-        assert payload["state"]["coach"]["expected_move"] is None
-        assert "e2e4" not in str(payload["state"])
-        assert payload["state"]["board"]["highlighted_squares"] == []
-        assert payload["state"]["engine"]["recommendation"] is None
+        _assert_test_mode_answer_hidden(payload["state"])
+
+        # Legal move options remain visible so the board can operate normally.
+        assert "e2e4" in payload["state"]["board"]["legal_moves"]
 
         # A separate GET must apply the same privacy policy.
         refreshed = client.get(f"/api/sessions/{session_id}")
         assert refreshed.status_code == 200
-        assert refreshed.json()["state"]["coach"]["expected_move"] is None
-        assert "e2e4" not in str(refreshed.json()["state"])
+        _assert_test_mode_answer_hidden(refreshed.json()["state"])
 
