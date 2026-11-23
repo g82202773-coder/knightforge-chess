@@ -84,7 +84,11 @@ class AdaptiveOpeningCoach:
             # A custom lesson start has no implied standard-game move history.
             recognition = self.recognizer.recognize(fen=board.fen())
         variation_match = self.matcher.match(recognition)
-        if variation_match.matches:
+        if any(
+            len(match.matched_line_uci) > len(self.repository.get(match.opening_id).anchor_uci)
+            for match in variation_match.matches
+            if self.repository.get(match.opening_id) is not None
+        ):
             status = "reviewed_variation_match"
         elif recognition.matches:
             status = "reviewed_opening_anchor_only"
