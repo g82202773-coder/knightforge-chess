@@ -22,14 +22,21 @@ def _catalog():
     })
 
 
+def _reviewed_berlin_tree():
+    node = VariationNode("g8f6", label="Berlin Defence")
+    for move in ("f1b5", "b8c6", "g1f3", "e7e5"):
+        node = VariationNode(move, children=(node,))
+    return OpeningTree(
+        opening_id="ruy-lopez", name="Ruy Lopez", side="white",
+        source_name="Licensed source", license_name="CC BY 4.0",
+        review_status="reviewed", roots=(VariationNode("e2e4", children=(node,)),),
+        anchor_uci=("e2e4", "e7e5", "g1f3", "b8c6", "f1b5", "g8f6"),
+    )
+
+
 def test_coverage_reports_missing_systems_and_variations(tmp_path):
     repository = OpeningRepository.load(tmp_path / "openings.json")
-    repository.add(OpeningTree(
-        opening_id="ruy-lopez",
-        name="Ruy Lopez",
-        side="white",
-        roots=(VariationNode("e2e4", label="Berlin Defence"),),
-    ))
+    repository.add(_reviewed_berlin_tree())
 
     report = analyze_opening_coverage(_catalog(), repository)
 
@@ -42,7 +49,7 @@ def test_coverage_reports_missing_systems_and_variations(tmp_path):
         "italian-game:evans gambit",
         "ruy-lopez:marshall attack",
     )
-    assert report.total_move_nodes == 1
+    assert report.total_move_nodes == 6
     assert report.system_coverage_ratio == 0.5
     assert report.variation_coverage_ratio == 1 / 3
 
@@ -67,15 +74,7 @@ def test_coverage_flags_missing_provenance_eco_and_review_state(tmp_path):
 
 def test_coverage_counts_reviewed_records_and_serializes(tmp_path):
     repository = OpeningRepository.load(tmp_path / "openings.json")
-    repository.add(OpeningTree(
-        opening_id="ruy-lopez",
-        name="Ruy Lopez",
-        side="white",
-        source_name="Licensed source",
-        license_name="CC BY 4.0",
-        review_status="reviewed",
-        roots=(VariationNode("e2e4", label="Berlin Defence"),),
-    ))
+    repository.add(_reviewed_berlin_tree())
 
     report = analyze_opening_coverage(_catalog(), repository)
     payload = report.to_dict()
@@ -101,3 +100,18 @@ def test_empty_placeholder_tree_does_not_count_as_playable_coverage(tmp_path):
     assert report.missing_system_ids == ("italian-game", "ruy-lopez")
     assert report.trees_without_moves == ("ruy-lopez",)
     assert report.system_coverage_ratio == 0.0
+
+
+def test_legal_but_unrelated_tree_does_not_claim_opening_coverage(tmp_path):
+    repository = OpeningRepository.load(tmp_path / "openings.json")
+    repository.add(OpeningTree(
+        opening_id="ruy-lopez", name="Ruy Lopez", side="white",
+        source_name="Licensed source", license_name="CC BY 4.0",
+        review_status="reviewed", roots=(VariationNode("d2d4"),),
+        anchor_uci=("d2d4",),
+    ))
+
+    report = analyze_opening_coverage(_catalog(), repository)
+
+    assert report.matched_system_ids == ()
+    assert report.missing_system_ids == ("italian-game", "ruy-lopez")
