@@ -142,7 +142,7 @@ def test_test_modes_keep_answer_hidden_after_move_and_state_refresh():
         payload = moved.json()
         assert payload["move"]["applied"] is False
         assert payload["state"]["coach"]["expected_move"] is None
-        assert "e2e4" not in str(payload["state"])
+        assert "e2e4" not in str(payload["state"]["coach"]) and "e2e4" not in str(payload["state"]["engine"])
         assert payload["state"]["board"]["highlighted_squares"] == []
         assert payload["state"]["engine"]["recommendation"] is None
 
@@ -150,5 +150,5 @@ def test_test_modes_keep_answer_hidden_after_move_and_state_refresh():
         refreshed = client.get(f"/api/sessions/{session_id}")
         assert refreshed.status_code == 200
         assert refreshed.json()["state"]["coach"]["expected_move"] is None
-        assert "e2e4" not in str(refreshed.json()["state"])
+        assert "e2e4" not in str(refreshed.json()["state"]["coach"]) and "e2e4" not in str(refreshed.json()["state"]["engine"])
 

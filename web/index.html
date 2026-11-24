@@ -1,15 +1,591 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#101714"><title>KnightForge — Chess Coach</title><link rel="stylesheet" href="/assets/styles.css"></head>
-<body><main class="shell">
-<header class="topbar"><a class="brand" href="/"><span class="brand-mark">♞</span><span>KNIGHT<span class="accent">FORGE</span><small>CHESS INTELLIGENCE</small></span></a><div class="top-status"><span class="status-dot"></span><span id="connection-label">Connecting</span></div></header>
-<section class="intro"><div><p class="eyebrow">INTERACTIVE LEARNING BOARD</p><h1>Think in moves.<br><em>Learn the position.</em></h1></div><p class="intro-copy">A rules-backed chessboard connected to your adaptive KnightForge coach. Play the lesson, explore hints, and understand each move.</p></section>
-<section class="workspace"><div class="board-panel">
-<div class="board-heading"><div><span class="eyebrow">LIVE POSITION</span><h2 id="lesson-title">Open Game · First Five Moves</h2></div><span id="turn-label" class="turn-pill">WHITE TO MOVE</span></div>
-<div class="board-wrap"><div class="board-coordinates files-top"><span>a</span><span>b</span><span>c</span><span>d</span><span>e</span><span>f</span><span>g</span><span>h</span></div><div class="board-row"><div class="ranks"><span>8</span><span>7</span><span>6</span><span>5</span><span>4</span><span>3</span><span>2</span><span>1</span></div><div id="board" class="board" role="grid" aria-label="Interactive chessboard"></div><div class="ranks right"><span>8</span><span>7</span><span>6</span><span>5</span><span>4</span><span>3</span><span>2</span><span>1</span></div></div><div class="board-coordinates files-bottom"><span>a</span><span>b</span><span>c</span><span>d</span><span>e</span><span>f</span><span>g</span><span>h</span></div></div>
-<div class="board-actions"><button id="undo-btn" class="button secondary">↶ Undo</button><button id="restart-btn" class="button secondary">↻ Restart</button><span id="move-count" class="move-count">0 half-moves</span></div><div class="move-log"><span class="eyebrow">MOVE HISTORY</span><div id="moves" class="moves-empty">Your moves will appear here.</div></div></div>
-<aside class="coach-panel"><div class="coach-header"><div class="coach-avatar">♞</div><div><span class="eyebrow">KNIGHTFORGE COACH</span><h2>Position-aware coach</h2><span class="coach-subtitle">Guidance from the live board</span></div></div>
-<div class="mode-row"><label for="mode-select">Learning mode</label><select id="mode-select"><option value="guided">Guided · hints visible</option><option value="practice">Practice · request hints</option><option value="mastery">Mastery · no hints</option></select></div>
-<div class="coach-message"><span class="eyebrow">YOUR NEXT TASK</span><p id="coach-text">Loading your lesson…</p><p id="coach-explanation" class="explanation"></p></div><div id="feedback" class="feedback hidden" aria-live="polite"></div>
-<div class="hint-area"><div class="hint-title"><span class="eyebrow">PROGRESSIVE HINTS</span><span id="hint-level">LEVEL 1 / 4</span></div><p id="hint-text">Hints will appear here when available.</p><button id="hint-btn" class="button hint-button">Reveal next hint</button></div>
-<div class="coach-controls"><label class="toggle"><input id="voice-toggle" type="checkbox"><span>Read coach aloud</span></label><button id="speak-btn" class="icon-button" title="Read current instruction">🔊</button></div><div class="engine-note"><span class="engine-indicator"></span><span id="engine-status">Engine analysis is optional. The board works without Stockfish.</span></div></aside></section>
-<footer><span>KNIGHTFORGE ENGINE</span><span>Legal moves · Reviewed lesson knowledge · Optional engine analysis</span></footer></main><script src="/assets/app.js" defer></script></body></html>
+<html lang="en" data-theme="dark" data-board-theme="emerald" data-piece-style="classic">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#101714">
+  <link rel="manifest" href="/manifest.json">
+  <link rel="icon" type="image/svg+xml" href="/icon.svg">
+  <title>KnightForge — Complete Chess Intelligence Platform</title>
+  <link rel="stylesheet" href="/assets/styles.css">
+</head>
+<body>
+<main class="shell">
+  <header class="topbar">
+    <a class="brand" href="/">
+      <span class="brand-mark">♞</span>
+      <span>KNIGHT<span class="accent">FORGE</span><small>CHESS INTELLIGENCE v4.0</small></span>
+    </a>
+    <nav class="nav-tabs" aria-label="Primary navigation">
+      <button type="button" class="tab-btn active" data-tab="play">Play Chess</button>
+      <button type="button" class="tab-btn" data-tab="academy">Learn &amp; Academy</button>
+      <button type="button" class="tab-btn" data-tab="openings">Openings &amp; Gambits</button>
+      <button type="button" class="tab-btn" data-tab="tactics">Tactics</button>
+      <button type="button" class="tab-btn" data-tab="analysis">Analysis &amp; Coach</button>
+      <button type="button" class="tab-btn" data-tab="profile">Profile</button>
+    </nav>
+    <div class="top-controls">
+      <button id="sound-toggle" type="button" class="icon-button" title="Toggle Chess Sounds">🔊</button>
+      <button id="theme-toggle" type="button" class="icon-button" title="Toggle Dark/Light Theme">◐</button>
+      <div class="top-status">
+        <span class="status-dot"></span>
+        <span id="connection-label">Connecting</span>
+      </div>
+    </div>
+  </header>
+
+  <section class="appearance-bar">
+    <label>Board
+      <select id="board-theme-select">
+        <option value="emerald">Emerald</option>
+        <option value="wood">Classic Wood</option>
+        <option value="slate">Slate</option>
+        <option value="ocean">Ocean</option>
+      </select>
+    </label>
+    <label>Pieces
+      <select id="piece-style-select">
+        <option value="classic">Staunton Classic</option>
+        <option value="neo">Neo Emerald</option>
+        <option value="contrast">Tournament High-Contrast</option>
+      </select>
+    </label>
+    <span id="header-user" class="pill subtle">Guest · Elo 1000</span>
+  </section>
+
+  <!-- =====================================================================
+       TAB 1: PLAY CHESS (HvAI 7 LEVELS, LOCAL 2P, ONLINE MULTIPLAYER + HUD)
+       ===================================================================== -->
+  <section id="tab-play" class="tab-panel active">
+    <div class="workspace">
+      <div class="board-panel">
+        <div class="board-heading">
+          <div>
+            <span class="eyebrow">FULL LEGAL CHESS GAME</span>
+            <h2 id="play-title">Human vs. KnightForge AI</h2>
+          </div>
+          <div class="heading-pills">
+            <span id="play-opening" class="pill subtle">Opening: —</span>
+            <span id="play-turn" class="turn-pill">WHITE TO MOVE</span>
+          </div>
+        </div>
+
+        <!-- Top player bar (Opponent by default; flips automatically) -->
+        <div class="player-strip">
+          <div class="player-info">
+            <span id="top-side-label" class="side-dot black-dot">BLACK</span>
+            <div id="captured-top" class="captured-tray" aria-label="Captured pieces"></div>
+            <span id="material-top" class="mat-badge hidden"></span>
+          </div>
+          <div id="clock-top" class="clock-box"><strong id="clock-top-time">--:--</strong></div>
+        </div>
+
+        <!-- Board + Live Vertical Evaluation Bar -->
+        <div class="board-stage">
+          <div class="eval-bar-wrap" aria-label="Position evaluation bar">
+            <div id="eval-bar-fill" class="eval-bar-fill" style="height:50%"></div>
+            <span id="eval-bar-label" class="eval-bar-label">0.0</span>
+          </div>
+          <div class="board-wrap">
+            <div id="play-files-top" class="board-coordinates files-top"></div>
+            <div class="board-row">
+              <div id="play-ranks-left" class="ranks"></div>
+              <div id="play-board" class="board" role="grid" aria-label="Play chessboard"></div>
+              <div id="play-ranks-right" class="ranks right"></div>
+            </div>
+            <div id="play-files-bottom" class="board-coordinates files-bottom"></div>
+          </div>
+        </div>
+
+        <!-- Bottom player bar (You by default; flips automatically) -->
+        <div class="player-strip bottom-strip">
+          <div class="player-info">
+            <span id="bottom-side-label" class="side-dot white-dot">WHITE</span>
+            <div id="captured-bottom" class="captured-tray" aria-label="Captured pieces"></div>
+            <span id="material-bottom" class="mat-badge hidden"></span>
+          </div>
+          <div id="clock-bottom" class="clock-box"><strong id="clock-bottom-time">--:--</strong></div>
+        </div>
+
+        <!-- Replay / Scrub Controls -->
+        <div class="replay-bar">
+          <button id="replay-start" type="button" class="button secondary mini" title="First move">⏮</button>
+          <button id="replay-prev" type="button" class="button secondary mini" title="Previous move">◀</button>
+          <span id="replay-indicator" class="pill subtle">Live</span>
+          <button id="replay-next" type="button" class="button secondary mini" title="Next move">▶</button>
+          <button id="replay-live" type="button" class="button secondary mini" title="Jump to live">⏭</button>
+          <span id="eval-pill" class="pill subtle push-right">Eval: 0.00</span>
+        </div>
+
+        <div class="board-actions">
+          <button id="play-undo-btn" class="button secondary">↶ Undo</button>
+          <button id="play-restart-btn" class="button secondary">↻ Restart</button>
+          <button id="play-flip-btn" class="button secondary">⇅ Flip</button>
+          <button id="play-pause-btn" class="button secondary">⏸ Pause</button>
+          <button id="play-draw-btn" class="button secondary">½ Draw</button>
+          <button id="play-resign-btn" class="button secondary">⚑ Resign</button>
+          <button id="play-analyze-btn" class="button hint-button">📊 Analyze</button>
+        </div>
+
+        <div id="play-status" class="feedback hidden" aria-live="polite"></div>
+
+        <div class="move-log">
+          <div class="hint-title">
+            <span class="eyebrow">MOVE HISTORY (CLICK ANY MOVE TO REVIEW)</span>
+            <button id="play-copy-pgn" class="button secondary mini">Copy PGN</button>
+          </div>
+          <div id="play-moves" class="moves-empty">Drag or tap any piece to start playing.</div>
+        </div>
+      </div>
+
+      <aside class="coach-panel">
+        <span class="eyebrow">GAME SETUP</span>
+        <h2 class="panel-title">Play Mode &amp; Controls</h2>
+        <div class="mode-row">
+          <label for="play-mode">Mode</label>
+          <select id="play-mode">
+            <option value="human_vs_ai">Human vs AI</option>
+            <option value="local_pvp">Human vs Human (Local)</option>
+            <option value="online_pvp">Online Private Match</option>
+          </select>
+        </div>
+        <div class="mode-row">
+          <label for="play-color">Your side</label>
+          <select id="play-color">
+            <option value="white">White</option>
+            <option value="black">Black</option>
+          </select>
+        </div>
+        <div class="mode-row">
+          <label for="play-difficulty">AI Strength</label>
+          <select id="play-difficulty">
+            <option value="beginner">1 · Beginner</option>
+            <option value="easy">2 · Easy</option>
+            <option value="intermediate" selected>3 · Intermediate</option>
+            <option value="advanced">4 · Advanced</option>
+            <option value="expert">5 · Expert</option>
+            <option value="master">6 · Master</option>
+            <option value="maximum">7 · Maximum Engine</option>
+          </select>
+        </div>
+        <div class="mode-row">
+          <label for="play-clock">Time Control</label>
+          <select id="play-clock">
+            <option value="unlimited">Unlimited</option>
+            <option value="bullet_1_0">Bullet · 1+0</option>
+            <option value="bullet_2_1">Bullet · 2+1</option>
+            <option value="blitz_3_0">Blitz · 3+0</option>
+            <option value="blitz_3_2">Blitz · 3+2</option>
+            <option value="blitz_5_0">Blitz · 5+0</option>
+            <option value="rapid_10_0" selected>Rapid · 10+0</option>
+            <option value="rapid_15_10">Rapid · 15+10</option>
+            <option value="classical_30_0">Classical · 30+0</option>
+            <option value="correspondence">Correspondence</option>
+          </select>
+        </div>
+        <button id="play-new-btn" class="button hint-button full-btn">Start New Game</button>
+        <button id="quick-match-btn" class="button secondary full-btn">⚡ Online Quick Match</button>
+
+        <div id="invite-box" class="coach-message hidden">
+          <span class="eyebrow">ONLINE INVITE CODE</span>
+          <p id="invite-code-display">—</p>
+          <p class="explanation">Share this code with a friend to play live via WebSockets.</p>
+        </div>
+
+        <div class="section-spacer">
+          <span class="eyebrow">JOIN ONLINE MATCH</span>
+          <div class="recognize-row">
+            <input id="join-code-input" class="text-input" type="text" placeholder="Enter 8-char invite code">
+            <button id="join-game-btn" class="button secondary">Join</button>
+          </div>
+        </div>
+
+        <div class="section-spacer">
+          <span class="eyebrow">ENDGAME DRILL LAB</span>
+          <div class="recognize-row">
+            <select id="endgame-drill-select" class="text-input"></select>
+            <button id="start-drill-btn" class="button hint-button">Drill</button>
+          </div>
+        </div>
+
+        <div class="section-spacer">
+          <span class="eyebrow">IMPORT PGN GAME</span>
+          <textarea id="import-pgn-input" class="text-area" rows="3" placeholder="Paste PGN moves e.g. 1. e4 e5 2. Nf3 Nc6"></textarea>
+          <button id="import-pgn-btn" class="button secondary full-btn">Load PGN onto Board</button>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <!-- =====================================================================
+       TAB 2: LEARN & ACADEMY (5 LEVELS)
+       ===================================================================== -->
+  <section id="tab-academy" class="tab-panel">
+    <div class="workspace">
+      <div class="board-panel">
+        <div class="board-heading">
+          <div>
+            <span class="eyebrow">INTERACTIVE CHESS ACADEMY</span>
+            <h2 id="lesson-title">Open Game · First Five Moves</h2>
+          </div>
+          <div class="heading-pills">
+            <span id="opening-badge" class="pill subtle">Opening: —</span>
+            <span id="turn-label" class="turn-pill">WHITE TO MOVE</span>
+          </div>
+        </div>
+        <div class="board-wrap">
+          <div id="files-top" class="board-coordinates files-top"></div>
+          <div class="board-row">
+            <div id="ranks-left" class="ranks"></div>
+            <div id="board" class="board" role="grid" aria-label="Academy chessboard"></div>
+            <div id="ranks-right" class="ranks right"></div>
+          </div>
+          <div id="files-bottom" class="board-coordinates files-bottom"></div>
+        </div>
+        <div class="board-actions">
+          <button id="undo-btn" class="button secondary">↶ Undo</button>
+          <button id="restart-btn" class="button secondary">↻ Restart</button>
+          <button id="flip-btn" class="button secondary">⇅ Flip</button>
+          <button id="continue-free-btn" class="button hint-button">Continue Full Game →</button>
+          <span id="move-count" class="move-count">0 half-moves</span>
+        </div>
+        <div class="move-log">
+          <span class="eyebrow">LESSON MOVES</span>
+          <div id="moves" class="moves-empty">Your moves will appear here.</div>
+        </div>
+      </div>
+
+      <aside class="coach-panel">
+        <div class="coach-header">
+          <div class="coach-avatar">♞</div>
+          <div>
+            <span class="eyebrow">KNIGHTFORGE ACADEMY</span>
+            <h2>5-Level Structured Coach</h2>
+            <span class="coach-subtitle">Rules · Openings · Gambits · Strategy · Middlegame · Endgames</span>
+          </div>
+        </div>
+
+        <div class="mode-row">
+          <label for="academy-category">Course</label>
+          <select id="academy-category">
+            <option value="">All Courses (Levels 0–5)</option>
+            <option value="basics">Level 0 · Piece Movement Basics</option>
+            <option value="rules">Level 1 · Rules &amp; Basics</option>
+            <option value="opening">Openings</option>
+            <option value="gambit">Gambit Academy</option>
+            <option value="strategy">Strategy Academy</option>
+            <option value="middlegame">Middlegame Course</option>
+            <option value="endgame">Endgame Academy</option>
+          </select>
+        </div>
+        <div class="mode-row">
+          <label for="lesson-select">Lesson</label>
+          <select id="lesson-select"></select>
+        </div>
+        <div class="mode-row">
+          <label for="mode-select">Learning mode</label>
+          <select id="mode-select">
+            <option value="guided">Guided · hints visible</option>
+            <option value="practice">Practice · request hints</option>
+            <option value="mastery">Mastery · no hints</option>
+          </select>
+        </div>
+
+        <div class="coach-message">
+          <span class="eyebrow">YOUR NEXT TASK</span>
+          <p id="coach-text">Loading your lesson…</p>
+          <p id="coach-explanation" class="explanation"></p>
+        </div>
+        <div id="feedback" class="feedback hidden" aria-live="polite"></div>
+
+        <div class="hint-area">
+          <div class="hint-title">
+            <span class="eyebrow">PROGRESSIVE HINTS</span>
+            <span id="hint-level">LEVEL 1 / 4</span>
+          </div>
+          <p id="hint-text">Hints will appear here when available.</p>
+          <button id="hint-btn" class="button hint-button">Reveal next hint</button>
+        </div>
+
+        <div class="coach-controls">
+          <label class="toggle"><input id="voice-toggle" type="checkbox"><span>Read coach aloud</span></label>
+          <button id="speak-btn" class="icon-button" title="Read instruction">🔊</button>
+        </div>
+        <div class="engine-note">
+          <span class="engine-indicator"></span>
+          <span id="engine-status">Rules engine &amp; curated coaching active.</span>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <!-- =====================================================================
+       TAB 3: INTERACTIVE OPENING & GAMBIT EXPLORER
+       ===================================================================== -->
+  <section id="tab-openings" class="tab-panel">
+    <div class="workspace">
+      <div class="board-panel">
+        <div class="board-heading">
+          <div>
+            <span class="eyebrow">INTERACTIVE OPENING &amp; GAMBIT TREE</span>
+            <h2 id="op-explorer-title">Select an opening to explore</h2>
+          </div>
+          <span id="op-explorer-eco" class="turn-pill">ECO —</span>
+        </div>
+
+        <div class="board-wrap">
+          <div id="op-files-top" class="board-coordinates files-top"></div>
+          <div class="board-row">
+            <div id="op-ranks-left" class="ranks"></div>
+            <div id="opening-board" class="board" role="grid" aria-label="Opening explorer board"></div>
+            <div id="op-ranks-right" class="ranks right"></div>
+          </div>
+          <div id="op-files-bottom" class="board-coordinates files-bottom"></div>
+        </div>
+
+        <div class="board-actions">
+          <button id="op-back-btn" class="button secondary">◀ Back</button>
+          <button id="op-reset-btn" class="button secondary">⏮ Start</button>
+          <button id="op-flip-btn" class="button secondary">⇅ Flip</button>
+          <button id="op-play-here-btn" class="button secondary">Play From Here →</button>
+        </div>
+
+        <div class="coach-message">
+          <span class="eyebrow">GUIDED VARIATION TRAINER (TELLS YOU EVERY MOVE)</span>
+          <div class="recognize-row">
+            <select id="op-variation-select" class="text-input"></select>
+            <button id="op-train-btn" class="button hint-button">🎯 Train Line</button>
+          </div>
+          <p class="explanation">Pick any variation (e.g. Jobava London or Classical London) and KnightForge will guide you move-by-move with opponent replies.</p>
+        </div>
+
+        <div class="coach-message">
+          <span class="eyebrow">NEXT VARIATION BRANCHES (CLICK TO STEP)</span>
+          <div id="op-branches" class="branch-chips"></div>
+          <p id="op-node-explanation" class="explanation">Choose an opening on the right to step through its verified variations and strategic plans.</p>
+          <p id="op-node-plans" class="explanation"></p>
+        </div>
+      </div>
+
+      <aside class="coach-panel">
+        <span class="eyebrow">SEARCH 31 REVIEWED OPENINGS & GAMBITS</span>
+        <h2 class="panel-title">Opening &amp; Gambit Library</h2>
+        <div id="coverage-summary" class="stat-strip"></div>
+        <input id="opening-search-input" class="text-input full-width section-mt" type="text" placeholder="Search Ruy Lopez, Sicilian, Gambit, C60, B90...">
+        <div id="repo-openings-list" class="card-list"></div>
+
+        <div class="section-spacer">
+          <span class="eyebrow">RECOGNIZE SAN / UCI / PGN / FEN</span>
+          <div class="recognize-row">
+            <input id="recognize-input" class="text-input" type="text" placeholder="1. e4 e5 2. Nf3 Nc6 3. Bb5 a6" value="1. e4 e5 2. Nf3 Nc6 3. Bb5 a6">
+            <button id="recognize-btn" class="button secondary">Check</button>
+          </div>
+          <div id="recognize-output" class="recognize-box">Enter moves to match reviewed lines.</div>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <!-- =====================================================================
+       TAB 4: TACTICS TRAINER
+       ===================================================================== -->
+  <section id="tab-tactics" class="tab-panel">
+    <div class="workspace">
+      <div class="board-panel">
+        <div class="board-heading">
+          <div>
+            <span class="eyebrow">TACTICS TRAINER</span>
+            <h2 id="puzzle-title">Select a puzzle</h2>
+          </div>
+          <div class="heading-pills">
+            <span id="puzzle-timer" class="pill subtle">00:00</span>
+            <span id="puzzle-turn" class="turn-pill">WHITE TO MOVE</span>
+          </div>
+        </div>
+        <div class="board-wrap">
+          <div id="puz-files-top" class="board-coordinates files-top"></div>
+          <div class="board-row">
+            <div id="puz-ranks-left" class="ranks"></div>
+            <div id="puzzle-board" class="board" role="grid" aria-label="Puzzle chessboard"></div>
+            <div id="puz-ranks-right" class="ranks right"></div>
+          </div>
+          <div id="puz-files-bottom" class="board-coordinates files-bottom"></div>
+        </div>
+        <div class="board-actions">
+          <button id="puzzle-hint-btn" class="button hint-button">💡 Hint</button>
+          <button id="puzzle-daily-btn" class="button secondary">★ Daily</button>
+          <button id="puzzle-random-btn" class="button secondary">🎲 Random</button>
+          <button id="puzzle-next-btn" class="button secondary">Next →</button>
+          <span id="puzzle-meta" class="move-count"></span>
+        </div>
+      </div>
+
+      <aside class="coach-panel">
+        <span class="eyebrow" id="puzzle-bank-count">1,000+ VERIFIED TACTICAL PUZZLES</span>
+        <h2 class="panel-title">Sharpen Calculation</h2>
+        <div class="mode-row">
+          <label for="puzzle-diff-filter">Difficulty</label>
+          <select id="puzzle-diff-filter">
+            <option value="">All levels</option>
+            <option value="beginner">Beginner</option>
+            <option value="intermediate">Intermediate</option>
+            <option value="advanced">Advanced</option>
+          </select>
+        </div>
+        <div class="mode-row">
+          <label for="puzzle-theme-filter">Theme</label>
+          <select id="puzzle-theme-filter">
+            <option value="">All themes</option>
+            <option value="mate-in-1">Mate in 1</option>
+            <option value="mate-in-2">Mate in 2</option>
+            <option value="mate-in-3">Mate in 3</option>
+            <option value="back-rank">Back-Rank</option>
+            <option value="fork">Royal Forks</option>
+            <option value="skewer">Skewers</option>
+            <option value="promotion">Promotions</option>
+            <option value="endgame">Endgame Tactics</option>
+          </select>
+        </div>
+        <div class="board-actions">
+          <button id="puzzle-mistakes-btn" type="button" class="button secondary mini">🔁 Review Mistakes</button>
+          <button id="vision-drill-btn" type="button" class="button secondary mini">🎯 30s Coordinate Drill</button>
+        </div>
+        <div id="vision-box" class="coach-message hidden">
+          <span class="eyebrow">BOARD VISION SPEED DRILL</span>
+          <p id="vision-prompt">Tap square: —</p>
+          <p id="vision-score" class="explanation">Score: 0 · Time: 30s</p>
+        </div>
+        <div id="puzzle-feedback" class="feedback hidden" aria-live="polite"></div>
+        <div class="coach-message">
+          <span class="eyebrow">OBJECTIVE</span>
+          <p id="puzzle-prompt">Find the winning tactical sequence.</p>
+          <p id="puzzle-themes" class="explanation"></p>
+        </div>
+        <div id="puzzle-list" class="card-list"></div>
+        <button id="puzzle-more-btn" type="button" class="button secondary full-btn hidden">Load More Puzzles</button>
+      </aside>
+    </div>
+  </section>
+
+  <!-- =====================================================================
+       TAB 5: GAME ANALYSIS & AI CHESS COACH
+       ===================================================================== -->
+  <section id="tab-analysis" class="tab-panel">
+    <div class="explorer-grid">
+      <div class="board-panel">
+        <span class="eyebrow">POST-GAME ANALYSIS SYSTEM</span>
+        <h2 class="panel-title">Move Classifications &amp; Evaluation Graph</h2>
+        <textarea id="analysis-pgn-input" class="text-area" rows="4" placeholder="Paste any PGN game to analyze every move...">1. e4 e5 2. Nf3 Nc6 3. Bc4 Bc5 4. c3 Nf6 5. d4 exd4 6. cxd4 Bb4+ 7. Bd2 Bxd2+ 8. Nbxd2 *</textarea>
+        <button id="run-analysis-btn" class="button hint-button full-btn">Run Full Game Analysis</button>
+
+        <div id="analysis-summary" class="stat-grid section-spacer"></div>
+        <div id="analysis-disclaimer" class="explanation"></div>
+        <div id="eval-graph-wrap" class="eval-graph-wrap hidden">
+          <span class="eyebrow">EVALUATION GRAPH (WHITE PERSPECTIVE)</span>
+          <svg id="eval-graph-svg" viewBox="0 0 600 140" class="eval-svg"></svg>
+        </div>
+        <div id="analysis-moves-list" class="card-list"></div>
+      </div>
+
+      <aside class="coach-panel">
+        <span class="eyebrow">GROUNDED AI CHESS COACH</span>
+        <h2 class="panel-title">Ask About Any Position</h2>
+        <label class="field-label" for="coach-fen-input">Position FEN</label>
+        <input id="coach-fen-input" class="text-input full-width" type="text" value="r1bqkbnr/pppp1ppp/2n5/1B2p3/4P3/5N2/PPPP1PPP/RNBQK2R b KQkq - 3 3">
+        <label class="field-label" for="coach-question-input">Your Question</label>
+        <input id="coach-question-input" class="text-input full-width" type="text" placeholder="e.g. What is the strategic plan or tactical threat?" value="What is the best plan and threat here?">
+        <div class="mode-row">
+          <label for="coach-level">Explanation Level</label>
+          <select id="coach-level">
+            <option value="beginner">Beginner</option>
+            <option value="intermediate" selected>Intermediate</option>
+            <option value="advanced">Advanced</option>
+          </select>
+        </div>
+        <button id="ask-coach-btn" class="button hint-button full-btn">Ask KnightForge Coach</button>
+        <div id="coach-answer-box" class="recognize-box section-spacer">Enter a FEN and ask a question to receive rules- and engine-grounded coaching.</div>
+      </aside>
+    </div>
+  </section>
+
+  <!-- =====================================================================
+       TAB 6: USER PROFILE, ACCOUNTS & PROGRESS
+       ===================================================================== -->
+  <section id="tab-profile" class="tab-panel">
+    <div class="explorer-grid">
+      <div class="board-panel">
+        <div class="board-heading">
+          <div>
+            <span class="eyebrow">PERSISTENT SQLITE ACCOUNT</span>
+            <h2 id="profile-heading">Guest Profile</h2>
+          </div>
+          <button id="refresh-progress-btn" class="button secondary">↻ Refresh</button>
+        </div>
+        <div id="progress-stats" class="stat-grid"></div>
+        <div id="achievements-box" class="stat-strip"></div>
+        <div id="progress-next" class="coach-message"></div>
+        <div class="section-spacer">
+          <span class="eyebrow">SAVED GAME HISTORY</span>
+          <div id="progress-games" class="card-list"></div>
+        </div>
+      </div>
+
+      <aside class="coach-panel">
+        <span class="eyebrow">ACCOUNT AUTHENTICATION</span>
+        <h2 class="panel-title">Sign In or Create Account</h2>
+        <div id="auth-status" class="feedback hidden"></div>
+        <input id="auth-username" class="text-input full-width" type="text" placeholder="Username (min 3 chars)">
+        <input id="auth-password" class="text-input full-width section-mt" type="password" placeholder="Password (min 6 chars)">
+        <div class="board-actions">
+          <button id="auth-login-btn" class="button hint-button">Login</button>
+          <button id="auth-register-btn" class="button secondary">Register</button>
+          <button id="auth-logout-btn" class="button secondary">Logout</button>
+        </div>
+
+        <div class="section-spacer">
+          <span class="eyebrow">PERSONAL STUDY NOTES</span>
+          <textarea id="profile-notes" class="text-area" rows="5" placeholder="Write opening prep, endgame reminders, or tournament notes..."></textarea>
+          <button id="save-notes-btn" class="button secondary full-btn">Save Notes</button>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <!-- PAWN PROMOTION MODAL -->
+  <div id="promo-modal" class="modal hidden" role="dialog" aria-modal="true" aria-label="Choose promotion piece">
+    <div class="modal-card">
+      <span class="eyebrow">PAWN PROMOTION</span>
+      <h3>Choose a piece</h3>
+      <div class="promo-choices">
+        <button type="button" class="button secondary promo-btn" data-promo="q">Queen</button>
+        <button type="button" class="button secondary promo-btn" data-promo="r">Rook</button>
+        <button type="button" class="button secondary promo-btn" data-promo="b">Bishop</button>
+        <button type="button" class="button secondary promo-btn" data-promo="n">Knight</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- FLOATING DRAG GHOST LAYER FOR ANDROID TOUCH + MOUSE DRAGGING -->
+  <div id="drag-ghost" class="drag-ghost hidden" aria-hidden="true"></div>
+
+  <footer>
+    <span>KNIGHTFORGE CHESS PLATFORM v4.0 ULTIMATE</span>
+    <span>Vector SVG Pieces · Android Touch Drag · Live Eval Bar · 29 Interactive Opening Trees · 7-Tier AI</span>
+  </footer>
+</main>
+
+<!-- ONE-HAND MOBILE BOTTOM NAVIGATION -->
+<nav class="mobile-bottom-nav" aria-label="Mobile quick navigation">
+  <button type="button" class="mobile-tab-btn active" data-tab="play"><span>♞</span><small>Play</small></button>
+  <button type="button" class="mobile-tab-btn" data-tab="academy"><span>🎓</span><small>Learn</small></button>
+  <button type="button" class="mobile-tab-btn" data-tab="openings"><span>📖</span><small>Openings</small></button>
+  <button type="button" class="mobile-tab-btn" data-tab="tactics"><span>⚡</span><small>Tactics</small></button>
+  <button type="button" class="mobile-tab-btn" data-tab="analysis"><span>📊</span><small>Coach</small></button>
+  <button type="button" class="mobile-tab-btn" data-tab="profile"><span>👤</span><small>Profile</small></button>
+</nav>
+
+<script src="/assets/pieces.js" defer></script>
+<script src="/assets/audio.js" defer></script>
+<script src="/assets/app.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,18 @@
+{
+  "name": "KnightForge Chess",
+  "short_name": "KnightForge",
+  "description": "Play, learn, train tactics (1,000+ puzzles), master 31 openings & gambits, and analyze chess.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0f1613",
+  "theme_color": "#101714",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

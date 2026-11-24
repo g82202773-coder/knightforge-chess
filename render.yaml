@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: knightforge-chess
+    runtime: docker
+    plan: free
+    healthCheckPath: /api/health
+    envVars:
+      - key: STOCKFISH_PATH
+        value: /usr/games/stockfish
+      - key: KNIGHTFORGE_DB_PATH
+        value: /app/data/knightforge.db
+      - key: KNIGHTFORGE_SESSION_TTL_SECONDS
+        value: "7200"

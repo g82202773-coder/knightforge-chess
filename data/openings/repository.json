@@ -1,0 +1,3808 @@
+{
+  "schema_version": 1,
+  "openings": [
+    {
+      "schema_version": 1,
+      "opening_id": "ruy-lopez",
+      "name": "Ruy Lopez",
+      "side": "white",
+      "starting_fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+      "eco": "C60",
+      "aliases": [
+        "Spanish Opening",
+        "Spanish Game"
+      ],
+      "source_name": "KnightForge Curated Chess Encyclopedia",
+      "source_url": null,
+      "license_name": "Original editorial content",
+      "review_status": "reviewed",
+      "transposition_notes": [],
+      "anchor_uci": [
+        "e2e4",
+        "e7e5",
+        "g1f3",
+        "b8c6",
+        "f1b5"
+      ],
+      "roots": [
+        {
+          "move_uci": "e2e4",
+          "label": "",
+          "white_plan": "",
+          "black_plan": "",
+          "explanation": "",
+          "children": [
+            {
+              "move_uci": "e7e5",
+              "label": "",
+              "white_plan": "",
+              "black_plan": "",
+              "explanation": "",
+              "children": [
+                {
+                  "move_uci": "g1f3",
+                  "label": "",
+                  "white_plan": "",
+                  "black_plan": "",
+                  "explanation": "",
+                  "children": [
+                    {
+                      "move_uci": "b8c6",
+                      "label": "",
+                      "white_plan": "",
+                      "black_plan": "",
+                      "explanation": "",
+                      "children": [
+                        {
+                          "move_uci": "f1b5",
+                          "label": "Ruy Lopez",
+                          "white_plan": "Castle kingside, build a c3-d4 centre, and maintain pressure on e5.",
+                          "black_plan": "Challenge the b5 bishop with ...a6 or counterattack e4 with ...Nf6.",
+                          "explanation": "Develop the bishop with indirect pressure against Black's e5 defender.",
+                          "children": [
+                            {
+                              "move_uci": "a7a6",
+                              "label": "Morphy Defence",
+                              "white_plan": "",
+                              "black_plan": "",
+                              "explanation": "Question the bishop immediately.",
+                              "children": [
+                                {
+                                  "move_uci": "b5a4",
+                                  "label": "",
+                                  "white_plan": "",
+                                  "black_plan": "",
+                                  "explanation": "Keep tension along the a4-e8 diagonal.",
+                                  "children": [
+                                    {
+                                      "move_uci": "g8f6",
+                                      "label": "",
+                                      "white_plan": "",
+                                      "black_plan": "",
+                                      "explanation": "Develop and attack e4.",
+                                      "children": [
+                                        {
+                                          "move_uci": "e1g1",
+                                          "label": "",
+                                          "white_plan": "",
+                                          "black_plan": "",
+                                          "explanation": "Castle kingside and defend e4 indirectly.",
+                                          "children": [
+                                            {
+                                              "move_uci": "f8e7",
+                                              "label": "Closed Ruy Lopez",
+                                              "white_plan": "",
+                                              "black_plan": "",
+                                              "explanation": "Prepare kingside castling.",
+                                              "children": [
+                                                {
+                                                  "move_uci": "f1e1",
+                                                  "label": "",
+                                                  "white_plan": "",
+                                                  "black_plan": "",
+                                                  "explanation": "",
+                                                  "children": [
+                                                    {
+                                                      "move_uci": "b7b5",
+                                                      "label": "",
+                                                      "white_plan": "",
+                                                      "black_plan": "",
+                                                      "explanation": "",
+                                                      "children": [
+                                                        {
+                                                          "move_uci": "a4b3",
+                                                          "label": "",
+                                                          "white_plan": "",
+                                                          "black_plan": "",
+                                                          "explanation": "",
+                                                          "children": [
+                                                            {
+                                                              "move_uci": "e8g8",
+                                                              "label": "",
+                                                              "white_plan": "",
+                                                              "black_plan": "",
+                                                              "explanation": "",
+                                                              "children": [
+                                                                {
+                                                                  "move_uci": "c2c3",
+                                                                  "label": "",
+                                                                  "white_plan": "",
+                                                                  "black_plan": "",
+                                                                  "explanation": "",
+                                                                  "children": [
+                                                                    {
+                                                                      "move_uci": "d7d5",
+                                                                      "label": "Marshall Attack",
+                                                                      "white_plan": "",
+                                                                      "black_plan": "",
+                                                                      "explanation": "Sacrifice the e5 pawn for a fierce kingside attack.",
+                                                                      "children": []
+                                                                    },
+                                                                    {
+                                                                      "move_uci": "d7d6",
+                                                                      "label": "Closed Ruy Lopez",
+                                                                      "white_plan": "",
+                                                                      "black_plan": "",
+                                                                      "explanation": "Solid classical central structure.",
+                                                                      "children": []
+                                                                    }
+                                                                  ]
+                                                                }
+                                                              ]
+                                                            }
+                                                          ]
+                                                        }
+                                                      ]
+                                                    }
+                                                  ]
+                                                }
+                                              ]
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "move_uci": "b5c6",
+                                  "label": "Exchange Variation",
+                                  "white_plan": "",
+                                  "black_plan": "",
+                                  "explanation": "Damage Black's pawn structure to play for a superior king-and-pawn endgame.",
+                                  "children": [
+                                    {
+                                      "move_uci": "d7c6",
+                                      "label": "",
+                                      "white_plan": "",
+                                      "black_plan": "",
+                                      "explanation": "Open lines for both bishops to compensate for doubled c-pawns.",
+                                      "children": []
+                                    }
+                                  ]
+                                }
+                              ]
+                            },
+                            {
+                              "move_uci": "g8f6",
+                              "label": "Berlin Defence",
+                              "white_plan": "",
+                              "black_plan": "",
+                              "explanation": "Counterattack White's e4 pawn right away.",
+                              "children": [
+                                {
+                                  "move_uci": "e1g1",
+                                  "label": "",
+                                  "white_plan": "",
+                                  "black_plan": "",
+                                  "explanation": "",
+                                  "children": [
+                                    {
+                                      "move_uci": "f6e4",
+                                      "label": "",
+                                      "white_plan": "",
+                                      "black_plan": "",
+                                      "explanation": "Enter the solid Berlin structure.",
+                                      "children": []
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "schema_version": 1,
+      "opening_id": "italian-game",
+      "name": "Italian Game",
+      "side": "white",
+      "starting_fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+      "eco": "C50",
+      "aliases": [
+        "Giuoco Piano"
+      ],
+      "source_name": "KnightForge Curated Chess Encyclopedia",
+      "source_url": null,
+      "license_name": "Original editorial content",
+      "review_status": "reviewed",
+      "transposition_notes": [],
+      "anchor_uci": [
+        "e2e4",
+        "e7e5",
+        "g1f3",
+        "b8c6",
+        "f1c4"
+      ],
+      "roots": [
+        {
+          "move_uci": "e2e4",
+          "label": "",
+          "white_plan": "",
+          "black_plan": "",
+          "explanation": "",
+          "children": [
+            {
+              "move_uci": "e7e5",
+              "label": "",
+              "white_plan": "",
+              "black_plan": "",
+              "explanation": "",
+              "children": [
+                {
+                  "move_uci": "g1f3",
+                  "label": "",
+                  "white_plan": "",
+                  "black_plan": "",
+                  "explanation": "",
+                  "children": [
+                    {
+                      "move_uci": "b8c6",
+                      "label": "",
+                      "white_plan": "",
+                      "black_plan": "",
+                      "explanation": "",
+                      "children": [
+                        {
+                          "move_uci": "f1c4",
+                          "label": "Italian Game",
+                          "white_plan": "Target f7, castle quickly, and strike with c3-d4.",
+                          "black_plan": "Develop symmetrically with ...Bc5 or counterattack with ...Nf6.",
+                          "explanation": "Develop the light-squared bishop to its most active diagonal.",
+                          "children": [
+                            {
+                              "move_uci": "f8c5",
+                              "label": "Giuoco Piano",
+                              "white_plan": "",
+                              "black_plan": "",
+                              "explanation": "Develop harmoniously and contest d4.",
+                              "children": [
+                                {
+                                  "move_uci": "c2c3",
+                                  "label": "",
+                                  "white_plan": "",
+                                  "black_plan": "",
+                                  "explanation": "Prepare d4 to build a broad pawn centre.",
+                                  "children": []
+                                },
+                                {
+                                  "move_uci": "b2b4",
+                                  "label": "Evans Gambit",
+                                  "white_plan": "",
+                                  "black_plan": "",
+                                  "explanation": "Sacrifice the b-pawn to gain tempo and rapid central domination.",
+                                  "children": [
+                                    {
+                                      "move_uci": "c5b4",
+                                      "label": "",
+                                      "white_plan": "",
+                                      "black_plan": "",
+                                      "explanation": "",
+                                      "children": [
+                                        {
+                                          "move_uci": "c2c3",
+                                          "label": "",
+                                          "white_plan": "",
+                                          "black_plan": "",
+                                          "explanation": "",
+                                          "children": [
+                                            {
+                                              "move_uci": "b4a5",
+                                              "label": "",
+                                              "white_plan": "",
+                                              "black_plan": "",
+                                              "explanation": "",
+                                              "children": [
+                                                {
+                                                  "move_uci": "d2d4",
+                                                  "label": "",
+                                                  "white_plan": "",
+                                                  "black_plan": "",
+                                                  "explanation": "",
+                                                  "children": []
+                                                }
+                                              ]
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "move_uci": "d2d3",
+                                  "label": "Giuoco Pianissimo",
+                                  "white_plan": "",
+                                  "black_plan": "",
+                                  "explanation": "Slow, flexible build-up.",
+                                  "children": []
+                                }
+                              ]
+                            },
+                            {
+                              "move_uci": "g8f6",
+                              "label": "Two Knights Defence",
+                              "white_plan": "",
+                              "black_plan": "",
+                              "explanation": "Counterattack e4 immediately.",
+                              "children": [
+                                {
+                                  "move_uci": "f3g5",
+                                  "label": "Fried Liver Attack",
+                                  "white_plan": "",
+                                  "black_plan": "",
+                                  "explanation": "Target f7 with knight and bishop.",
+                                  "children": [
+                                    {
+                                      "move_uci": "d7d5",
+                                      "label": "",
+                                      "white_plan": "",
+                                      "black_plan": "",
+                                      "explanation": "Interrupt the c4-f7 diagonal immediately.",
+                                      "children": []
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "schema_version": 1,
+      "opening_id": "scotch-game",
+      "name": "Scotch Game",
+      "side": "white",
+      "starting_fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+      "eco": "C45",
+      "aliases": [],
+      "source_name": "KnightForge Curated Chess Encyclopedia",
+      "source_url": null,
+      "license_name": "Original editorial content",
+      "review_status": "reviewed",
+      "transposition_notes": [],
+      "anchor_uci": [
+        "e2e4",
+        "e7e5",
+        "g1f3",
+        "b8c6",
+        "d2d4"
+      ],
+      "roots": [
+        {
+          "move_uci": "e2e4",
+          "label": "",
+          "white_plan": "",
+          "black_plan": "",
+          "explanation": "",
+          "children": [
+            {
+              "move_uci": "e7e5",
+              "label": "",
+              "white_plan": "",
+              "black_plan": "",
+              "explanation": "",
+              "children": [
+                {
+                  "move_uci": "g1f3",
+                  "label": "",
+                  "white_plan": "",
+                  "black_plan": "",
+                  "explanation": "",
+                  "children": [
+                    {
+                      "move_uci": "b8c6",
+                      "label": "",
+                      "white_plan": "",
+                      "black_plan": "",
+                      "explanation": "",
+                      "children": [
+                        {
+                          "move_uci": "d2d4",
+                          "label": "Scotch Game",
+                          "white_plan": "Open the centre immediately to seize space and active piece play.",
+                          "black_plan": "Capture on d4 and counterattack White's centre with ...Bc5 or ...Nf6.",
+                          "explanation": "Challenge Black's e5 pawn directly on move 3.",
+                          "children": [
+                            {
+                              "move_uci": "e5d4",
+                              "label": "",
+                              "white_plan": "",
+                              "black_plan": "",
+                              "explanation": "",
+                              "children": [
+                                {
+                                  "move_uci": "f3d4",
+                                  "label": "Classical Variation",
+                                  "white_plan": "",
+                                  "black_plan": "",
+                                  "explanation": "",
+                                  "children": [
+                                    {
+                                      "move_uci": "f8c5",
+                                      "label": "",
+                                      "white_plan": "",
+                                      "black_plan": "",
+                                      "explanation": "Challenge the central knight.",
+                                      "children": []
+                                    },
+                                    {
+                                      "move_uci": "g8f6",
+                                      "label": "Schmidt Variation",
+                                      "white_plan": "",
+                                      "black_plan": "",
+                                      "explanation": "Attack e4 immediately.",
+                                      "children": []
+                                    }
+                                  ]
+                                },
+                                {
+                                  "move_uci": "f1c4",
+                                  "label": "Scotch Gambit",
+                                  "white_plan": "",
+                                  "black_plan": "",
+                                  "explanation": "Sacrifice the d4 pawn for rapid development and kingside pressure.",
+                                  "children": []
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "schema_version": 1,
+      "opening_id": "kings-gambit",
+      "name": "King's Gambit",
+      "side": "white",
+      "starting_fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+      "eco": "C30",
+      "aliases": [],
+      "source_name": "KnightForge Curated Chess Encyclopedia",
+      "source_url": null,
+      "license_name": "Original editorial content",
+      "review_status": "reviewed",
+      "transposition_notes": [],
+      "anchor_uci": [
+        "e2e4",
+        "e7e5",
+        "f2f4"
+      ],
+      "roots": [
+        {
+          "move_uci": "e2e4",
+          "label": "",
+          "white_plan": "",
+          "black_plan": "",
+          "explanation": "",
+          "children": [
+            {
+              "move_uci": "e7e5",
+              "label": "",
+              "white_plan": "",
+              "black_plan": "",
+              "explanation": "",
+              "children": [
+                {
+                  "move_uci": "f2f4",
+                  "label": "King's Gambit",
+                  "white_plan": "Deflect Black's e5 pawn, open the f-file, and build a strong d4-e4 centre.",
+                  "black_plan": "Accept the pawn and defend carefully, or counterattack with 2...d5 or 2...Bc5.",
+                  "explanation": "Offer the f-pawn on move 2 for rapid development and kingside attacking chances.",
+                  "children": [
+                    {
+                      "move_uci": "e5f4",
+                      "label": "King's Gambit Accepted",
+                      "white_plan": "",
+                      "black_plan": "",
+                      "explanation": "",
+                      "children": [
+                        {
+                          "move_uci": "g1f3",
+                          "label": "",
+                          "white_plan": "",
+                          "black_plan": "",
+                          "explanation": "Prevent ...Qh4+ and prepare d4.",
+                          "children": [
+                            {
+                              "move_uci": "g7g5",
+                              "label": "",
+                              "white_plan": "",
+                              "black_plan": "",
+                              "explanation": "Defend the extra f4 pawn aggressively.",
+                              "children": []
+                            }
+                          ]
+                        },
+                        {
+                          "move_uci": "f1c4",
+                          "label": "Bishop's Gambit",
+                          "white_plan": "",
+                          "black_plan": "",
+                          "explanation": "Develop rapidly toward f7.",
+                          "children": []
+                        }
+                      ]
+                    },
+                    {
+                      "move_uci": "f8c5",
+                      "label": "King's Gambit Declined",
+                      "white_plan": "",
+                      "black_plan": "",
+                      "explanation": "Prevent castling and develop actively.",
+                      "children": []
+                    },
+                    {
+                      "move_uci": "d7d5",
+                      "label": "Falkbeer Countergambit",
+                      "white_plan": "",
+                      "black_plan": "",
+                      "explanation": "Counter-strike the centre immediately.",
+                      "children": []
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "schema_version": 1,
+      "opening_id": "vienna-game",
+      "name": "Vienna Game",
+      "side": "white",
+      "starting_fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+      "eco": "C25",
+      "aliases": [],
+      "source_name": "KnightForge Curated Chess Encyclopedia",
+      "source_url": null,
+      "license_name": "Original editorial content",
+      "review_status": "reviewed",
+      "transposition_notes": [],
+      "anchor_uci": [
+        "e2e4",
+        "e7e5",
+        "b1c3"
+      ],
+      "roots": [
+        {
+          "move_uci": "e2e4",
+          "label": "",
+          "white_plan": "",
+          "black_plan": "",
+          "explanation": "",
+          "children": [
+            {
+              "move_uci": "e7e5",
+              "label": "",
+              "white_plan": "",
+              "black_plan": "",
+              "explanation": "",
+              "children": [
+                {
+                  "move_uci": "b1c3",
+                  "label": "Vienna Game",
+                  "white_plan": "Support e4 flexibly and prepare a delayed f4 kingside break.",
+                  "black_plan": "Develop 2...Nf6 to prepare a timely ...d5 counter-strike.",
+                  "explanation": "Keep the f-pawn unobstructed while reinforcing e4.",
+                  "children": [
+                    {
+                      "move_uci": "g8f6",
+                      "label": "Falkbeer Variation",
+                      "white_plan": "",
+                      "black_plan": "",
+                      "explanation": "",
+                      "children": [
+                        {
+                          "move_uci": "f2f4",
+                          "label": "Vienna Gambit",
+                          "white_plan": "",
+                          "black_plan": "",
+                          "explanation": "Strike at Black's centre while guarding against ...Qh4+.",
+                          "children": [
+                            {
+                              "move_uci": "d7d5",
+                              "label": "",
+                              "white_plan": "",
+                              "black_plan": "",
+                              "explanation": "Best principled counter-strike in the centre.",
+                              "children": []
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "move_uci": "b8c6",
+                      "label": "Max Lange Defence",
+                      "white_plan": "",
+                      "black_plan": "",
+                      "explanation": "",
+                      "children": [
+                        {
+                          "move_uci": "f1c4",
+                          "label": "",
+                          "white_plan": "",
+                          "black_plan": "",
+                          "explanation": "",
+                          "children": []
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "schema_version": 1,
+      "opening_id": "four-knights",
+      "name": "Four Knights Game",
+      "side": "white",
+      "starting_fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+      "eco": "C47",
+      "aliases": [],
+      "source_name": "KnightForge Curated Chess Encyclopedia",
+      "source_url": null,
+      "license_name": "Original editorial content",
+      "review_status": "reviewed",
+      "transposition_notes": [],
+      "anchor_uci": [
+        "e2e4",
+        "e7e5",
+        "g1f3",
+        "b8c6",
+        "b1c3",
+        "g8f6"
+      ],
+      "roots": [
+        {
+          "move_uci": "e2e4",
+          "label": "",
+          "white_plan": "",
+          "black_plan": "",
+          "explanation": "",
+          "children": [
+            {
+              "move_uci": "e7e5",
+              "label": "",
+              "white_plan": "",
+              "black_plan": "",
+              "explanation": "",
+              "children": [
+                {
+                  "move_uci": "g1f3",
+                  "label": "",
+                  "white_plan": "",
+                  "black_plan": "",
+                  "explanation": "",
+                  "children": [
+                    {
+                      "move_uci": "b8c6",
+                      "label": "",
+                      "white_plan": "",
+                      "black_plan": "",
+                      "explanation": "",
+                      "children": [
+                        {
+                          "move_uci": "b1c3",
+                          "label": "",
+                          "white_plan": "",
+                          "black_plan": "",
+                          "explanation": "",
+                          "children": [
+                            {
+                              "move_uci": "g8f6",
+                              "label": "Four Knights Game",
+                              "white_plan": "Maintain harmonious development and fight for central squares.",
+                              "black_plan": "Keep symmetry or break with ...Nd4 or ...d5.",
+                              "explanation": "All four knights develop naturally toward the centre.",
+                              "children": [
+                                {
+                                  "move_uci": "f1b5",
+                                  "label": "Spanish Variation",
+                                  "white_plan": "",
+                                  "black_plan": "",
+                                  "explanation": "",
+                                  "children": [
+                                    {
+                                      "move_uci": "f8b4",
+                                      "label": "Double Ruy Lopez",
+                                      "white_plan": "",
+                                      "black_plan": "",
+                                      "explanation": "",
+                                      "children": []
+                                    }
+                                  ]
+                                },
+                                {
+                                  "move_uci": "d2d4",
+                                  "label": "Scotch Variation",
+                                  "white_plan": "",
+                                  "black_plan": "",
+                                  "explanation": "",
+                                  "children": [
+                                    {
+                                      "move_uci": "e5d4",
+                                      "label": "",
+                                      "white_plan": "",
+                                      "black_plan": "",
+                                      "explanation": "",
+                                      "children": [
+                                        {
+                                          "move_uci": "f3d4",
+                                          "label": "",
+                                          "white_plan": "",
+                                          "black_plan": "",
+                                          "explanation": "",
+                                          "children": []
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "schema_version": 1,
+      "opening_id": "petrov",
+      "name": "Petrov Defence",
+      "side": "black",
+      "starting_fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+      "eco": "C42",
+      "aliases": [
+        "Russian Game"
+      ],
+      "source_name": "KnightForge Curated Chess Encyclopedia",
+      "source_url": null,
+      "license_name": "Original editorial content",
+      "review_status": "reviewed",
+      "transposition_notes": [],
+      "anchor_uci": [
+        "e2e4",
+        "e7e5",
+        "g1f3",
+        "g8f6"
+      ],
+      "roots": [
+        {
+          "move_uci": "e2e4",
+          "label": "",
+          "white_plan": "",
+          "black_plan": "",
+          "explanation": "",
+          "children": [
+            {
+              "move_uci": "e7e5",
+              "label": "",
+              "white_plan": "",
+              "black_plan": "",
+              "explanation": "",
+              "children": [
+                {
+                  "move_uci": "g1f3",
+                  "label": "",
+                  "white_plan": "",
+                  "black_plan": "",
+                  "explanation": "",
+                  "children": [
+                    {
+                      "move_uci": "g8f6",
+                      "label": "Petrov Defence",
+                      "white_plan": "Take e5 and fight for a slight space advantage after d4.",
+                      "black_plan": "Counterattack e4 symmetrically for a rock-solid position.",
+                      "explanation": "Instead of defending e5 passively, Black counterattacks e4 immediately.",
+                      "children": [
+                        {
+                          "move_uci": "f3e5",
+                          "label": "Classical Attack",
+                          "white_plan": "",
+                          "black_plan": "",
+                          "explanation": "",
+                          "children": [
+                            {
+                              "move_uci": "d7d6",
+                              "label": "",
+                              "white_plan": "",
+                              "black_plan": "",
+                              "explanation": "Drive the white knight away before recapturing on e4.",
+                              "children": [
+                                {
+                                  "move_uci": "e5f3",
+                                  "label": "",
+                                  "white_plan": "",
+                                  "black_plan": "",
+                                  "explanation": "",
+                                  "children": [
+                                    {
+                                      "move_uci": "f6e4",
+                                      "label": "",
+                                      "white_plan": "",
+                                      "black_plan": "",
+                                      "explanation": "",
+                                      "children": []
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "move_uci": "d2d4",
+                          "label": "Steinitz Attack",
+                          "white_plan": "",
+                          "black_plan": "",
+                          "explanation": "",
+                          "children": [
+                            {
+                              "move_uci": "f6e4",
+                              "label": "",
+                              "white_plan": "",
+                              "black_plan": "",
+                              "explanation": "",
+                              "children": []
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "schema_version": 1,
+      "opening_id": "center-game",
+      "name": "Center Game",
+      "side": "white",
+      "starting_fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+      "eco": "C21",
+      "aliases": [],
+      "source_name": "KnightForge Curated Chess Encyclopedia",
+      "source_url": null,
+      "license_name": "Original editorial content",
+      "review_status": "reviewed",
+      "transposition_notes": [],
+      "anchor_uci": [
+        "e2e4",
+        "e7e5",
+        "d2d4"
+      ],
+      "roots": [
+        {
+          "move_uci": "e2e4",
+          "label": "",
+          "white_plan": "",
+          "black_plan": "",
+          "explanation": "",
+          "children": [
+            {
+              "move_uci": "e7e5",
+              "label": "",
+              "white_plan": "",
+              "black_plan": "",
+              "explanation": "",
+              "children": [
+                {
+                  "move_uci": "d2d4",
+                  "label": "Center Game",
+                  "white_plan": "Open diagonals rapidly for bishops and queen.",
+                  "black_plan": "Return a pawn if needed to complete development and neutralize the initiative.",
+                  "explanation": "",
+                  "children": [
+                    {
+                      "move_uci": "e5d4",
+                      "label": "Accepted Variation",
+                      "white_plan": "",
+                      "black_plan": "",
+                      "explanation": "",
+                      "children": [
+                        {
+                          "move_uci": "c2c3",
+                          "label": "Danish Gambit",
+                          "white_plan": "",
+                          "black_plan": "",
+                          "explanation": "Offer one or two pawns for ferocious bishop diagonals.",
+                          "children": [
+                            {
+                              "move_uci": "d4c3",
+                              "label": "",
+                              "white_plan": "",
+                              "black_plan": "",
+                              "explanation": "",
+                              "children": [
+                                {
+                                  "move_uci": "f1c4",
+                                  "label": "",
+                                  "white_plan": "",
+                                  "black_plan": "",
+                                  "explanation": "",
+                                  "children": [
+                                    {
+                                      "move_uci": "c3b2",
+                                      "label": "",
+                                      "white_plan": "",
+                                      "black_plan": "",
+                                      "explanation": "",
+                                      "children": [
+                                        {
+                                          "move_uci": "c1b2",
+                                          "label": "",
+                                          "white_plan": "",
+                                          "black_plan": "",
+                                          "explanation": "",
+                                          "children": []
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "schema_version": 1,
+      "opening_id": "open-sicilian",
+      "name": "Open Sicilian",
+      "side": "black",
+      "starting_fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+      "eco": "B20",
+      "aliases": [
+        "Sicilian Defence"
+      ],
+      "source_name": "KnightForge Curated Chess Encyclopedia",
+      "source_url": null,
+      "license_name": "Original editorial content",
+      "review_status": "reviewed",
+      "transposition_notes": [],
+      "anchor_uci": [
+        "e2e4",
+        "c7c5",
+        "g1f3",
+        "d7d6",
+        "d2d4"
+      ],
+      "roots": [
+        {
+          "move_uci": "e2e4",
+          "label": "",
+          "white_plan": "",
+          "black_plan": "",
+          "explanation": "",
+          "children": [
+            {
+              "move_uci": "c7c5",
+              "label": "",
+              "white_plan": "",
+              "black_plan": "",
+              "explanation": "",
+              "children": [
+                {
+                  "move_uci": "g1f3",
+                  "label": "",
+                  "white_plan": "",
+                  "black_plan": "",
+                  "explanation": "",
+                  "children": [
+                    {
+                      "move_uci": "d7d6",
+                      "label": "",
+                      "white_plan": "",
+                      "black_plan": "",
+                      "explanation": "",
+                      "children": [
+                        {
+                          "move_uci": "d2d4",
+                          "label": "Open Sicilian",
+                          "white_plan": "Use lead in development and central space for a kingside attack.",
+                          "black_plan": "Use the half-open c-file and extra central pawn for dynamic counterplay.",
+                          "explanation": "",
+                          "children": [
+                            {
+                              "move_uci": "c5d4",
+                              "label": "",
+                              "white_plan": "",
+                              "black_plan": "",
+                              "explanation": "",
+                              "children": [
+                                {
+                                  "move_uci": "f3d4",
+                                  "label": "",
+                                  "white_plan": "",
+                                  "black_plan": "",
+                                  "explanation": "",
+                                  "children": [
+                                    {
+                                      "move_uci": "g8f6",
+                                      "label": "",
+                                      "white_plan": "",
+                                      "black_plan": "",
+                                      "explanation": "",
+                                      "children": [
+                                        {
+                                          "move_uci": "b1c3",
+                                          "label": "",
+                                          "white_plan": "",
+                                          "black_plan": "",
+                                          "explanation": "",
+                                          "children": [
+                                            {
+                                              "move_uci": "a7a6",
+                                              "label": "Najdorf Variation",
+                                              "white_plan": "",
+                                              "black_plan": "",
+                                              "explanation": "Control b5 and prepare ...e5 or queenside expansion.",
+                                              "children": []
+                                            },
+                                            {
+                                              "move_uci": "g7g6",
+                                              "label": "Dragon Variation",
+                                              "white_plan": "",
+                                              "black_plan": "",
+                                              "explanation": "Fianchetto the dark-squared bishop along the long diagonal.",
+                                              "children": []
+                                            },
+                                            {
+                                              "move_uci": "b8c6",
+                                              "label": "Classical Variation",
+                                              "white_plan": "",
+                                              "black_plan": "",
+                                              "explanation": "Develop naturally and contest the centre.",
+                                              "children": []
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "schema_version": 1,
+      "opening_id": "anti-sicilians",
+      "name": "Anti-Sicilians",
+      "side": "black",
+      "starting_fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+      "eco": "B22",
+      "aliases": [],
+      "source_name": "KnightForge Curated Chess Encyclopedia",
+      "source_url": null,
+      "license_name": "Original editorial content",
+      "review_status": "reviewed",
+      "transposition_notes": [],
+      "anchor_uci": [
+        "e2e4",
+        "c7c5"
+      ],
+      "roots": [
+        {
+          "move_uci": "e2e4",
+          "label": "",
+          "white_plan": "",
+          "black_plan": "",
+          "explanation": "",
+          "children": [
+            {
+              "move_uci": "c7c5",
+              "label": "Sicilian Defence",
+              "white_plan": "Sidestep sharp Open Sicilian theory with solid or gambit setups.",
+              "black_plan": "Equalize quickly in the centre against non-mainline systems.",
+              "explanation": "",
+              "children": [
+                {
+                  "move_uci": "c2c3",
+                  "label": "Alapin Variation",
+                  "white_plan": "",
+                  "black_plan": "",
+                  "explanation": "Prepare a broad c3-d4 pawn centre.",
+                  "children": [
+                    {
+                      "move_uci": "g8f6",
+                      "label": "",
+                      "white_plan": "",
+                      "black_plan": "",
+                      "explanation": "",
+                      "children": [
+                        {
+                          "move_uci": "e4e5",
+                          "label": "",
+                          "white_plan": "",
+                          "black_plan": "",
+                          "explanation": "",
+                          "children": [
+                            {
+                              "move_uci": "f6d5",
+                              "label": "",
+                              "white_plan": "",
+                              "black_plan": "",
+                              "explanation": "",
+                              "children": []
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "move_uci": "d7d5",
+                      "label": "",
+                      "white_plan": "",
+                      "black_plan": "",
+                      "explanation": "Challenge e4 immediately.",
+                      "children": []
+                    }
+                  ]
+                },
+                {
+                  "move_uci": "b1c3",
+                  "label": "Closed Sicilian",
+                  "white_plan": "",
+                  "black_plan": "",
+                  "explanation": "Build a kingside fianchetto attack.",
+                  "children": [
+                    {
+                      "move_uci": "b8c6",
+                      "label": "",
+                      "white_plan": "",
+                      "black_plan": "",
+                      "explanation": "",
+                      "children": [
+                        {
+                          "move_uci": "g2g3",
+                          "label": "",
+                          "white_plan": "",
+                          "black_plan": "",
+                          "explanation": "",
+                          "children": []
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "move_uci": "d2d4",
+                  "label": "Smith–Morra Gambit",
+                  "white_plan": "",
+                  "black_plan": "",
+                  "explanation": "Sacrifice the c-pawn for open files and rapid development.",
+                  "children": [
+                    {
+                      "move_uci": "c5d4",
+                      "label": "",
+                      "white_plan": "",
+                      "black_plan": "",
+                      "explanation": "",
+                      "children": [
+                        {
+                          "move_uci": "c2c3",
+                          "label": "",
+                          "white_plan": "",
+                          "black_plan": "",
+                          "explanation": "",
+                          "children": [
+                            {
+                              "move_uci": "d4c3",
+                              "label": "",
+                              "white_plan": "",
+                              "black_plan": "",
+                              "explanation": "",
+                              "children": [
+                                {
+                                  "move_uci": "b1c3",
+                                  "label": "",
+                                  "white_plan": "",
+                                  "black_plan": "",
+                                  "explanation": "",
+                                  "children": []
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "move_uci": "g1f3",
+                  "label": "",
+                  "white_plan": "",
+                  "black_plan": "",
+                  "explanation": "",
+                  "children": [
+                    {
+                      "move_uci": "b8c6",
+                      "label": "",
+                      "white_plan": "",
+                      "black_plan": "",
+                      "explanation": "",
+                      "children": [
+                        {
+                          "move_uci": "d2d4",
+                          "label": "",
+                          "white_plan": "",
+                          "black_plan": "",
+                          "explanation": "",
+                          "children": [
+                            {
+                              "move_uci": "c5d4",
+                              "label": "",
+                              "white_plan": "",
+                              "black_plan": "",
+                              "explanation": "",
+                              "children": [
+                                {
+                                  "move_uci": "f3d4",
+                                  "label": "",
+                                  "white_plan": "",
+                                  "black_plan": "",
+                                  "explanation": "",
+                                  "children": [
+                                    {
+                                      "move_uci": "g7g6",
+                                      "label": "Accelerated Dragon",
+                                      "white_plan": "",
+                                      "black_plan": "",
+                                      "explanation": "Fianchetto immediately while saving a tempo on ...d6.",
+                                      "children": []
+                                    },
+                                    {
+                                      "move_uci": "g8f6",
+                                      "label": "",
+                                      "white_plan": "",
+                                      "black_plan": "",
+                                      "explanation": "",
+                                      "children": [
+                                        {
+                                          "move_uci": "b1c3",
+                                          "label": "",
+                                          "white_plan": "",
+                                          "black_plan": "",
+                                          "explanation": "",
+                                          "children": [
+                                            {
+                                              "move_uci": "e7e5",
+                                              "label": "Sveshnikov Variation",
+                                              "white_plan": "",
+                                              "black_plan": "",
+                                              "explanation": "Accept a backward d6 pawn for fierce active piece play.",
+                                              "children": []
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "schema_version": 1,
+      "opening_id": "french",
+      "name": "French Defence",
+      "side": "black",
+      "starting_fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+      "eco": "C00",
+      "aliases": [],
+      "source_name": "KnightForge Curated Chess Encyclopedia",
+      "source_url": null,
+      "license_name": "Original editorial content",
+      "review_status": "reviewed",
+      "transposition_notes": [],
+      "anchor_uci": [
+        "e2e4",
+        "e7e6",
+        "d2d4",
+        "d7d5"
+      ],
+      "roots": [
+        {
+          "move_uci": "e2e4",
+          "label": "",
+          "white_plan": "",
+          "black_plan": "",
+          "explanation": "",
+          "children": [
+            {
+              "move_uci": "e7e6",
+              "label": "",
+              "white_plan": "",
+              "black_plan": "",
+              "explanation": "",
+              "children": [
+                {
+                  "move_uci": "d2d4",
+                  "label": "",
+                  "white_plan": "",
+                  "black_plan": "",
+                  "explanation": "",
+                  "children": [
+                    {
+                      "move_uci": "d7d5",
+                      "label": "French Defence",
+                      "white_plan": "Maintain central space and target Black's kingside.",
+                      "black_plan": "Undermine White's pawn chain with ...c5 and ...f6.",
+                      "explanation": "",
+                      "children": [
+                        {
+                          "move_uci": "e4e5",
+                          "label": "Advance Variation",
+                          "white_plan": "",
+                          "black_plan": "",
+                          "explanation": "",
+                          "children": [
+                            {
+                              "move_uci": "c7c5",
+                              "label": "",
+                              "white_plan": "",
+                              "black_plan": "",
+                              "explanation": "",
+                              "children": [
+                                {
+                                  "move_uci": "c2c3",
+                                  "label": "",
+                                  "white_plan": "",
+                                  "black_plan": "",
+                                  "explanation": "",
+                                  "children": []
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "move_uci": "e4d5",
+                          "label": "Exchange Variation",
+                          "white_plan": "",
+                          "black_plan": "",
+                          "explanation": "",
+                          "children": [
+                            {
+                              "move_uci": "e6d5",
+                              "label": "",
+                              "white_plan": "",
+                              "black_plan": "",
+                              "explanation": "",
+                              "children": []
+                            }
+                          ]
+                        },
+                        {
+                          "move_uci": "b1d2",
+                          "label": "Tarrasch Variation",
+                          "white_plan": "",
+                          "black_plan": "",
+                          "explanation": "Defend e4 without allowing ...Bb4 pin.",
+                          "children": [
+                            {
+                              "move_uci": "g8f6",
+                              "label": "",
+                              "white_plan": "",
+                              "black_plan": "",
+                              "explanation": "",
+                              "children": []
+                            }
+                          ]
+                        },
+                        {
+                          "move_uci": "b1c3",
+                          "label": "Classical Variation",
+                          "white_plan": "",
+                          "black_plan": "",
+                          "explanation": "",
+                          "children": [
+                            {
+                              "move_uci": "f8b4",
+                              "label": "Winawer Variation",
+                              "white_plan": "",
+                              "black_plan": "",
+                              "explanation": "Pin the c3 knight to pressure e4.",
+                              "children": []
+                            },
+                            {
+                              "move_uci": "g8f6",
+                              "label": "",
+                              "white_plan": "",
+                              "black_plan": "",
+                              "explanation": "Directly pressure e4.",
+                              "children": []
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "schema_version": 1,
+      "opening_id": "caro-kann",
+      "name": "Caro-Kann Defence",
+      "side": "black",
+      "starting_fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+      "eco": "B10",
+      "aliases": [],
+      "source_name": "KnightForge Curated Chess Encyclopedia",
+      "source_url": null,
+      "license_name": "Original editorial content",
+      "review_status": "reviewed",
+      "transposition_notes": [],
+      "anchor_uci": [
+        "e2e4",
+        "c7c6",
+        "d2d4",
+        "d7d5"
+      ],
+      "roots": [
+        {
+          "move_uci": "e2e4",
+          "label": "",
+          "white_plan": "",
+          "black_plan": "",
+          "explanation": "",
+          "children": [
+            {
+              "move_uci": "c7c6",
+              "label": "",
+              "white_plan": "",
+              "black_plan": "",
+              "explanation": "",
+              "children": [
+                {
+                  "move_uci": "d2d4",
+                  "label": "",
+                  "white_plan": "",
+                  "black_plan": "",
+                  "explanation": "",
+                  "children": [
+                    {
+                      "move_uci": "d7d5",
+                      "label": "Caro-Kann Defence",
+                      "white_plan": "Use extra space and active piece development.",
+                      "black_plan": "Develop the c8 bishop outside the pawn chain and maintain a solid structure.",
+                      "explanation": "",
+                      "children": [
+                        {
+                          "move_uci": "e4e5",
+                          "label": "Advance Variation",
+                          "white_plan": "",
+                          "black_plan": "",
+                          "explanation": "",
+                          "children": [
+                            {
+                              "move_uci": "c8f5",
+                              "label": "",
+                              "white_plan": "",
+                              "black_plan": "",
+                              "explanation": "",
+                              "children": []
+                            }
+                          ]
+                        },
+                        {
+                          "move_uci": "b1c3",
+                          "label": "Classical Variation",
+                          "white_plan": "",
+                          "black_plan": "",
+                          "explanation": "",
+                          "children": [
+                            {
+                              "move_uci": "d5e4",
+                              "label": "",
+                              "white_plan": "",
+                              "black_plan": "",
+                              "explanation": "",
+                              "children": [
+                                {
+                                  "move_uci": "c3e4",
+                                  "label": "",
+                                  "white_plan": "",
+                                  "black_plan": "",
+                                  "explanation": "",
+                                  "children": [
+                                    {
+                                      "move_uci": "c8f5",
+                                      "label": "",
+                                      "white_plan": "",
+                                      "black_plan": "",
+                                      "explanation": "",
+                                      "children": []
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "move_uci": "e4d5",
+                          "label": "Exchange Variation",
+                          "white_plan": "",
+                          "black_plan": "",
+                          "explanation": "",
+                          "children": [
+                            {
+                              "move_uci": "c6d5",
+                              "label": "",
+                              "white_plan": "",
+                              "black_plan": "",
+                              "explanation": "",
+                              "children": []
+                            }
+                          ]
+                        },
+                        {
+                          "move_uci": "f2f3",
+                          "label": "Fantasy Variation",
+                          "white_plan": "",
+                          "black_plan": "",
+                          "explanation": "Bolster e4 ambitiously at the cost of diagonal exposure.",
+                          "children": []
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "schema_version": 1,
+      "opening_id": "queens-gambit",
+      "name": "Queen's Gambit",
+      "side": "white",
+      "starting_fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+      "eco": "D06",
+      "aliases": [
+        "QGD",
+        "QGA"
+      ],
+      "source_name": "KnightForge Curated Chess Encyclopedia",
+      "source_url": null,
+      "license_name": "Original editorial content",
+      "review_status": "reviewed",
+      "transposition_notes": [],
+      "anchor_uci": [
+        "d2d4",
+        "d7d5",
+        "c2c4"
+      ],
+      "roots": [
+        {
+          "move_uci": "d2d4",
+          "label": "",
+          "white_plan": "",
+          "black_plan": "",
+          "explanation": "",
+          "children": [
+            {
+              "move_uci": "d7d5",
+              "label": "",
+              "white_plan": "",
+              "black_plan": "",
+              "explanation": "",
+              "children": [
+                {
+                  "move_uci": "c2c4",
+                  "label": "Queen's Gambit",
+                  "white_plan": "Deflect Black's d5 pawn and control the centre.",
+                  "black_plan": "Hold d5 solidly or accept c4 for active piece play.",
+                  "explanation": "",
+                  "children": [
+                    {
+                      "move_uci": "d5c4",
+                      "label": "Queen's Gambit Accepted",
+                      "white_plan": "",
+                      "black_plan": "",
+                      "explanation": "",
+                      "children": [
+                        {
+                          "move_uci": "g1f3",
+                          "label": "",
+                          "white_plan": "",
+                          "black_plan": "",
+                          "explanation": "",
+                          "children": [
+                            {
+                              "move_uci": "g8f6",
+                              "label": "",
+                              "white_plan": "",
+                              "black_plan": "",
+                              "explanation": "",
+                              "children": []
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "move_uci": "e7e6",
+                      "label": "Queen's Gambit Declined",
+                      "white_plan": "",
+                      "black_plan": "",
+                      "explanation": "",
+                      "children": [
+                        {
+                          "move_uci": "b1c3",
+                          "label": "",
+                          "white_plan": "",
+                          "black_plan": "",
+                          "explanation": "",
+                          "children": [
+                            {
+                              "move_uci": "g8f6",
+                              "label": "",
+                              "white_plan": "",
+                              "black_plan": "",
+                              "explanation": "",
+                              "children": []
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "move_uci": "e7e5",
+                      "label": "Albin Countergambit",
+                      "white_plan": "",
+                      "black_plan": "",
+                      "explanation": "Counter-sacrifice a pawn to establish a cramping wedge on d4.",
+                      "children": [
+                        {
+                          "move_uci": "d4e5",
+                          "label": "",
+                          "white_plan": "",
+                          "black_plan": "",
+                          "explanation": "",
+                          "children": [
+                            {
+                              "move_uci": "d5d4",
+                              "label": "",
+                              "white_plan": "",
+                              "black_plan": "",
+                              "explanation": "",
+                              "children": []
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "schema_version": 1,
+      "opening_id": "slav",
+      "name": "Slav Defence",
+      "side": "black",
+      "starting_fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+      "eco": "D10",
+      "aliases": [],
+      "source_name": "KnightForge Curated Chess Encyclopedia",
+      "source_url": null,
+      "license_name": "Original editorial content",
+      "review_status": "reviewed",
+      "transposition_notes": [],
+      "anchor_uci": [
+        "d2d4",
+        "d7d5",
+        "c2c4",
+        "c7c6"
+      ],
+      "roots": [
+        {
+          "move_uci": "d2d4",
+          "label": "",
+          "white_plan": "",
+          "black_plan": "",
+          "explanation": "",
+          "children": [
+            {
+              "move_uci": "d7d5",
+              "label": "",
+              "white_plan": "",
+              "black_plan": "",
+              "explanation": "",
+              "children": [
+                {
+                  "move_uci": "c2c4",
+                  "label": "",
+                  "white_plan": "",
+                  "black_plan": "",
+                  "explanation": "",
+                  "children": [
+                    {
+                      "move_uci": "c7c6",
+                      "label": "Slav Defence",
+                      "white_plan": "Press for central control while preventing easy ...Bf5 development.",
+                      "black_plan": "Support d5 while keeping the c8 bishop free.",
+                      "explanation": "",
+                      "children": [
+                        {
+                          "move_uci": "g1f3",
+                          "label": "",
+                          "white_plan": "",
+                          "black_plan": "",
+                          "explanation": "",
+                          "children": [
+                            {
+                              "move_uci": "g8f6",
+                              "label": "",
+                              "white_plan": "",
+                              "black_plan": "",
+                              "explanation": "",
+                              "children": [
+                                {
+                                  "move_uci": "b1c3",
+                                  "label": "",
+                                  "white_plan": "",
+                                  "black_plan": "",
+                                  "explanation": "",
+                                  "children": [
+                                    {
+                                      "move_uci": "d5c4",
+                                      "label": "Classical Slav",
+                                      "white_plan": "",
+                                      "black_plan": "",
+                                      "explanation": "",
+                                      "children": []
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "move_uci": "c4d5",
+                          "label": "Exchange Slav",
+                          "white_plan": "",
+                          "black_plan": "",
+                          "explanation": "",
+                          "children": [
+                            {
+                              "move_uci": "c6d5",
+                              "label": "",
+                              "white_plan": "",
+                              "black_plan": "",
+                              "explanation": "",
+                              "children": []
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "schema_version": 1,
+      "opening_id": "semi-slav",
+      "name": "Semi-Slav Defence",
+      "side": "black",
+      "starting_fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+      "eco": "D43",
+      "aliases": [],
+      "source_name": "KnightForge Curated Chess Encyclopedia",
+      "source_url": null,
+      "license_name": "Original editorial content",
+      "review_status": "reviewed",
+      "transposition_notes": [],
+      "anchor_uci": [
+        "d2d4",
+        "d7d5",
+        "c2c4",
+        "c7c6",
+        "g1f3",
+        "g8f6",
+        "b1c3",
+        "e7e6"
+      ],
+      "roots": [
+        {
+          "move_uci": "d2d4",
+          "label": "",
+          "white_plan": "",
+          "black_plan": "",
+          "explanation": "",
+          "children": [
+            {
+              "move_uci": "d7d5",
+              "label": "",
+              "white_plan": "",
+              "black_plan": "",
+              "explanation": "",
+              "children": [
+                {
+                  "move_uci": "c2c4",
+                  "label": "",
+                  "white_plan": "",
+                  "black_plan": "",
+                  "explanation": "",
+                  "children": [
+                    {
+                      "move_uci": "c7c6",
+                      "label": "",
+                      "white_plan": "",
+                      "black_plan": "",
+                      "explanation": "",
+                      "children": [
+                        {
+                          "move_uci": "g1f3",
+                          "label": "",
+                          "white_plan": "",
+                          "black_plan": "",
+                          "explanation": "",
+                          "children": [
+                            {
+                              "move_uci": "g8f6",
+                              "label": "",
+                              "white_plan": "",
+                              "black_plan": "",
+                              "explanation": "",
+                              "children": [
+                                {
+                                  "move_uci": "b1c3",
+                                  "label": "",
+                                  "white_plan": "",
+                                  "black_plan": "",
+                                  "explanation": "",
+                                  "children": [
+                                    {
+                                      "move_uci": "e7e6",
+                                      "label": "Semi-Slav Defence",
+                                      "white_plan": "Choose between aggressive Bg5 lines and solid e3 systems.",
+                                      "black_plan": "Prepare ...dxc4 and ...b5 to gain queenside space and free the c8 bishop.",
+                                      "explanation": "",
+                                      "children": [
+                                        {
+                                          "move_uci": "e2e3",
+                                          "label": "",
+                                          "white_plan": "",
+                                          "black_plan": "",
+                                          "explanation": "",
+                                          "children": [
+                                            {
+                                              "move_uci": "b8d7",
+                                              "label": "",
+                                              "white_plan": "",
+                                              "black_plan": "",
+                                              "explanation": "",
+                                              "children": [
+                                                {
+                                                  "move_uci": "f1d3",
+                                                  "label": "",
+                                                  "white_plan": "",
+                                                  "black_plan": "",
+                                                  "explanation": "",
+                                                  "children": [
+                                                    {
+                                                      "move_uci": "d5c4",
+                                                      "label": "",
+                                                      "white_plan": "",
+                                                      "black_plan": "",
+                                                      "explanation": "",
+                                                      "children": [
+                                                        {
+                                                          "move_uci": "d3c4",
+                                                          "label": "",
+                                                          "white_plan": "",
+                                                          "black_plan": "",
+                                                          "explanation": "",
+                                                          "children": [
+                                                            {
+                                                              "move_uci": "b7b5",
+                                                              "label": "Meran Variation",
+                                                              "white_plan": "",
+                                                              "black_plan": "",
+                                                              "explanation": "",
+                                                              "children": []
+                                                            }
+                                                          ]
+                                                        }
+                                                      ]
+                                                    }
+                                                  ]
+                                                }
+                                              ]
+                                            }
+                                          ]
+                                        },
+                                        {
+                                          "move_uci": "c1g5",
+                                          "label": "Botvinnik Variation",
+                                          "white_plan": "",
+                                          "black_plan": "",
+                                          "explanation": "",
+                                          "children": [
+                                            {
+                                              "move_uci": "d5c4",
+                                              "label": "",
+                                              "white_plan": "",
+                                              "black_plan": "",
+                                              "explanation": "",
+                                              "children": []
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "schema_version": 1,
+      "opening_id": "colle",
+      "name": "Colle System",
+      "side": "white",
+      "starting_fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+      "eco": "D05",
+      "aliases": [],
+      "source_name": "KnightForge Curated Chess Encyclopedia",
+      "source_url": null,
+      "license_name": "Original editorial content",
+      "review_status": "reviewed",
+      "transposition_notes": [],
+      "anchor_uci": [
+        "d2d4",
+        "d7d5",
+        "g1f3",
+        "g8f6",
+        "e2e3"
+      ],
+      "roots": [
+        {
+          "move_uci": "d2d4",
+          "label": "",
+          "white_plan": "",
+          "black_plan": "",
+          "explanation": "",
+          "children": [
+            {
+              "move_uci": "d7d5",
+              "label": "",
+              "white_plan": "",
+              "black_plan": "",
+              "explanation": "",
+              "children": [
+                {
+                  "move_uci": "g1f3",
+                  "label": "",
+                  "white_plan": "",
+                  "black_plan": "",
+                  "explanation": "",
+                  "children": [
+                    {
+                      "move_uci": "g8f6",
+                      "label": "",
+                      "white_plan": "",
+                      "black_plan": "",
+                      "explanation": "",
+                      "children": [
+                        {
+                          "move_uci": "e2e3",
+                          "label": "Colle System",
+                          "white_plan": "Prepare a well-supported e4 central break and kingside attack.",
+                          "black_plan": "Develop actively with ...Bf5 or ...c5 to neutralize White's e4 plan.",
+                          "explanation": "",
+                          "children": [
+                            {
+                              "move_uci": "e7e6",
+                              "label": "",
+                              "white_plan": "",
+                              "black_plan": "",
+                              "explanation": "",
+                              "children": [
+                                {
+                                  "move_uci": "f1d3",
+                                  "label": "",
+                                  "white_plan": "",
+                                  "black_plan": "",
+                                  "explanation": "",
+                                  "children": [
+                                    {
+                                      "move_uci": "c7c5",
+                                      "label": "",
+                                      "white_plan": "",
+                                      "black_plan": "",
+                                      "explanation": "",
+                                      "children": [
+                                        {
+                                          "move_uci": "c2c3",
+                                          "label": "Colle-Koltanowski System",
+                                          "white_plan": "",
+                                          "black_plan": "",
+                                          "explanation": "",
+                                          "children": []
+                                        },
+                                        {
+                                          "move_uci": "b2b3",
+                                          "label": "Colle–Zukertort System",
+                                          "white_plan": "",
+                                          "black_plan": "",
+                                          "explanation": "",
+                                          "children": []
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "schema_version": 1,
+      "opening_id": "trompowsky",
+      "name": "Trompowsky Attack",
+      "side": "white",
+      "starting_fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+      "eco": "A45",
+      "aliases": [],
+      "source_name": "KnightForge Curated Chess Encyclopedia",
+      "source_url": null,
+      "license_name": "Original editorial content",
+      "review_status": "reviewed",
+      "transposition_notes": [],
+      "anchor_uci": [
+        "d2d4",
+        "g8f6",
+        "c1g5"
+      ],
+      "roots": [
+        {
+          "move_uci": "d2d4",
+          "label": "",
+          "white_plan": "",
+          "black_plan": "",
+          "explanation": "",
+          "children": [
+            {
+              "move_uci": "g8f6",
+              "label": "",
+              "white_plan": "",
+              "black_plan": "",
+              "explanation": "",
+              "children": [
+                {
+                  "move_uci": "c1g5",
+                  "label": "Trompowsky Attack",
+                  "white_plan": "Immediately question Black's f6 knight to sidestep Indian mainlines.",
+                  "black_plan": "Meet Bg5 dynamically with 2...Ne4 or 2...d5.",
+                  "explanation": "",
+                  "children": [
+                    {
+                      "move_uci": "f6e4",
+                      "label": "Classical Defence",
+                      "white_plan": "",
+                      "black_plan": "",
+                      "explanation": "",
+                      "children": [
+                        {
+                          "move_uci": "g5f4",
+                          "label": "",
+                          "white_plan": "",
+                          "black_plan": "",
+                          "explanation": "",
+                          "children": []
+                        }
+                      ]
+                    },
+                    {
+                      "move_uci": "d7d5",
+                      "label": "",
+                      "white_plan": "",
+                      "black_plan": "",
+                      "explanation": "",
+                      "children": [
+                        {
+                          "move_uci": "e2e3",
+                          "label": "",
+                          "white_plan": "",
+                          "black_plan": "",
+                          "explanation": "",
+                          "children": []
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "schema_version": 1,
+      "opening_id": "blackmar-diemer",
+      "name": "Blackmar–Diemer Gambit",
+      "side": "white",
+      "starting_fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+      "eco": "D00",
+      "aliases": [],
+      "source_name": "KnightForge Curated Chess Encyclopedia",
+      "source_url": null,
+      "license_name": "Original editorial content",
+      "review_status": "reviewed",
+      "transposition_notes": [],
+      "anchor_uci": [
+        "d2d4",
+        "d7d5",
+        "e2e4",
+        "d5e4",
+        "b1c3"
+      ],
+      "roots": [
+        {
+          "move_uci": "d2d4",
+          "label": "",
+          "white_plan": "",
+          "black_plan": "",
+          "explanation": "",
+          "children": [
+            {
+              "move_uci": "d7d5",
+              "label": "",
+              "white_plan": "",
+              "black_plan": "",
+              "explanation": "",
+              "children": [
+                {
+                  "move_uci": "e2e4",
+                  "label": "",
+                  "white_plan": "",
+                  "black_plan": "",
+                  "explanation": "",
+                  "children": [
+                    {
+                      "move_uci": "d5e4",
+                      "label": "",
+                      "white_plan": "",
+                      "black_plan": "",
+                      "explanation": "",
+                      "children": [
+                        {
+                          "move_uci": "b1c3",
+                          "label": "Blackmar–Diemer Gambit",
+                          "white_plan": "Sacrifice the e-pawn to open the f-file after f3 and launch a rapid attack.",
+                          "black_plan": "Develop smoothly and return the pawn at the right moment.",
+                          "explanation": "",
+                          "children": [
+                            {
+                              "move_uci": "g8f6",
+                              "label": "",
+                              "white_plan": "",
+                              "black_plan": "",
+                              "explanation": "",
+                              "children": [
+                                {
+                                  "move_uci": "f2f3",
+                                  "label": "Accepted",
+                                  "white_plan": "",
+                                  "black_plan": "",
+                                  "explanation": "",
+                                  "children": [
+                                    {
+                                      "move_uci": "e4f3",
+                                      "label": "",
+                                      "white_plan": "",
+                                      "black_plan": "",
+                                      "explanation": "",
+                                      "children": [
+                                        {
+                                          "move_uci": "g1f3",
+                                          "label": "",
+                                          "white_plan": "",
+                                          "black_plan": "",
+                                          "explanation": "",
+                                          "children": []
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "schema_version": 1,
+      "opening_id": "kings-indian",
+      "name": "King's Indian Defence",
+      "side": "black",
+      "starting_fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+      "eco": "E60",
+      "aliases": [
+        "KID"
+      ],
+      "source_name": "KnightForge Curated Chess Encyclopedia",
+      "source_url": null,
+      "license_name": "Original editorial content",
+      "review_status": "reviewed",
+      "transposition_notes": [],
+      "anchor_uci": [
+        "d2d4",
+        "g8f6",
+        "c2c4",
+        "g7g6",
+        "b1c3",
+        "f8g7"
+      ],
+      "roots": [
+        {
+          "move_uci": "d2d4",
+          "label": "",
+          "white_plan": "",
+          "black_plan": "",
+          "explanation": "",
+          "children": [
+            {
+              "move_uci": "g8f6",
+              "label": "",
+              "white_plan": "",
+              "black_plan": "",
+              "explanation": "",
+              "children": [
+                {
+                  "move_uci": "c2c4",
+                  "label": "",
+                  "white_plan": "",
+                  "black_plan": "",
+                  "explanation": "",
+                  "children": [
+                    {
+                      "move_uci": "g7g6",
+                      "label": "",
+                      "white_plan": "",
+                      "black_plan": "",
+                      "explanation": "",
+                      "children": [
+                        {
+                          "move_uci": "b1c3",
+                          "label": "",
+                          "white_plan": "",
+                          "black_plan": "",
+                          "explanation": "",
+                          "children": [
+                            {
+                              "move_uci": "f8g7",
+                              "label": "King's Indian Defence",
+                              "white_plan": "Occupy a broad centre and expand on the queenside.",
+                              "black_plan": "Castle quickly and counterattack White's centre with ...e5 or ...c5.",
+                              "explanation": "",
+                              "children": [
+                                {
+                                  "move_uci": "e2e4",
+                                  "label": "",
+                                  "white_plan": "",
+                                  "black_plan": "",
+                                  "explanation": "",
+                                  "children": [
+                                    {
+                                      "move_uci": "d7d6",
+                                      "label": "",
+                                      "white_plan": "",
+                                      "black_plan": "",
+                                      "explanation": "",
+                                      "children": [
+                                        {
+                                          "move_uci": "g1f3",
+                                          "label": "Classical Variation",
+                                          "white_plan": "",
+                                          "black_plan": "",
+                                          "explanation": "",
+                                          "children": [
+                                            {
+                                              "move_uci": "e8g8",
+                                              "label": "",
+                                              "white_plan": "",
+                                              "black_plan": "",
+                                              "explanation": "",
+                                              "children": []
+                                            }
+                                          ]
+                                        },
+                                        {
+                                          "move_uci": "f2f3",
+                                          "label": "Sämisch Variation",
+                                          "white_plan": "",
+                                          "black_plan": "",
+                                          "explanation": "",
+                                          "children": []
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "schema_version": 1,
+      "opening_id": "nimzo-indian",
+      "name": "Nimzo-Indian Defence",
+      "side": "black",
+      "starting_fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+      "eco": "E20",
+      "aliases": [],
+      "source_name": "KnightForge Curated Chess Encyclopedia",
+      "source_url": null,
+      "license_name": "Original editorial content",
+      "review_status": "reviewed",
+      "transposition_notes": [],
+      "anchor_uci": [
+        "d2d4",
+        "g8f6",
+        "c2c4",
+        "e7e6",
+        "b1c3",
+        "f8b4"
+      ],
+      "roots": [
+        {
+          "move_uci": "d2d4",
+          "label": "",
+          "white_plan": "",
+          "black_plan": "",
+          "explanation": "",
+          "children": [
+            {
+              "move_uci": "g8f6",
+              "label": "",
+              "white_plan": "",
+              "black_plan": "",
+              "explanation": "",
+              "children": [
+                {
+                  "move_uci": "c2c4",
+                  "label": "",
+                  "white_plan": "",
+                  "black_plan": "",
+                  "explanation": "",
+                  "children": [
+                    {
+                      "move_uci": "e7e6",
+                      "label": "",
+                      "white_plan": "",
+                      "black_plan": "",
+                      "explanation": "",
+                      "children": [
+                        {
+                          "move_uci": "b1c3",
+                          "label": "",
+                          "white_plan": "",
+                          "black_plan": "",
+                          "explanation": "",
+                          "children": [
+                            {
+                              "move_uci": "f8b4",
+                              "label": "Nimzo-Indian Defence",
+                              "white_plan": "Fight for the bishop pair and a strong central pawn mass.",
+                              "black_plan": "Control e4 with pieces and inflict structural weaknesses on White's queenside.",
+                              "explanation": "",
+                              "children": [
+                                {
+                                  "move_uci": "e2e3",
+                                  "label": "Rubinstein Variation",
+                                  "white_plan": "",
+                                  "black_plan": "",
+                                  "explanation": "",
+                                  "children": [
+                                    {
+                                      "move_uci": "e8g8",
+                                      "label": "",
+                                      "white_plan": "",
+                                      "black_plan": "",
+                                      "explanation": "",
+                                      "children": []
+                                    }
+                                  ]
+                                },
+                                {
+                                  "move_uci": "d1c2",
+                                  "label": "Classical Variation",
+                                  "white_plan": "",
+                                  "black_plan": "",
+                                  "explanation": "",
+                                  "children": [
+                                    {
+                                      "move_uci": "e8g8",
+                                      "label": "",
+                                      "white_plan": "",
+                                      "black_plan": "",
+                                      "explanation": "",
+                                      "children": []
+                                    }
+                                  ]
+                                },
+                                {
+                                  "move_uci": "a2a3",
+                                  "label": "Sämisch Variation",
+                                  "white_plan": "",
+                                  "black_plan": "",
+                                  "explanation": "",
+                                  "children": [
+                                    {
+                                      "move_uci": "b4c3",
+                                      "label": "",
+                                      "white_plan": "",
+                                      "black_plan": "",
+                                      "explanation": "",
+                                      "children": [
+                                        {
+                                          "move_uci": "b2c3",
+                                          "label": "",
+                                          "white_plan": "",
+                                          "black_plan": "",
+                                          "explanation": "",
+                                          "children": []
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "schema_version": 1,
+      "opening_id": "queens-indian",
+      "name": "Queen's Indian Defence",
+      "side": "black",
+      "starting_fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+      "eco": "E12",
+      "aliases": [],
+      "source_name": "KnightForge Curated Chess Encyclopedia",
+      "source_url": null,
+      "license_name": "Original editorial content",
+      "review_status": "reviewed",
+      "transposition_notes": [],
+      "anchor_uci": [
+        "d2d4",
+        "g8f6",
+        "c2c4",
+        "e7e6",
+        "g1f3",
+        "b7b6"
+      ],
+      "roots": [
+        {
+          "move_uci": "d2d4",
+          "label": "",
+          "white_plan": "",
+          "black_plan": "",
+          "explanation": "",
+          "children": [
+            {
+              "move_uci": "g8f6",
+              "label": "",
+              "white_plan": "",
+              "black_plan": "",
+              "explanation": "",
+              "children": [
+                {
+                  "move_uci": "c2c4",
+                  "label": "",
+                  "white_plan": "",
+                  "black_plan": "",
+                  "explanation": "",
+                  "children": [
+                    {
+                      "move_uci": "e7e6",
+                      "label": "",
+                      "white_plan": "",
+                      "black_plan": "",
+                      "explanation": "",
+                      "children": [
+                        {
+                          "move_uci": "g1f3",
+                          "label": "",
+                          "white_plan": "",
+                          "black_plan": "",
+                          "explanation": "",
+                          "children": [
+                            {
+                              "move_uci": "b7b6",
+                              "label": "Queen's Indian Defence",
+                              "white_plan": "Fianchetto with g3 to contest the long light-squared diagonal.",
+                              "black_plan": "Control the critical e4 square with ...Bb7 and ...Nf6.",
+                              "explanation": "",
+                              "children": [
+                                {
+                                  "move_uci": "g2g3",
+                                  "label": "4.g3",
+                                  "white_plan": "",
+                                  "black_plan": "",
+                                  "explanation": "",
+                                  "children": [
+                                    {
+                                      "move_uci": "c8b7",
+                                      "label": "",
+                                      "white_plan": "",
+                                      "black_plan": "",
+                                      "explanation": "",
+                                      "children": [
+                                        {
+                                          "move_uci": "f1g2",
+                                          "label": "",
+                                          "white_plan": "",
+                                          "black_plan": "",
+                                          "explanation": "",
+                                          "children": []
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "schema_version": 1,
+      "opening_id": "grunfeld",
+      "name": "Grünfeld Defence",
+      "side": "black",
+      "starting_fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+      "eco": "D80",
+      "aliases": [],
+      "source_name": "KnightForge Curated Chess Encyclopedia",
+      "source_url": null,
+      "license_name": "Original editorial content",
+      "review_status": "reviewed",
+      "transposition_notes": [],
+      "anchor_uci": [
+        "d2d4",
+        "g8f6",
+        "c2c4",
+        "g7g6",
+        "b1c3",
+        "d7d5"
+      ],
+      "roots": [
+        {
+          "move_uci": "d2d4",
+          "label": "",
+          "white_plan": "",
+          "black_plan": "",
+          "explanation": "",
+          "children": [
+            {
+              "move_uci": "g8f6",
+              "label": "",
+              "white_plan": "",
+              "black_plan": "",
+              "explanation": "",
+              "children": [
+                {
+                  "move_uci": "c2c4",
+                  "label": "",
+                  "white_plan": "",
+                  "black_plan": "",
+                  "explanation": "",
+                  "children": [
+                    {
+                      "move_uci": "g7g6",
+                      "label": "",
+                      "white_plan": "",
+                      "black_plan": "",
+                      "explanation": "",
+                      "children": [
+                        {
+                          "move_uci": "b1c3",
+                          "label": "",
+                          "white_plan": "",
+                          "black_plan": "",
+                          "explanation": "",
+                          "children": [
+                            {
+                              "move_uci": "d7d5",
+                              "label": "Grünfeld Defence",
+                              "white_plan": "Build an imposing central pawn duo and push d5.",
+                              "black_plan": "Allow White a big centre only to attack it mercilessly with ...Bg7 and ...c5.",
+                              "explanation": "",
+                              "children": [
+                                {
+                                  "move_uci": "c4d5",
+                                  "label": "Exchange Variation",
+                                  "white_plan": "",
+                                  "black_plan": "",
+                                  "explanation": "",
+                                  "children": [
+                                    {
+                                      "move_uci": "f6d5",
+                                      "label": "",
+                                      "white_plan": "",
+                                      "black_plan": "",
+                                      "explanation": "",
+                                      "children": [
+                                        {
+                                          "move_uci": "e2e4",
+                                          "label": "",
+                                          "white_plan": "",
+                                          "black_plan": "",
+                                          "explanation": "",
+                                          "children": [
+                                            {
+                                              "move_uci": "d5c3",
+                                              "label": "",
+                                              "white_plan": "",
+                                              "black_plan": "",
+                                              "explanation": "",
+                                              "children": [
+                                                {
+                                                  "move_uci": "b2c3",
+                                                  "label": "",
+                                                  "white_plan": "",
+                                                  "black_plan": "",
+                                                  "explanation": "",
+                                                  "children": [
+                                                    {
+                                                      "move_uci": "f8g7",
+                                                      "label": "",
+                                                      "white_plan": "",
+                                                      "black_plan": "",
+                                                      "explanation": "",
+                                                      "children": []
+                                                    }
+                                                  ]
+                                                }
+                                              ]
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "schema_version": 1,
+      "opening_id": "benoni",
+      "name": "Benoni Defence",
+      "side": "black",
+      "starting_fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+      "eco": "A60",
+      "aliases": [],
+      "source_name": "KnightForge Curated Chess Encyclopedia",
+      "source_url": null,
+      "license_name": "Original editorial content",
+      "review_status": "reviewed",
+      "transposition_notes": [],
+      "anchor_uci": [
+        "d2d4",
+        "g8f6",
+        "c2c4",
+        "c7c5",
+        "d4d5"
+      ],
+      "roots": [
+        {
+          "move_uci": "d2d4",
+          "label": "",
+          "white_plan": "",
+          "black_plan": "",
+          "explanation": "",
+          "children": [
+            {
+              "move_uci": "g8f6",
+              "label": "",
+              "white_plan": "",
+              "black_plan": "",
+              "explanation": "",
+              "children": [
+                {
+                  "move_uci": "c2c4",
+                  "label": "",
+                  "white_plan": "",
+                  "black_plan": "",
+                  "explanation": "",
+                  "children": [
+                    {
+                      "move_uci": "c7c5",
+                      "label": "",
+                      "white_plan": "",
+                      "black_plan": "",
+                      "explanation": "",
+                      "children": [
+                        {
+                          "move_uci": "d4d5",
+                          "label": "Benoni Defence",
+                          "white_plan": "Use the central space advantage to prepare an e4-e5 break.",
+                          "black_plan": "Generate queenside pawn-majority play with ...b5 and target e4.",
+                          "explanation": "",
+                          "children": [
+                            {
+                              "move_uci": "e7e6",
+                              "label": "Modern Benoni",
+                              "white_plan": "",
+                              "black_plan": "",
+                              "explanation": "",
+                              "children": [
+                                {
+                                  "move_uci": "b1c3",
+                                  "label": "",
+                                  "white_plan": "",
+                                  "black_plan": "",
+                                  "explanation": "",
+                                  "children": [
+                                    {
+                                      "move_uci": "e6d5",
+                                      "label": "",
+                                      "white_plan": "",
+                                      "black_plan": "",
+                                      "explanation": "",
+                                      "children": [
+                                        {
+                                          "move_uci": "c4d5",
+                                          "label": "",
+                                          "white_plan": "",
+                                          "black_plan": "",
+                                          "explanation": "",
+                                          "children": [
+                                            {
+                                              "move_uci": "d7d6",
+                                              "label": "",
+                                              "white_plan": "",
+                                              "black_plan": "",
+                                              "explanation": "",
+                                              "children": []
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            },
+                            {
+                              "move_uci": "b7b5",
+                              "label": "Benko Gambit",
+                              "white_plan": "",
+                              "black_plan": "",
+                              "explanation": "Sacrifice a wing pawn for lasting pressure down the a- and b-files.",
+                              "children": [
+                                {
+                                  "move_uci": "c4b5",
+                                  "label": "",
+                                  "white_plan": "",
+                                  "black_plan": "",
+                                  "explanation": "",
+                                  "children": [
+                                    {
+                                      "move_uci": "a7a6",
+                                      "label": "",
+                                      "white_plan": "",
+                                      "black_plan": "",
+                                      "explanation": "",
+                                      "children": []
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "schema_version": 1,
+      "opening_id": "budapest",
+      "name": "Budapest Gambit",
+      "side": "black",
+      "starting_fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+      "eco": "A51",
+      "aliases": [],
+      "source_name": "KnightForge Curated Chess Encyclopedia",
+      "source_url": null,
+      "license_name": "Original editorial content",
+      "review_status": "reviewed",
+      "transposition_notes": [],
+      "anchor_uci": [
+        "d2d4",
+        "g8f6",
+        "c2c4",
+        "e7e5"
+      ],
+      "roots": [
+        {
+          "move_uci": "d2d4",
+          "label": "",
+          "white_plan": "",
+          "black_plan": "",
+          "explanation": "",
+          "children": [
+            {
+              "move_uci": "g8f6",
+              "label": "",
+              "white_plan": "",
+              "black_plan": "",
+              "explanation": "",
+              "children": [
+                {
+                  "move_uci": "c2c4",
+                  "label": "",
+                  "white_plan": "",
+                  "black_plan": "",
+                  "explanation": "",
+                  "children": [
+                    {
+                      "move_uci": "e7e5",
+                      "label": "Budapest Gambit",
+                      "white_plan": "Return the extra pawn when convenient to secure a smooth positional edge.",
+                      "black_plan": "Generate sharp piece activity and attack White's weakened central squares.",
+                      "explanation": "",
+                      "children": [
+                        {
+                          "move_uci": "d4e5",
+                          "label": "",
+                          "white_plan": "",
+                          "black_plan": "",
+                          "explanation": "",
+                          "children": [
+                            {
+                              "move_uci": "f6g4",
+                              "label": "Rubinstein Variation",
+                              "white_plan": "",
+                              "black_plan": "",
+                              "explanation": "",
+                              "children": [
+                                {
+                                  "move_uci": "g1f3",
+                                  "label": "",
+                                  "white_plan": "",
+                                  "black_plan": "",
+                                  "explanation": "",
+                                  "children": []
+                                }
+                              ]
+                            },
+                            {
+                              "move_uci": "f6e4",
+                              "label": "Fajarowicz Variation",
+                              "white_plan": "",
+                              "black_plan": "",
+                              "explanation": "",
+                              "children": []
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "schema_version": 1,
+      "opening_id": "english",
+      "name": "English Opening",
+      "side": "white",
+      "starting_fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+      "eco": "A10",
+      "aliases": [],
+      "source_name": "KnightForge Curated Chess Encyclopedia",
+      "source_url": null,
+      "license_name": "Original editorial content",
+      "review_status": "reviewed",
+      "transposition_notes": [],
+      "anchor_uci": [
+        "c2c4"
+      ],
+      "roots": [
+        {
+          "move_uci": "c2c4",
+          "label": "English Opening",
+          "white_plan": "Control d5 from the flank and fianchetto the bishop on g2.",
+          "black_plan": "Contest d5 actively with ...e5, ...c5, or ...Nf6.",
+          "explanation": "",
+          "children": [
+            {
+              "move_uci": "e7e5",
+              "label": "Reversed Sicilian",
+              "white_plan": "",
+              "black_plan": "",
+              "explanation": "",
+              "children": [
+                {
+                  "move_uci": "b1c3",
+                  "label": "",
+                  "white_plan": "",
+                  "black_plan": "",
+                  "explanation": "",
+                  "children": [
+                    {
+                      "move_uci": "g8f6",
+                      "label": "",
+                      "white_plan": "",
+                      "black_plan": "",
+                      "explanation": "",
+                      "children": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "move_uci": "c7c5",
+              "label": "Symmetrical Variation",
+              "white_plan": "",
+              "black_plan": "",
+              "explanation": "",
+              "children": [
+                {
+                  "move_uci": "b1c3",
+                  "label": "",
+                  "white_plan": "",
+                  "black_plan": "",
+                  "explanation": "",
+                  "children": [
+                    {
+                      "move_uci": "b8c6",
+                      "label": "",
+                      "white_plan": "",
+                      "black_plan": "",
+                      "explanation": "",
+                      "children": []
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "schema_version": 1,
+      "opening_id": "reti",
+      "name": "Réti Opening",
+      "side": "white",
+      "starting_fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+      "eco": "A09",
+      "aliases": [],
+      "source_name": "KnightForge Curated Chess Encyclopedia",
+      "source_url": null,
+      "license_name": "Original editorial content",
+      "review_status": "reviewed",
+      "transposition_notes": [],
+      "anchor_uci": [
+        "g1f3",
+        "d7d5",
+        "c2c4"
+      ],
+      "roots": [
+        {
+          "move_uci": "g1f3",
+          "label": "",
+          "white_plan": "",
+          "black_plan": "",
+          "explanation": "",
+          "children": [
+            {
+              "move_uci": "d7d5",
+              "label": "",
+              "white_plan": "",
+              "black_plan": "",
+              "explanation": "",
+              "children": [
+                {
+                  "move_uci": "c2c4",
+                  "label": "Réti Opening",
+                  "white_plan": "Attack Black's centre from the flanks with hypermodern flexibility.",
+                  "black_plan": "Advance ...d4 or maintain a solid central pawn chain.",
+                  "explanation": "",
+                  "children": [
+                    {
+                      "move_uci": "d5c4",
+                      "label": "Réti Gambit",
+                      "white_plan": "",
+                      "black_plan": "",
+                      "explanation": "",
+                      "children": []
+                    },
+                    {
+                      "move_uci": "d5d4",
+                      "label": "Main line",
+                      "white_plan": "",
+                      "black_plan": "",
+                      "explanation": "",
+                      "children": []
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "schema_version": 1,
+      "opening_id": "bird",
+      "name": "Bird's Opening",
+      "side": "white",
+      "starting_fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+      "eco": "A02",
+      "aliases": [],
+      "source_name": "KnightForge Curated Chess Encyclopedia",
+      "source_url": null,
+      "license_name": "Original editorial content",
+      "review_status": "reviewed",
+      "transposition_notes": [],
+      "anchor_uci": [
+        "f2f4"
+      ],
+      "roots": [
+        {
+          "move_uci": "f2f4",
+          "label": "Bird's Opening",
+          "white_plan": "Clamp down on e5 and build a kingside attack.",
+          "black_plan": "Strike the centre with 1...d5 or challenge with From's Gambit 1...e5.",
+          "explanation": "",
+          "children": [
+            {
+              "move_uci": "d7d5",
+              "label": "Dutch Variation",
+              "white_plan": "",
+              "black_plan": "",
+              "explanation": "",
+              "children": [
+                {
+                  "move_uci": "g1f3",
+                  "label": "",
+                  "white_plan": "",
+                  "black_plan": "",
+                  "explanation": "",
+                  "children": []
+                }
+              ]
+            },
+            {
+              "move_uci": "e7e5",
+              "label": "From's Gambit",
+              "white_plan": "",
+              "black_plan": "",
+              "explanation": "",
+              "children": [
+                {
+                  "move_uci": "f4e5",
+                  "label": "",
+                  "white_plan": "",
+                  "black_plan": "",
+                  "explanation": "",
+                  "children": [
+                    {
+                      "move_uci": "d7d6",
+                      "label": "",
+                      "white_plan": "",
+                      "black_plan": "",
+                      "explanation": "",
+                      "children": []
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "schema_version": 1,
+      "opening_id": "larsen",
+      "name": "Nimzo-Larsen Attack",
+      "side": "white",
+      "starting_fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+      "eco": "A01",
+      "aliases": [
+        "Larsen's Opening"
+      ],
+      "source_name": "KnightForge Curated Chess Encyclopedia",
+      "source_url": null,
+      "license_name": "Original editorial content",
+      "review_status": "reviewed",
+      "transposition_notes": [],
+      "anchor_uci": [
+        "b2b3"
+      ],
+      "roots": [
+        {
+          "move_uci": "b2b3",
+          "label": "Nimzo-Larsen Attack",
+          "white_plan": "Fianchetto on b2 to exert long-range pressure on e5 and g7.",
+          "black_plan": "Occupy the centre cleanly with 1...e5 or 1...d5.",
+          "explanation": "",
+          "children": [
+            {
+              "move_uci": "e7e5",
+              "label": "Modern setup",
+              "white_plan": "",
+              "black_plan": "",
+              "explanation": "",
+              "children": [
+                {
+                  "move_uci": "c1b2",
+                  "label": "",
+                  "white_plan": "",
+                  "black_plan": "",
+                  "explanation": "",
+                  "children": [
+                    {
+                      "move_uci": "b8c6",
+                      "label": "",
+                      "white_plan": "",
+                      "black_plan": "",
+                      "explanation": "",
+                      "children": []
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "schema_version": 1,
+      "opening_id": "london",
+      "name": "London System",
+      "side": "white",
+      "starting_fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+      "eco": "D02",
+      "aliases": [
+        "London",
+        "Jobava London",
+        "Classical London"
+      ],
+      "source_name": "KnightForge Curated Chess Encyclopedia",
+      "source_url": null,
+      "license_name": "Original editorial content",
+      "review_status": "reviewed",
+      "transposition_notes": [
+        "1.d4 d5 2.Bf4 and 1.d4 Nf6 2.Bf4 transpose frequently into Classical or Jobava London."
+      ],
+      "anchor_uci": [
+        "d2d4",
+        "d7d5",
+        "c1f4"
+      ],
+      "roots": [
+        {
+          "move_uci": "d2d4",
+          "label": "",
+          "white_plan": "",
+          "black_plan": "",
+          "explanation": "Claim central dark squares with the queen's pawn.",
+          "children": [
+            {
+              "move_uci": "d7d5",
+              "label": "",
+              "white_plan": "",
+              "black_plan": "",
+              "explanation": "Black contests the centre directly.",
+              "children": [
+                {
+                  "move_uci": "c1f4",
+                  "label": "Accelerated London",
+                  "white_plan": "Develop Bf4 outside the pawn chain, then choose Classical (e3/c3) or Jobava (Nc3).",
+                  "black_plan": "Challenge d4 with ...c5, develop ...Nf6, or target b2 with ...Qb6.",
+                  "explanation": "Develop the dark-squared bishop immediately before playing e3.",
+                  "children": [
+                    {
+                      "move_uci": "g8f6",
+                      "label": "",
+                      "white_plan": "",
+                      "black_plan": "",
+                      "explanation": "Black develops the kingside knight.",
+                      "children": [
+                        {
+                          "move_uci": "e2e3",
+                          "label": "Classical London",
+                          "white_plan": "Build the d4-e3-c3 pyramid, plant a knight on e5, and attack the kingside.",
+                          "black_plan": "Strike the centre with ...c5 and test White's queenside with ...Qb6.",
+                          "explanation": "Solidify d4 and open the diagonal for the f1-bishop.",
+                          "children": [
+                            {
+                              "move_uci": "c7c5",
+                              "label": "Classical London: Early ...c5 Systems",
+                              "white_plan": "",
+                              "black_plan": "",
+                              "explanation": "Black attacks your d4 centre immediately.",
+                              "children": [
+                                {
+                                  "move_uci": "c2c3",
+                                  "label": "",
+                                  "white_plan": "",
+                                  "black_plan": "",
+                                  "explanation": "Reinforce d4 with the classic London pyramid.",
+                                  "children": [
+                                    {
+                                      "move_uci": "b8c6",
+                                      "label": "",
+                                      "white_plan": "",
+                                      "black_plan": "",
+                                      "explanation": "Black adds pressure to d4.",
+                                      "children": [
+                                        {
+                                          "move_uci": "b1d2",
+                                          "label": "",
+                                          "white_plan": "",
+                                          "black_plan": "",
+                                          "explanation": "Develop flexibly to support e4 or f3.",
+                                          "children": []
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "move_uci": "d8b6",
+                                      "label": "Classical London: ...Qb6 Pressure",
+                                      "white_plan": "",
+                                      "black_plan": "",
+                                      "explanation": "Black targets your undefended b2 pawn.",
+                                      "children": [
+                                        {
+                                          "move_uci": "d1b3",
+                                          "label": "",
+                                          "white_plan": "",
+                                          "black_plan": "",
+                                          "explanation": "Defend b2 and offer a queen trade that opens your a-file.",
+                                          "children": []
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            },
+                            {
+                              "move_uci": "e7e6",
+                              "label": "",
+                              "white_plan": "",
+                              "black_plan": "",
+                              "explanation": "Black chooses a solid classical structure.",
+                              "children": [
+                                {
+                                  "move_uci": "g1f3",
+                                  "label": "",
+                                  "white_plan": "",
+                                  "black_plan": "",
+                                  "explanation": "Control the key e5 square.",
+                                  "children": [
+                                    {
+                                      "move_uci": "f8d6",
+                                      "label": "",
+                                      "white_plan": "",
+                                      "black_plan": "",
+                                      "explanation": "Black challenges your active f4-bishop.",
+                                      "children": [
+                                        {
+                                          "move_uci": "f4g3",
+                                          "label": "",
+                                          "white_plan": "",
+                                          "black_plan": "",
+                                          "explanation": "Retreat to g3 so if Black captures, you open the h-file for your rook.",
+                                          "children": []
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "move_uci": "b1c3",
+                          "label": "Jobava London",
+                          "white_plan": "Fight aggressively for e4, threaten Nb5 hitting c7, and launch a kingside pawn storm.",
+                          "black_plan": "Stop Nb5 with ...a6 or ...c6 and strike the centre with ...c5.",
+                          "explanation": "Enter the dynamic Jobava London! Threaten Nb5 and prepare e3 or f3.",
+                          "children": [
+                            {
+                              "move_uci": "e7e6",
+                              "label": "Jobava London: Early Nc3 Setup",
+                              "white_plan": "",
+                              "black_plan": "",
+                              "explanation": "Black develops solidly.",
+                              "children": [
+                                {
+                                  "move_uci": "c3b5",
+                                  "label": "",
+                                  "white_plan": "",
+                                  "black_plan": "",
+                                  "explanation": "Threaten Nxc7+ forking Black's king and rook!",
+                                  "children": [
+                                    {
+                                      "move_uci": "b8a6",
+                                      "label": "",
+                                      "white_plan": "",
+                                      "black_plan": "",
+                                      "explanation": "Black defends c7 awkwardly on the rim.",
+                                      "children": [
+                                        {
+                                          "move_uci": "e2e3",
+                                          "label": "",
+                                          "white_plan": "",
+                                          "black_plan": "",
+                                          "explanation": "Solidify the centre with a lasting initiative.",
+                                          "children": []
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            },
+                            {
+                              "move_uci": "c7c5",
+                              "label": "Jobava London: Queenside Expansion",
+                              "white_plan": "",
+                              "black_plan": "",
+                              "explanation": "Black counterattacks d4 immediately.",
+                              "children": [
+                                {
+                                  "move_uci": "e2e3",
+                                  "label": "",
+                                  "white_plan": "",
+                                  "black_plan": "",
+                                  "explanation": "Keep the centre firm and prepare Nb5 or Bb5+.",
+                                  "children": [
+                                    {
+                                      "move_uci": "a7a6",
+                                      "label": "",
+                                      "white_plan": "",
+                                      "black_plan": "",
+                                      "explanation": "Black stops Nb5.",
+                                      "children": [
+                                        {
+                                          "move_uci": "g1f3",
+                                          "label": "",
+                                          "white_plan": "",
+                                          "black_plan": "",
+                                          "explanation": "Develop toward the centre and prepare kingside pressure.",
+                                          "children": []
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            },
+                            {
+                              "move_uci": "c8f5",
+                              "label": "Barry Attack",
+                              "white_plan": "",
+                              "black_plan": "",
+                              "explanation": "Black develops the bishop outside the pawn chain.",
+                              "children": [
+                                {
+                                  "move_uci": "f2f3",
+                                  "label": "",
+                                  "white_plan": "",
+                                  "black_plan": "",
+                                  "explanation": "Prepare a sharp g4-h4 pawn storm and e4 break.",
+                                  "children": []
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "schema_version": 1,
+      "opening_id": "englund-gambit",
+      "name": "Englund Gambit",
+      "side": "black",
+      "starting_fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+      "eco": "A40",
+      "aliases": [
+        "Englund"
+      ],
+      "source_name": "KnightForge Curated Chess Encyclopedia",
+      "source_url": null,
+      "license_name": "Original editorial content",
+      "review_status": "reviewed",
+      "transposition_notes": [],
+      "anchor_uci": [
+        "d2d4",
+        "e7e5"
+      ],
+      "roots": [
+        {
+          "move_uci": "d2d4",
+          "label": "",
+          "white_plan": "",
+          "black_plan": "",
+          "explanation": "",
+          "children": [
+            {
+              "move_uci": "e7e5",
+              "label": "Englund Gambit",
+              "white_plan": "Accept the pawn, develop solidly, and refute premature queen raids.",
+              "black_plan": "Create immediate tactical traps targeting b2, e5, and White's queenside.",
+              "explanation": "Sacrifice the e-pawn on move 1 to steer 1.d4 players into sharp tactical waters.",
+              "children": [
+                {
+                  "move_uci": "d4e5",
+                  "label": "",
+                  "white_plan": "",
+                  "black_plan": "",
+                  "explanation": "White accepts the gambit pawn.",
+                  "children": [
+                    {
+                      "move_uci": "b8c6",
+                      "label": "",
+                      "white_plan": "",
+                      "black_plan": "",
+                      "explanation": "Attack the e5 pawn immediately.",
+                      "children": [
+                        {
+                          "move_uci": "g1f3",
+                          "label": "",
+                          "white_plan": "",
+                          "black_plan": "",
+                          "explanation": "White defends e5.",
+                          "children": [
+                            {
+                              "move_uci": "d8e7",
+                              "label": "",
+                              "white_plan": "",
+                              "black_plan": "",
+                              "explanation": "Double up on e5 and set up the classic ...Qb4+ trap.",
+                              "children": []
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "schema_version": 1,
+      "opening_id": "stafford-gambit",
+      "name": "Stafford Gambit",
+      "side": "black",
+      "starting_fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+      "eco": "C42",
+      "aliases": [
+        "Stafford"
+      ],
+      "source_name": "KnightForge Curated Chess Encyclopedia",
+      "source_url": null,
+      "license_name": "Original editorial content",
+      "review_status": "reviewed",
+      "transposition_notes": [
+        "Arises from the Petrov Defence after 1.e4 e5 2.Nf3 Nf6 3.Nxe5 Nc6."
+      ],
+      "anchor_uci": [
+        "e2e4",
+        "e7e5",
+        "g1f3",
+        "g8f6",
+        "f3e5",
+        "b8c6"
+      ],
+      "roots": [
+        {
+          "move_uci": "e2e4",
+          "label": "",
+          "white_plan": "",
+          "black_plan": "",
+          "explanation": "",
+          "children": [
+            {
+              "move_uci": "e7e5",
+              "label": "",
+              "white_plan": "",
+              "black_plan": "",
+              "explanation": "",
+              "children": [
+                {
+                  "move_uci": "g1f3",
+                  "label": "",
+                  "white_plan": "",
+                  "black_plan": "",
+                  "explanation": "",
+                  "children": [
+                    {
+                      "move_uci": "g8f6",
+                      "label": "",
+                      "white_plan": "",
+                      "black_plan": "",
+                      "explanation": "",
+                      "children": [
+                        {
+                          "move_uci": "f3e5",
+                          "label": "",
+                          "white_plan": "",
+                          "black_plan": "",
+                          "explanation": "",
+                          "children": [
+                            {
+                              "move_uci": "b8c6",
+                              "label": "Stafford Gambit",
+                              "white_plan": "Take on c6, defend e4 solidly with d3 or Nc3, and avoid opening the kingside.",
+                              "black_plan": "Open lines for both bishops and launch rapid mating traps with ...Bc5, ...Ng4, and ...Qh4.",
+                              "explanation": "Sacrifice a pawn for explosive piece development and deadly kingside traps.",
+                              "children": [
+                                {
+                                  "move_uci": "e5c6",
+                                  "label": "",
+                                  "white_plan": "",
+                                  "black_plan": "",
+                                  "explanation": "White trades knights.",
+                                  "children": [
+                                    {
+                                      "move_uci": "d7c6",
+                                      "label": "",
+                                      "white_plan": "",
+                                      "black_plan": "",
+                                      "explanation": "Recapture toward the centre, freeing both the c8-bishop and queen.",
+                                      "children": [
+                                        {
+                                          "move_uci": "d2d3",
+                                          "label": "",
+                                          "white_plan": "",
+                                          "black_plan": "",
+                                          "explanation": "White defends e4 solidly.",
+                                          "children": [
+                                            {
+                                              "move_uci": "f8c5",
+                                              "label": "",
+                                              "white_plan": "",
+                                              "black_plan": "",
+                                              "explanation": "Aim at f2 and prepare ...Ng4!",
+                                              "children": []
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
