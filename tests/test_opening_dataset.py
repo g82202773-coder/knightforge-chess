@@ -3,10 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 
 from knightforge_engine.opening_catalog import OpeningCatalog
-from knightforge_engine.opening_dataset import (
-    LAUNCH_SYSTEM_IDS,
-    load_lichess_opening_trees,
-)
+from knightforge_engine.opening_dataset import LAUNCH_SYSTEM_IDS, load_lichess_opening_trees
 
 
 ROOT = Path(__file__).resolve().parents[1]
