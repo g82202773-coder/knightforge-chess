@@ -18,13 +18,13 @@ from pydantic import BaseModel, Field
 from .adaptive_coach import AdaptiveOpeningCoach
 from .analysis import StockfishAnalyzer
 from .coach_presentation import coach_state_payload, submission_payload
-from .guided_learning import GuidedLesson, LessonNode
 from .full_game import FullGame
+from .guided_learning import GuidedLesson, LessonNode
 from .opening_catalog import OpeningCatalog
+from .opening_courses import london_jobava_courses
 from .opening_import import parse_opening_import
 from .opening_repository import OpeningRepository
 from .opening_training import OpeningTrainingSession, TrainingMode
-from .opening_courses import london_jobava_courses
 from .opening_tree import OpeningTree, VariationNode
 from .positional_analysis import analyze_position
 from .strategy_training import EXERCISES, LESSONS, StrategyMode, StrategySession
