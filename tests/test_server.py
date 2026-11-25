@@ -152,3 +152,31 @@ def test_test_modes_keep_answer_hidden_after_move_and_state_refresh():
         assert refreshed.json()["state"]["coach"]["expected_move"] is None
         assert "e2e4" not in str(refreshed.json()["state"]["coach"]) and "e2e4" not in str(refreshed.json()["state"]["engine"])
 
+
+
+
+def test_password_recovery_fails_closed_without_verified_delivery():
+    registered = client.post(
+        "/api/auth/register",
+        json={"username": "recovery-safety-test", "password": "correct-horse-1"},
+    )
+    assert registered.status_code == 200
+
+    request = client.post(
+        "/api/auth/recover/request",
+        json={"username": "recovery-safety-test"},
+    )
+    assert request.status_code == 503
+    assert "recovery_token" not in request.json()
+
+    # The failed request must not alter credentials or issue a usable token.
+    login = client.post(
+        "/api/auth/login",
+        json={"username": "recovery-safety-test", "password": "correct-horse-1"},
+    )
+    assert login.status_code == 200
+    reset = client.post(
+        "/api/auth/recover/confirm",
+        json={"recovery_token": "not-a-real-token", "new_password": "attacker-password"},
+    )
+    assert reset.status_code == 400
