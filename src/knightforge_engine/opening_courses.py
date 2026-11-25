@@ -13,18 +13,15 @@ from .opening_tree import OpeningTree, VariationNode
 # OpeningTree.validate(). Each reaches a playable middlegame, not a forced mate.
 _LONDON_LINES: tuple[tuple[str, str], ...] = (
     (
-        "d2d4 d7d5 g1f3 g8f6 c1f4 e7e6 e2e3 f8d6 f1d3 e8g8 "
-        "e1g1 c7c5 c2c3 b8c6 b1d2 b7b6",
+        "d2d4 d7d5 g1f3 g8f6 c1f4 e7e6 e2e3 f8d6 f1d3 e8g8 " + "e1g1 c7c5 c2c3 b8c6 b1d2 b7b6",
         "Classical ...e6 setup",
     ),
     (
-        "d2d4 d7d5 g1f3 g8f6 c1f4 c7c5 e2e3 b8c6 c2c3 e7e6 "
-        "b1d2 f8d6 f1d3 e8g8 e1g1",
+        "d2d4 d7d5 g1f3 g8f6 c1f4 c7c5 e2e3 b8c6 c2c3 e7e6 " + "b1d2 f8d6 f1d3 e8g8 e1g1",
         "Early ...c5 challenge",
     ),
     (
-        "d2d4 d7d5 g1f3 g8f6 c1f4 e7e6 e2e3 c7c5 c2c3 b8c6 "
-        "b1d2 f8d6 f1d3 e8g8 e1g1",
+        "d2d4 d7d5 g1f3 g8f6 c1f4 e7e6 e2e3 c7c5 c2c3 b8c6 " + "b1d2 f8d6 f1d3 e8g8 e1g1",
         "Symmetrical central pressure",
     ),
     (
@@ -35,18 +32,15 @@ _LONDON_LINES: tuple[tuple[str, str], ...] = (
 
 _JOBAVA_LINES: tuple[tuple[str, str], ...] = (
     (
-        "d2d4 d7d5 b1c3 g8f6 c1f4 e7e6 e2e3 f8d6 d1f3 e8g8 "
-        "e1c1 c7c5 c3b5 d6f4 f3f4 b8a6 g1f3",
+        "d2d4 d7d5 b1c3 g8f6 c1f4 e7e6 e2e3 f8d6 d1f3 e8g8 " + "e1c1 c7c5 c3b5 d6f4 f3f4 b8a6 g1f3",
         "Qf3 plan and long castling",
     ),
     (
-        "d2d4 d7d5 b1c3 g8f6 c1f4 e7e6 e2e3 f8d6 d1f3 e8g8 "
-        "e1c1 c7c5 c3b5 d6f4 f3f4 b8a6",
+        "d2d4 d7d5 b1c3 g8f6 c1f4 e7e6 e2e3 f8d6 d1f3 e8g8 " + "e1c1 c7c5 c3b5 d6f4 f3f4 b8a6",
         "Pressure on c7 and queenside",
     ),
     (
-        "d2d4 d7d5 b1c3 g8f6 c1f4 c7c5 e2e3 b8c6 "
-        "d1f3",
+        "d2d4 d7d5 b1c3 g8f6 c1f4 c7c5 e2e3 b8c6 " + "d1f3",
         "Early ...c5 and Qf3",
     ),
 )
