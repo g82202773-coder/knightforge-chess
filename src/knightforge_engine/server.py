@@ -5,7 +5,7 @@ import json
 import os
 import secrets
 import threading
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from pathlib import Path
 from typing import Literal
 
@@ -22,6 +22,7 @@ from .full_game import FullGame
 from .guided_learning import GuidedLesson, LessonNode
 from .opening_catalog import OpeningCatalog
 from .opening_courses import london_jobava_courses
+from .opening_dataset import LAUNCH_SYSTEM_IDS, load_lichess_opening_trees, merge_variation_nodes
 from .opening_import import parse_opening_import
 from .opening_repository import OpeningRepository
 from .opening_training import OpeningTrainingSession, TrainingMode
@@ -80,6 +81,38 @@ class SessionStore:
         # Built-in KnightForge repertoire courses are validated before exposure.
         for course in london_jobava_courses():
             self.study_openings[course.opening_id] = course
+        self.opening_import_report: dict | None = None
+        self.opening_dataset_error: str | None = None
+        opening_dataset_path = data_root / "lichess_cc0" / "openings.json"
+        if self.opening_catalog is not None and opening_dataset_path.exists():
+            try:
+                imported_trees, import_report = load_lichess_opening_trees(
+                    opening_dataset_path, self.opening_catalog
+                )
+                self.study_openings.update(imported_trees)
+                self.opening_import_report = import_report.to_dict()
+            except (OSError, ValueError, TypeError) as exc:
+                # Keep core chess available if optional knowledge data is damaged.
+                self.opening_dataset_error = str(exc)
+
+        # Keep the hand-authored London lines and Jobava sub-course alongside
+        # the larger CC0 ECO import, while preserving the primary dataset source.
+        for course in london_jobava_courses():
+            existing = self.study_openings.get(course.opening_id)
+            if existing is not None:
+                combined = replace(
+                    existing,
+                    roots=merge_variation_nodes(existing.roots, course.roots),
+                    transposition_notes=(
+                        *existing.transposition_notes,
+                        *course.transposition_notes,
+                    ),
+                )
+                combined.validate()
+                self.study_openings[course.opening_id] = combined
+            else:
+                self.study_openings[course.opening_id] = course
+
         self.analyzer: StockfishAnalyzer | None = None
         executable = os.environ.get("STOCKFISH_PATH")
         if executable:
@@ -620,6 +653,32 @@ def restart_training(training_id: str) -> dict:
     training, lock = _training_record(training_id)
     with lock:
         return {"state": training.restart()}
+
+
+@app.get("/api/openings/coverage")
+def opening_library_coverage() -> dict:
+    """Report launch-system move-tree coverage without counting taxonomy labels as courses."""
+    available = [
+        opening_id for opening_id in LAUNCH_SYSTEM_IDS
+        if opening_id in store.study_openings
+    ]
+    return {
+        "launch_target": len(LAUNCH_SYSTEM_IDS),
+        "available_launch_system_count": len(available),
+        "available_launch_systems": available,
+        "missing_launch_systems": [
+            opening_id for opening_id in LAUNCH_SYSTEM_IDS
+            if opening_id not in store.study_openings
+        ],
+        "supplemental_courses": [
+            opening_id for opening_id in store.study_openings
+            if opening_id not in LAUNCH_SYSTEM_IDS
+        ],
+        "total_study_count": len(store.study_openings),
+        "source_import": store.opening_import_report,
+        "dataset_error": store.opening_dataset_error,
+        "content_status": "in_review",
+    }
 
 
 @app.get("/api/openings")
