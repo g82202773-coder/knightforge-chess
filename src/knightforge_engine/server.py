@@ -24,6 +24,7 @@ from .opening_catalog import OpeningCatalog
 from .opening_import import parse_opening_import
 from .opening_repository import OpeningRepository
 from .opening_training import OpeningTrainingSession, TrainingMode
+from .opening_courses import london_jobava_courses
 from .opening_tree import OpeningTree, VariationNode
 from .positional_analysis import analyze_position
 from .strategy_training import EXERCISES, LESSONS, StrategyMode, StrategySession
@@ -76,6 +77,9 @@ class SessionStore:
                 # Optional study content must not take down ordinary chess sessions.
                 self.study_openings = {}
                 self.opening_catalog = None
+        # Built-in KnightForge repertoire courses are validated before exposure.
+        for course in london_jobava_courses():
+            self.study_openings.setdefault(course.opening_id, course)
         self.analyzer: StockfishAnalyzer | None = None
         executable = os.environ.get("STOCKFISH_PATH")
         if executable:
