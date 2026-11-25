@@ -57,9 +57,9 @@ def page():
 def test_main_board_loads_and_supports_legal_move_undo_restart(page: Page) -> None:
     expect(page.locator("#connection-label")).to_have_text("SESSION ACTIVE")
     expect(page.locator("#board .square")).to_have_count(64)
-    page.locator('#board button[aria-label="e2 P"]').click()
+    page.locator('#board button[data-square="e2"]').click()
     expect(page.locator("#board .square.legal")).not_to_have_count(0)
-    page.locator('#board button[aria-label="e4 empty"]').click()
+    page.locator('#board button[data-square="e4"]').click()
     expect(page.locator("#move-count")).to_have_text("1 half-moves")
     expect(page.locator("#moves")).to_contain_text("e4")
     page.locator("#undo-btn").click()
