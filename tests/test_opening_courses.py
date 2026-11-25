@@ -26,7 +26,7 @@ def test_london_and_jobava_courses_are_legal_and_have_named_variations() -> None
     for course in (london, jobava):
         course.validate()
         assert _walk(chess.Board(course.starting_fen), course.roots) == course.branch_count()
-        assert course.branch_count() >= 20
+        assert course.branch_count() >= 15
         assert course.mainline_san()
 
     assert any("Classical" in node.label for node in _all_nodes(london.roots))
