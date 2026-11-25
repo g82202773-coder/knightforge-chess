@@ -10,9 +10,10 @@ import io
 import json
 import re
 from collections import OrderedDict
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Callable
+from typing import Any
 
 import chess
 import chess.pgn
@@ -47,7 +48,7 @@ def _matches(opening_id: str, name: str) -> bool:
         "kings-gambit": lambda n: n.startswith("King's Gambit"),
         "vienna-game": lambda n: n.startswith("Vienna Game"),
         "four-knights": lambda n: n.startswith("Four Knights Game"),
-        "petrov": lambda n: bool(re.match(r"Petrov'?s? (?:Defense|Defence)", n, re.I)),
+        "petrov": lambda n: bool(re.match(r"Petrov'?s? (?:Defense|Defence)", n, re.IGNORECASE)),
         "open-sicilian": lambda n: n.startswith("Sicilian Defense") and not _ANTI_SICILIAN.search(n),
         "anti-sicilians": lambda n: n.startswith("Sicilian Defense") and bool(_ANTI_SICILIAN.search(n)),
         "french": lambda n: n.startswith("French Defense"),
@@ -60,7 +61,7 @@ def _matches(opening_id: str, name: str) -> bool:
         "semi-slav": lambda n: n.startswith("Semi-Slav Defense"),
         "london": lambda n: bool(re.match(
             r"(?:London System(?:[:,]|$)|Indian Defense: .*London System|"
-            r"Queen's Pawn Game: .*London System|Rapport-Jobava System)", n, re.I
+            r"Queen's Pawn Game: .*London System|Rapport-Jobava System)", n, re.IGNORECASE
         )),
         "colle": lambda n: "Colle System" in n,
         "trompowsky": lambda n: "Trompowsky Attack" in n,
@@ -206,7 +207,7 @@ def load_lichess_opening_trees(
             skipped.append(f"row {index}: record is not an object")
             continue
         opening_id = record.get("opening_id")
-        name, pgn, eco = record.get("name"), record.get("pgn"), record.get("eco")
+        name, pgn = record.get("name"), record.get("pgn")
         if opening_id not in grouped or not isinstance(name, str) or not isinstance(pgn, str):
             skipped.append(f"row {index}: malformed or unsupported record")
             continue
@@ -278,8 +279,8 @@ def load_lichess_opening_trees(
             review_status="in_review",
             roots=roots,
             transposition_notes=(
-                "Identical UCI prefixes are merged. The source may list multiple named "
-                "positions and distinct move orders; each imported PGN remains a separate leaf label.",
+                ("Identical UCI prefixes are merged. The source may list multiple named "
+                "positions and distinct move orders; each imported PGN remains a separate leaf label."),
             ),
         )
         tree.validate()
