@@ -108,7 +108,7 @@ def london_jobava_courses() -> tuple[OpeningTree, OpeningTree]:
     """Return two legally validated White repertoires with labelled branches."""
     courses = (
         OpeningTree(
-            opening_id="london-system",
+            opening_id="london",
             name="London System",
             side="white",
             eco="D00",
