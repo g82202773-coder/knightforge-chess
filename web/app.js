@@ -6,7 +6,7 @@ function parseFen(fen){const rows=fen.split(" ")[0].split("/"),out=[];rows.forEa
 function parseUci(u){return {from:u.slice(0,2),to:u.slice(2,4),promotion:u[4]||null};}
 function legalFrom(sq){return (state.board.legal_moves_uci||[]).filter(u=>u.slice(0,2)===sq).map(parseUci);}
 function arrow(){if(mode==="mastery")return null;const h=state.coach.active_hint;if(h&&h.arrow_from&&h.arrow_to)return {from:h.arrow_from,to:h.arrow_to};const a=state.coach.expected_move&&state.coach.expected_move.arrow;return mode==="guided"&&a&&a.from&&a.to?a:null;}
-function render(){if(!state)return;const root=$("board");root.innerHTML="";const cells=parseFen(state.board.fen),a=arrow();const ranks=fullGameFlipped?[1,2,3,4,5,6,7,8]:[8,7,6,5,4,3,2,1],files=fullGameFlipped?[...FILES].reverse():FILES;for(const rank of ranks)for(const file of files){const sq=FILES[file]+rank,entry=cells.find(x=>x.sq===sq),b=document.createElement("button");b.type="button";b.className="square "+(((file+rank)%2===0)?"light":"dark");if(sq===selected)b.classList.add("selected");if(lastMove&&lastMove.includes(sq))b.classList.add("last-move");const target=targets.find(x=>x.to===sq);if(target)b.classList.add(entry&&entry.p?"capture":"legal");if(entry&&entry.p){const span=document.createElement("span");span.className="piece "+(entry.p===entry.p.toUpperCase()?"white":"black");span.textContent=PIECES[entry.p];b.append(span);}b.setAttribute("aria-label",sq+(entry&&entry.p?" "+entry.p:" empty"));b.addEventListener("click",()=>clickSquare(sq,entry&&entry.p));root.append(b);}
+function render(){if(!state)return;const root=$("board");root.innerHTML="";const cells=parseFen(state.board.fen),a=arrow();const ranks=[8,7,6,5,4,3,2,1],files=FILES;for(const rank of ranks)for(const file of files){const sq=FILES[file]+rank,entry=cells.find(x=>x.sq===sq),b=document.createElement("button");b.type="button";b.className="square "+(((file+rank)%2===0)?"light":"dark");if(sq===selected)b.classList.add("selected");if(lastMove&&lastMove.includes(sq))b.classList.add("last-move");const target=targets.find(x=>x.to===sq);if(target)b.classList.add(entry&&entry.p?"capture":"legal");if(entry&&entry.p){const span=document.createElement("span");span.className="piece "+(entry.p===entry.p.toUpperCase()?"white":"black");span.textContent=PIECES[entry.p];b.append(span);}b.dataset.square=sq;b.dataset.piece=entry&&entry.p?entry.p:"";b.setAttribute("aria-label",sq+(entry&&entry.p?" "+entry.p:" empty"));b.addEventListener("click",()=>clickSquare(sq,entry&&entry.p));root.append(b);}
 if(a){const pos=s=>({x:(FILES.indexOf(s[0])+.5)*12.5,y:(8-Number(s[1])+.5)*12.5}),p=pos(a.from),q=pos(a.to),svg=document.createElementNS("http://www.w3.org/2000/svg","svg");svg.setAttribute("viewBox","0 0 100 100");svg.setAttribute("class","board-arrow");svg.innerHTML='<defs><marker id="arrowhead" markerUnits="userSpaceOnUse" markerWidth="3.2" markerHeight="3.2" refX="2.8" refY="1.6" orient="auto"><path d="M0 0 L3.2 1.6 L0 3.2Z" fill="#d7f18a"/></marker></defs>';const line=document.createElementNS("http://www.w3.org/2000/svg","line");line.setAttribute("x1",p.x);line.setAttribute("y1",p.y);line.setAttribute("x2",q.x);line.setAttribute("y2",q.y);line.setAttribute("stroke-width","2.4");svg.append(line);root.append(svg);}}
 function clickSquare(sq,piece){if(busy)return;if(selected){const move=targets.find(x=>x.to===sq);if(move){sendMove(selected+sq+(move.promotion||""));return;}if(selected===sq){selected=null;targets=[];render();return;}}if(piece){selected=sq;targets=legalFrom(sq);render();}else{selected=null;targets=[];render();}}
 async function sendMove(uci){setBusy(true);try{const result=await api("/api/sessions/"+sessionId+"/moves",{method:"POST",body:JSON.stringify({uci})});if(result.move.applied){lastMove=[uci.slice(0,2),uci.slice(2,4)];history.push(result.move.actual_san||uci);feedback(result.move.message||"Move accepted.",result.move.correct!==false);}else feedback(result.move.message||"Try again.",false);selected=null;targets=[];apply(result.state);}catch(e){feedback(e.message,false);}finally{setBusy(false);}}
@@ -325,8 +325,10 @@ function renderStrategyBoard(){
   if(!strategyState)return;
   const root=$("strategy-board");root.innerHTML="";
   const cells=parseFen(strategyState.fen),legal=strategyState.legal_moves_uci||[];
-  for(let rank=8;rank>=1;rank--)for(let file=0;file<8;file++){
-    const square=FILES[file]+rank,entry=cells.find(x=>x.sq===square),button=document.createElement("button");
+  const ranks=fullGameFlipped?[1,2,3,4,5,6,7,8]:[8,7,6,5,4,3,2,1];
+  const files=fullGameFlipped?[...FILES].reverse():FILES;
+  for(const rank of ranks)for(const file of files){
+    const square=file+rank,entry=cells.find(x=>x.sq===square),button=document.createElement("button");
     button.type="button";button.className="tactics-square "+(((file+rank)%2===0)?"light":"dark");
     if(square===strategySelected)button.classList.add("selected");
     if(strategyTargets.some(move=>move.slice(2,4)===square))button.classList.add("legal");
@@ -428,6 +430,7 @@ function renderFullGame(){
     if(square===fullGameSelected)button.classList.add("selected");
     if(fullGameTargets.includes(square))button.classList.add(entry&&entry.p?"capture":"legal");
     if(entry&&entry.p){const piece=document.createElement("span");piece.className="piece "+(entry.p===entry.p.toUpperCase()?"white":"black");piece.textContent=PIECES[entry.p];button.append(piece);}
+    button.dataset.square=square;button.dataset.piece=entry&&entry.p?entry.p:"";
     button.setAttribute("aria-label",square+(entry&&entry.p?" "+entry.p:" empty"));
     button.disabled=fullGameBusy||fullGameState.game_over;
     button.addEventListener("click",()=>fullGameClick(square,entry&&entry.p));
