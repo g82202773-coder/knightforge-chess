@@ -357,7 +357,7 @@ def _load_extra_puzzles(path: Path | None = None) -> tuple[Puzzle, ...]:
 
 
 class PuzzleCatalog:
-    """Read-only registry of 1,000+ validated KnightForge puzzles."""
+    """Registry of validated curated puzzles and an optional imported bulk dataset."""
 
     def __init__(
         self,
