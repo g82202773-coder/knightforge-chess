@@ -3,9 +3,9 @@ from __future__ import annotations
 
 import datetime
 import json
-from pathlib import Path
 import random
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Literal
 
 import chess
