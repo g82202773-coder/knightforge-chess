@@ -95,7 +95,7 @@ class ConnectionManager:
         for ws in room:
             try:
                 await ws.send_json(payload)
-            except Exception:
+            except (WebSocketDisconnect, RuntimeError):
                 self.disconnect(game_id, ws)
 
 
