@@ -30,7 +30,7 @@ def app_server():
                 with urllib.request.urlopen(BASE_URL + "/api/health", timeout=1) as response:
                     if response.status == 200:
                         break
-            except Exception:
+            except (OSError, TimeoutError):
                 time.sleep(0.5)
         else:
             raise RuntimeError("KnightForge server did not become healthy.")
