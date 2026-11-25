@@ -11,27 +11,17 @@ from .opening_tree import OpeningTree, VariationNode
 # branch reaches a playable middlegame structure; it is not a forced game-to-mate.
 _LONDON_LINES = (
     (
-        "d2d4 d7d5 g1f3 g8f6 c1f4 e7e6 e2e3 f8d6 f1d3 e8g8 e1g1 c7c5 "
-        "c2c3 b8c6 b1d2 b7b6"
-    , "Classical ...e6 setup"),
+        ("d2d4 d7d5 g1f3 g8f6 c1f4 e7e6 e2e3 f8d6 f1d3 e8g8 e1g1 c7c5 " + "c2c3 b8c6 b1d2 b7b6", "Classical ...e6 setup"),
     (
-        "d2d4 d7d5 g1f3 g8f6 c1f4 c7c5 e2e3 b8c6 c2c3 e7e6 b1d2 f8d6 "
-        "f1d3 e8g8 e1g1"
-    , "Early ...c5 challenge"),
+        ("d2d4 d7d5 g1f3 g8f6 c1f4 c7c5 e2e3 b8c6 c2c3 e7e6 b1d2 f8d6 " + "f1d3 e8g8 e1g1", "Early ...c5 challenge"),
     (
-        "d2d4 d7d5 g1f3 g8f6 c1f4 e7e6 e2e3 c7c5 c2c3 b8c6 b1d2 "
-        "f8d6 f1d3 e8g8 e1g1"
-    , "Symmetrical central pressure"),
+        ("d2d4 d7d5 g1f3 g8f6 c1f4 e7e6 e2e3 c7c5 c2c3 b8c6 b1d2 " + "f8d6 f1d3 e8g8 e1g1", "Symmetrical central pressure"),
 )
 _JOBAVA_LINES = (
     (
-        "d2d4 d7d5 b1c3 g8f6 c1f4 e7e6 e2e3 f8d6 d1f3 e8g8 "
-        "e1c1 c7c5 c3b5 d6f4 f3f4 b8a6 g1f3"
-    , "Main Jobava plan: Qf3 and long castling"),
+        ("d2d4 d7d5 b1c3 g8f6 c1f4 e7e6 e2e3 f8d6 d1f3 e8g8 " + "e1c1 c7c5 c3b5 d6f4 f3f4 b8a6 g1f3", "Main Jobava plan: Qf3 and long castling"),
     (
-        "d2d4 d7d5 b1c3 g8f6 c1f4 e7e6 e2e3 f8d6 d1f3 e8g8 "
-        "e1c1 c7c5 c3b5 d6f4 f3f4 b8a6"
-    , "Pressure on c7 and queenside"),
+        ("d2d4 d7d5 b1c3 g8f6 c1f4 e7e6 e2e3 f8d6 d1f3 e8g8 " + "e1c1 c7c5 c3b5 d6f4 f3f4 b8a6", "Pressure on c7 and queenside"),
 )
 _EXPLANATIONS = {
     "d2d4": "Claim central space and open lines for the dark-squared bishop.",
@@ -46,7 +36,6 @@ _EXPLANATIONS = {
     "c3b5": "Use the advanced knight to create pressure on c7 and d6.",
     "d6f4": "Black exchanges the active bishop for White's London bishop.",
     "f3f4": "Recapture with the queen and keep active central influence.",
-    "g1f3": "Complete development and prepare to coordinate the rooks.",
     "e1g1": "Castle kingside and connect the rooks.",
     "c7c5": "Black challenges White's central pawn chain immediately.",
     "b8c6": "Develop and increase pressure on d4.",
