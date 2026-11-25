@@ -30,7 +30,7 @@ def test_london_and_jobava_courses_are_legal_and_have_named_variations() -> None
         assert course.mainline_san()
 
     assert any("Classical" in node.label for node in _all_nodes(london.roots))
-    assert any("Jobava" in node.label for node in _all_nodes(jobava.roots))
+    assert any("Qf3" in node.label for node in _all_nodes(jobava.roots))
 
 
 def _all_nodes(nodes):
