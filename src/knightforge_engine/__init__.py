@@ -49,6 +49,7 @@ from .variation_matching import (
 )
 
 __all__ = [
+    "CLOCK_PRESETS",
     "AdaptiveOpeningCoach",
     "AIDifficulty",
     "AIMoveDecision",
@@ -62,7 +63,6 @@ __all__ = [
     "ChessClock",
     "ChessCoachAssistant",
     "ChessGame",
-    "CLOCK_PRESETS",
     "coach_state_payload",
     "CoachDecisionLayer",
     "CoachHint",
