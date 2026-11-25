@@ -455,12 +455,20 @@ def login(request: AuthRequest) -> dict[str, Any]:
 
 
 @app.post("/api/auth/recover/request")
-def request_recovery(request: RecoveryRequest) -> dict[str, Any]:
-    try:
-        token = store.progress.create_recovery_token(request.username)
-        return {"recovery_token": token, "message": "One-time recovery token issued."}
-    except ValueError as exc:
-        raise HTTPException(status_code=404, detail=str(exc)) from exc
+def request_recovery(_request: RecoveryRequest) -> dict[str, Any]:
+    """Fail closed until a verified recovery-delivery provider is configured.
+
+    Returning a recovery token in an unauthenticated API response would let
+    anyone who knows a username take over that account. Tokens must only be
+    delivered through a verified out-of-band channel.
+    """
+    raise HTTPException(
+        status_code=503,
+        detail=(
+            "Password recovery is temporarily unavailable because verified "
+            "email delivery is not configured. No recovery token was issued."
+        ),
+    )
 
 
 @app.post("/api/auth/recover/confirm")
