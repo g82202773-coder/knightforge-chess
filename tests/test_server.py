@@ -175,11 +175,15 @@ def test_opening_explorer_lists_curated_studies_with_review_status():
     response = client.get("/api/openings")
     assert response.status_code == 200
     payload = response.json()
-    assert payload["count"] == 9
+    assert payload["count"] == 31
     assert payload["content_status"] == "in_review"
     assert {item["opening_id"] for item in payload["items"]} >= {
         "italian-game", "open-sicilian", "french", "caro-kann",
         "queens-gambit", "london", "kings-gambit", "english", "jobava-london",
+        "ruy-lopez", "scotch-game", "vienna-game", "four-knights", "petrov",
+        "anti-sicilians", "pirc", "scandinavian", "alekhine", "slav", "semi-slav",
+        "colle", "trompowsky", "catalan", "kings-indian", "grunfeld",
+        "nimzo-indian", "benoni", "benko", "reti", "dutch-stonewall", "dutch-leningrad",
     }
     assert all(item["review_status"] == "in_review" for item in payload["items"])
     assert client.get("/api/openings?query=najdorf").json()["items"][0]["opening_id"] == "open-sicilian"
