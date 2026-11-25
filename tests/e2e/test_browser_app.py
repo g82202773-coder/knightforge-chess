@@ -7,6 +7,8 @@ import time
 from pathlib import Path
 
 import pytest
+
+pytest.importorskip("playwright.sync_api")
 from playwright.sync_api import Page, expect, sync_playwright
 
 ROOT = Path(__file__).resolve().parents[2]
