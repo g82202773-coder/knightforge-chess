@@ -18,8 +18,6 @@ import chess.pgn
 from .ai_opponent import AIDifficulty, ChessAIOpponent
 from .opening_recognition import OpeningRecognizer
 from .opening_repository import OpeningRepository
-from .positional_analysis import analyze_position
-from .tactics import TacticalScanner
 from .variation_matching import PositionBasedVariationMatcher
 
 MatchMode = Literal["human_vs_ai", "local_pvp", "online_pvp"]
