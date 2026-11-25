@@ -1,4 +1,6 @@
 """HTTP and session lifecycle tests for the KnightForge browser server."""
+import secrets
+
 from fastapi.testclient import TestClient
 
 from knightforge_engine.server import app
@@ -156,15 +158,16 @@ def test_test_modes_keep_answer_hidden_after_move_and_state_refresh():
 
 
 def test_password_recovery_fails_closed_without_verified_delivery():
+    username = f"recovery-{secrets.token_hex(4)}"
     registered = client.post(
         "/api/auth/register",
-        json={"username": "recovery-safety-test", "password": "correct-horse-1"},
+        json={"username": username, "password": "correct-horse-1"},
     )
     assert registered.status_code == 200
 
     request = client.post(
         "/api/auth/recover/request",
-        json={"username": "recovery-safety-test"},
+        json={"username": username},
     )
     assert request.status_code == 503
     assert "recovery_token" not in request.json()
@@ -172,7 +175,7 @@ def test_password_recovery_fails_closed_without_verified_delivery():
     # The failed request must not alter credentials or issue a usable token.
     login = client.post(
         "/api/auth/login",
-        json={"username": "recovery-safety-test", "password": "correct-horse-1"},
+        json={"username": username, "password": "correct-horse-1"},
     )
     assert login.status_code == 200
     reset = client.post(
