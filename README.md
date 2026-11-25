@@ -16,7 +16,7 @@ KnightForge is a unified, server-authoritative chess platform built with Python,
 - **Tactics Trainer (`puzzles.py`):** 15 validated single- and multi-move puzzles (including Mate-in-1, Mate-in-2, Anastasia's Mate, Knight Underpromotion Fork, and Philidor's Legacy Mate-in-3) with Daily/Random selection, progressive hints, timer, and Elo tracking.
 - **Post-Game Analysis & Grounded AI Coach (`game_analyzer.py`, `coach_decision.py`, `tactics.py`, `positional_analysis.py`):** PGN move-by-move classification (`best`, `excellent`, `good`, `inaccuracy`, `mistake`, `blunder`, `missed_opportunity`), accuracy estimate, SVG evaluation graph, and position-grounded coaching.
 - **Multiplayer & Clocks (`game_manager.py`, `server.py`):** Local 2-Player, Online Private Invite Codes, Online Quick Match queue, WebSocket live sync (`/ws/games/{game_id}`), and Bullet/Blitz/Rapid/Classical/Correspondence/Custom clocks with increment, delay, pause, and timeout detection.
-- **Accounts & Persistent Progress (`storage.py`):** PBKDF2-HMAC-SHA256 registration/login, one-time token password recovery, Chess & Puzzle Elo ratings, daily streaks, achievements, saved PGN history, and personal study notes backed by SQLite.
+- **Accounts & Persistent Progress (`storage.py`):** PBKDF2-HMAC-SHA256 registration/login, Chess & Puzzle Elo ratings, daily streaks, achievements, saved PGN history, and personal study notes backed by SQLite. Password recovery is deliberately disabled until a verified email-delivery provider is configured; the API must never return reset tokens directly to anonymous callers.
 
 ---
 
