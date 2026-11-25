@@ -79,7 +79,7 @@ class SessionStore:
                 self.opening_catalog = None
         # Built-in KnightForge repertoire courses are validated before exposure.
         for course in london_jobava_courses():
-            self.study_openings.setdefault(course.opening_id, course)
+            self.study_openings[course.opening_id] = course
         self.analyzer: StockfishAnalyzer | None = None
         executable = os.environ.get("STOCKFISH_PATH")
         if executable:
