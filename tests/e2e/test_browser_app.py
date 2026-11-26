@@ -194,18 +194,80 @@ def test_gambit_academy_filters_guides_and_starts_a_selected_coach_line(
         page.locator("#opening-side-filter").select_option("all")
         page.locator("#opening-search-input").fill("Benko")
         page.wait_for_selector('#repo-openings-list button:has-text("Benko Gambit")')
-        page.locator('#repo-openings-list button:has-text("Benko Gambit")').click()
+        with page.expect_response(
+            lambda response: response.url.endswith("/api/openings/black-benko/tree")
+            and response.request.method == "GET",
+            timeout=8000,
+        ) as tree_response:
+            page.locator('#repo-openings-list button:has-text("Benko Gambit")').click()
+        assert tree_response.value.status == 200
         page.wait_for_selector("#gambit-coach-guide:not(.hidden)")
         assert "queenside" in page.locator("#gambit-guide-summary").inner_text().lower()
         assert page.locator("#op-variation-select option").count() >= 3
+        assert page.locator("#op-train-btn").is_enabled()
 
-        page.locator("#op-train-btn").click()
-        page.wait_for_selector("#tab-academy.active #board .square", timeout=8000)
-        page.wait_for_function(
-            "() => document.querySelector('#coach-text')?.textContent.includes('Play')"
-            " || document.querySelector('#coach-text')?.textContent.length > 0",
+        with page.expect_response(
+            lambda response: response.url.endswith("/api/openings/black-benko/train")
+            and response.request.method == "POST",
             timeout=8000,
-        )
+        ) as training_response:
+            page.locator("#op-train-btn").click()
+        assert training_response.value.status == 200
+        assert training_response.value.json()["session_id"]
+        page.wait_for_selector("#tab-academy.active #board .square", timeout=8000)
         assert page.locator("#board .square").count() == 64
         assert page.locator("#board .piece-wrap").count() == 32
+        browser.close()
+
+
+
+def test_opening_search_is_debounced_and_metadata_is_not_refetched(
+    live_server_url: str,
+) -> None:
+    with playwright.sync_playwright() as p:
+        browser = p.chromium.launch()
+        page = browser.new_page(viewport={"width": 390, "height": 844})
+        requests: list[str] = []
+        page.on("request", lambda request: requests.append(request.url))
+        page.goto(live_server_url, wait_until="networkidle")
+        page.locator('.tab-btn[data-tab="openings"]').click()
+        page.wait_for_selector("#repo-openings-list .list-card")
+        requests.clear()
+
+        search = page.locator("#opening-search-input")
+        for character in "Benko":
+            search.press_sequentially(character, delay=35)
+        page.wait_for_selector('#repo-openings-list button:has-text("Benko Gambit")')
+        page.wait_for_timeout(400)
+
+        repository_reads = [
+            url for url in requests
+            if "/api/openings/repository?q=" in url
+        ]
+        metadata_reads = [
+            url for url in requests
+            if url.endswith("/api/openings/taxonomy") or url.endswith("/api/gambits")
+        ]
+        assert len(repository_reads) == 1, repository_reads
+        assert metadata_reads == [], metadata_reads
+        browser.close()
+
+
+def test_opening_tree_failure_shows_retry_instead_of_stale_board(
+    live_server_url: str,
+) -> None:
+    with playwright.sync_playwright() as p:
+        browser = p.chromium.launch()
+        page = browser.new_page(viewport={"width": 390, "height": 844})
+        page.goto(live_server_url, wait_until="networkidle")
+        page.locator('.tab-btn[data-tab="openings"]').click()
+        page.wait_for_selector("#repo-openings-list .list-card")
+        page.route("**/api/openings/black-benko/tree", lambda route: route.abort())
+        page.locator("#opening-search-input").fill("Benko")
+        page.wait_for_selector('#repo-openings-list button:has-text("Benko Gambit")')
+        page.locator('#repo-openings-list button:has-text("Benko Gambit")').click()
+        page.wait_for_selector("#opening-tree-status.bad")
+        assert page.locator("#opening-retry-btn").is_visible()
+        assert page.locator("#op-train-btn").is_disabled()
+        assert "could not load" in page.locator("#opening-tree-status").inner_text().lower()
         browser.close()
