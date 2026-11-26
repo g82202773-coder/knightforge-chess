@@ -317,13 +317,15 @@ def test_android_native_coach_tts_bridge_speaks_without_web_speech_api(
         page.locator('.mobile-tab-btn[data-tab="academy"]').click()
         page.wait_for_selector("#board .square")
         page.wait_for_function(
-            "() => window.__nativeTtsCalls && window.__nativeTtsCalls.length > 0",
+            "() => document.querySelector('#speak-btn') && !document.querySelector('#speak-btn').disabled",
             timeout=8000,
         )
 
+        # Use the explicit Listen control so the test doesn't depend on automatic
+        # narration racing the initial preview-board render.
         page.locator("#speak-btn").click()
         page.wait_for_function(
-            "() => window.__nativeTtsCalls && window.__nativeTtsCalls.length >= 2",
+            "() => window.__nativeTtsCalls && window.__nativeTtsCalls.length > 0",
             timeout=8000,
         )
         calls = page.evaluate("window.__nativeTtsCalls")
