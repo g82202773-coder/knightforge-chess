@@ -151,3 +151,24 @@ def test_academy_coach_speech_bubble_arrows_and_voice_controls(live_server_url: 
         page.locator("#stop-speak-btn").click()
         assert "stopped" in page.locator("#coach-voice-status").inner_text().lower()
         browser.close()
+
+
+
+def test_academy_renders_board_preview_and_retry_when_training_api_is_offline(
+    live_server_url: str,
+) -> None:
+    with playwright.sync_playwright() as p:
+        browser = p.chromium.launch()
+        page = browser.new_page(viewport={"width": 390, "height": 844})
+        page.route("**/api/lessons**", lambda route: route.abort())
+        page.goto(live_server_url, wait_until="networkidle")
+        page.locator('.mobile-tab-btn[data-tab="academy"]').click()
+
+        page.wait_for_selector("#academy-connection-alert:not(.hidden)")
+        assert page.locator("#board .square").count() == 64
+        assert page.locator("#board .piece-wrap").count() == 32
+        assert page.locator("#academy-retry-btn").is_visible()
+        assert "reconnect" in page.locator("#coach-text").inner_text().lower()
+        assert page.locator("#undo-btn").is_disabled()
+        assert page.locator("#flip-btn").is_enabled()
+        browser.close()
