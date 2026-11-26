@@ -971,12 +971,12 @@ function applyAcademyState(s) {
   $("lesson-title").textContent = s.lesson_title || "KnightForge Lesson";
   $("turn-label").textContent = s.board.turn.toUpperCase() + " TO MOVE";
   $("opening-badge").textContent = "Opening: " + (s.opening && s.opening.name ? s.opening.name : "—");
-  const mistake = s.coach.mistake_feedback;
-  $("coach-text").textContent = mistake && !acMistakeDismissed
-    ? (mistake.title || "Can I show you something?") + " " + (mistake.text || "")
+  const visibleMistake = s.coach.mistake_feedback;
+  $("coach-text").textContent = visibleMistake && !acMistakeDismissed
+    ? (visibleMistake.title || "Can I show you something?") + " " + (visibleMistake.text || "")
     : (s.coach.text || "Lesson line complete.");
-  $("coach-explanation").textContent = mistake && !acMistakeDismissed
-    ? (mistake.detail || "")
+  $("coach-explanation").textContent = visibleMistake && !acMistakeDismissed
+    ? (visibleMistake.detail || "")
     : (s.coach.explanation || "");
   $("hint-level").textContent = s.coach.active_hint
     ? `LEVEL ${acHintLevel} / 4`
