@@ -34,7 +34,16 @@ jobs:
           npx cap sync android
       - name: Build Debug APK
         working-directory: android-app/android
-        run: ./gradlew assembleDebug
+        shell: bash
+        run: |
+          for attempt in 1 2 3; do
+            if ./gradlew --no-daemon --max-workers=2 assembleDebug; then
+              exit 0
+            fi
+            echo "Gradle dependency/build attempt ${attempt} failed; retrying after a short pause."
+            sleep 20
+          done
+          exit 1
       - name: Upload KnightForge APK Artifact
         uses: actions/upload-artifact@v4
         with:
