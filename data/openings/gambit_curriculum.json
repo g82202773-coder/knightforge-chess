@@ -71,6 +71,16 @@
           "label": "Albin Countergambit",
           "moves": "d4 d5 c4 e5 dxe5 d4 Nf3 Nc6",
           "coach": ""
+        },
+        {
+          "label": "QGA · 3.e4 setup",
+          "moves": "d4 d5 c4 dxc4 e4",
+          "coach": ""
+        },
+        {
+          "label": "QGA · 3.e3 setup",
+          "moves": "d4 d5 c4 dxc4 e3",
+          "coach": ""
         }
       ]
     },
@@ -141,6 +151,26 @@
         {
           "label": "Falkbeer Countergambit",
           "moves": "e4 e5 f4 d5 exd5 e4 d3 Nf6",
+          "coach": ""
+        },
+        {
+          "label": "King's Gambit Declined · ...d6",
+          "moves": "e4 e5 f4 d6",
+          "coach": ""
+        },
+        {
+          "label": "King's Gambit Declined · ...Nc6",
+          "moves": "e4 e5 f4 Nc6",
+          "coach": ""
+        },
+        {
+          "label": "Bishop's Gambit · ...d5",
+          "moves": "e4 e5 f4 exf4 Bc4 d5",
+          "coach": ""
+        },
+        {
+          "label": "Bishop's Gambit · ...Qh4+",
+          "moves": "e4 e5 f4 exf4 Bc4 Qh4+ Kf1",
           "coach": ""
         }
       ]
@@ -309,6 +339,21 @@
         {
           "label": "Declined · ...Bc5",
           "moves": "e4 e5 Nc3 Nf6 f4 Bc5",
+          "coach": ""
+        },
+        {
+          "label": "Vienna · 5.Qf3 counterstrike",
+          "moves": "e4 e5 Nc3 Nf6 f4 d5 fxe5 Nxe4 Qf3",
+          "coach": ""
+        },
+        {
+          "label": "Vienna · 5.d3 counterstrike",
+          "moves": "e4 e5 Nc3 Nf6 f4 d5 fxe5 Nxe4 d3",
+          "coach": ""
+        },
+        {
+          "label": "Vienna · Declined ...Nc6",
+          "moves": "e4 e5 Nc3 Nf6 f4 Nc6",
           "coach": ""
         }
       ]
@@ -831,6 +876,21 @@
           "label": "Deferred Wing Gambit",
           "moves": "e4 c5 Nf3 d6 b4",
           "coach": ""
+        },
+        {
+          "label": "Wing Gambit · Declined ...e6",
+          "moves": "e4 c5 b4 e6",
+          "coach": ""
+        },
+        {
+          "label": "Wing Gambit · Declined ...d5",
+          "moves": "e4 c5 b4 d5",
+          "coach": ""
+        },
+        {
+          "label": "Deferred Wing Gambit · ...e6",
+          "moves": "e4 c5 Nf3 e6 b4",
+          "coach": ""
         }
       ]
     },
@@ -918,6 +978,11 @@
           "label": "Declined · ...O-O",
           "moves": "e4 e6 d4 d5 Nc3 Nf6 Bg5 Be7 e5 Nfd7 h4 O-O",
           "coach": ""
+        },
+        {
+          "label": "Alekhine-Chatard · Declined ...h6",
+          "moves": "e4 e6 d4 d5 Nc3 Nf6 Bg5 Be7 e5 Nfd7 h4 h6",
+          "coach": ""
         }
       ]
     },
@@ -963,6 +1028,11 @@
         {
           "label": "Declined · ...e6",
           "moves": "Nf3 d5 e4 e6",
+          "coach": ""
+        },
+        {
+          "label": "Tennison · Scandinavian move order",
+          "moves": "e4 d5 Nf3 dxe4 Ng5",
           "coach": ""
         }
       ]
@@ -1014,6 +1084,16 @@
         {
           "label": "Sidestep · ...e6",
           "moves": "e4 c6 d4 d5 Nc3 dxe4 Nxe4 e6",
+          "coach": ""
+        },
+        {
+          "label": "Alien Gambit · 5...Bf5 sidestep",
+          "moves": "e4 c6 d4 d5 Nc3 dxe4 Nxe4 Nf6 Ng5 Bf5",
+          "coach": ""
+        },
+        {
+          "label": "Alien Gambit · 5...e6 sidestep",
+          "moves": "e4 c6 d4 d5 Nc3 dxe4 Nxe4 Nf6 Ng5 e6",
           "coach": ""
         }
       ]
@@ -1071,6 +1151,21 @@
           "label": "Benko · Declined Qc2",
           "moves": "d4 Nf6 c4 c5 d5 b5 Qc2",
           "coach": ""
+        },
+        {
+          "label": "Benko · Half-accepted Nc3",
+          "moves": "d4 Nf6 c4 c5 d5 b5 cxb5 a6 Nc3",
+          "coach": ""
+        },
+        {
+          "label": "Benko · Half-accepted f3",
+          "moves": "d4 Nf6 c4 c5 d5 b5 cxb5 a6 f3",
+          "coach": ""
+        },
+        {
+          "label": "Benko · Declined Nd2",
+          "moves": "d4 Nf6 c4 c5 d5 b5 Nd2",
+          "coach": ""
         }
       ]
     },
@@ -1126,6 +1221,11 @@
         {
           "label": "Budapest · Declined e3",
           "moves": "d4 Nf6 c4 e5 e3",
+          "coach": ""
+        },
+        {
+          "label": "Budapest · Kieninger trap continuation",
+          "moves": "d4 Nf6 c4 e5 dxe5 Ng4 Bf4 Nc6 Nf3 Bb4+ Nbd2 Qe7 a3 Ngxe5 axb4 Nd3#",
           "coach": ""
         }
       ]
@@ -1218,6 +1318,16 @@
         {
           "label": "Petrov fallback after 4.Nf3",
           "moves": "e4 e5 Nf3 Nf6 Nxe5 Nc6 Nf3 Nxe4",
+          "coach": ""
+        },
+        {
+          "label": "Stafford · h3 setup",
+          "moves": "e4 e5 Nf3 Nf6 Nxe5 Nc6 Nxc6 dxc6 Nc3 Bc5 h3",
+          "coach": ""
+        },
+        {
+          "label": "Stafford · Bc4 setup",
+          "moves": "e4 e5 Nf3 Nf6 Nxe5 Nc6 Nxc6 dxc6 Nc3 Bc5 Bc4 Ng4",
           "coach": ""
         }
       ]
@@ -1321,6 +1431,16 @@
           "label": "Traxler · Centre strike",
           "moves": "e4 e5 Nf3 Nc6 Bc4 Nf6 Ng5 Bc5 d4",
           "coach": ""
+        },
+        {
+          "label": "Traxler · 7.Kg1 branch",
+          "moves": "e4 e5 Nf3 Nc6 Bc4 Nf6 Ng5 Bc5 Nxf7 Bxf2+ Kxf2 Nxe4+ Kg1 Qh4",
+          "coach": ""
+        },
+        {
+          "label": "Traxler · 7.Kf1 branch",
+          "moves": "e4 e5 Nf3 Nc6 Bc4 Nf6 Ng5 Bc5 Nxf7 Bxf2+ Kxf2 Nxe4+ Kf1 Qh4",
+          "coach": ""
         }
       ]
     },
@@ -1366,6 +1486,11 @@
         {
           "label": "Anti-Marshall · d4",
           "moves": "e4 e5 Nf3 Nc6 Bb5 a6 Ba4 Nf6 O-O Be7 Re1 b5 Bb3 O-O d4",
+          "coach": ""
+        },
+        {
+          "label": "Marshall · Anti-Marshall d3",
+          "moves": "e4 e5 Nf3 Nc6 Bb5 a6 Ba4 Nf6 O-O Be7 Re1 b5 Bb3 O-O c3 d3",
           "coach": ""
         }
       ]
