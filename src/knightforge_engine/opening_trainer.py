@@ -44,20 +44,23 @@ def list_opening_variations(tree: OpeningTree) -> tuple[VariationLine, ...]:
             next_uci = (*uci_path, node.move_uci)
             next_san = (*san_path, san)
             lbl = node.label.strip() or last_label
-            if not node.children:
-                if next_uci not in seen_paths:
-                    seen_paths.add(next_uci)
-                    var_id = f"{tree.opening_id}::{len(lines) + 1}"
-                    lines.append(
-                        VariationLine(
-                            variation_id=var_id,
-                            label=lbl or tree.name,
-                            moves_uci=next_uci,
-                            moves_san=next_san,
-                            ply_count=len(next_uci),
-                        )
+            # A named node is itself a selectable training endpoint even when
+            # it also has deeper continuations. Unlabelled leaves inherit the
+            # nearest named branch label.
+            is_named_endpoint = bool(node.label.strip()) and node.label.strip() != last_label
+            if (is_named_endpoint or not node.children) and next_uci not in seen_paths:
+                seen_paths.add(next_uci)
+                var_id = f"{tree.opening_id}::{len(lines) + 1}"
+                lines.append(
+                    VariationLine(
+                        variation_id=var_id,
+                        label=lbl or tree.name,
+                        moves_uci=next_uci,
+                        moves_san=next_san,
+                        ply_count=len(next_uci),
                     )
-            else:
+                )
+            if node.children:
                 walk(nxt, node.children, next_uci, next_san, lbl)
 
     walk(board, tree.roots, (), (), tree.name)
