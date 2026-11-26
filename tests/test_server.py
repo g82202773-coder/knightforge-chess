@@ -183,3 +183,63 @@ def test_password_recovery_fails_closed_without_verified_delivery():
         json={"recovery_token": "not-a-real-token", "new_password": "attacker-password"},
     )
     assert reset.status_code == 400
+
+def test_online_resignation_requires_the_seated_player_token():
+    created = client.post("/api/games", json={"mode": "online_pvp"}).json()
+    joined = client.post(f"/api/games/join/{created['invite_code']}").json()
+    game_id = created["game_id"]
+
+    missing = client.post(f"/api/games/{game_id}/resign")
+    assert missing.status_code == 403
+    invalid = client.post(
+        f"/api/games/{game_id}/resign",
+        json={"player_token": "not-a-player-token"},
+    )
+    assert invalid.status_code == 403
+    assert client.get(f"/api/games/{game_id}").json()["state"]["is_over"] is False
+
+    resigned = client.post(
+        f"/api/games/{game_id}/resign",
+        json={"player_token": created["player_token"]},
+    )
+    assert resigned.status_code == 200
+    assert resigned.json()["state"]["winner"] == "black"
+    assert resigned.json()["state"]["termination_reason"] == "resignation"
+
+
+def test_online_draw_actions_require_tokens_and_opponent_response():
+    created = client.post("/api/games", json={"mode": "online_pvp"}).json()
+    joined = client.post(f"/api/games/join/{created['invite_code']}").json()
+    game_id = created["game_id"]
+
+    missing = client.post(f"/api/games/{game_id}/draw", json={"action": "offer"})
+    assert missing.status_code == 403
+
+    spoofed = client.post(
+        f"/api/games/{game_id}/draw",
+        json={"action": "offer", "actor": "white", "player_token": joined["player_token"]},
+    )
+    assert spoofed.status_code == 403
+
+    move = client.post(
+        f"/api/games/{game_id}/moves",
+        json={"uci": "e2e4", "player_token": created["player_token"]},
+    )
+    assert move.status_code == 200
+
+    offered = client.post(
+        f"/api/games/{game_id}/draw",
+        json={"action": "offer", "player_token": created["player_token"]},
+    )
+    assert offered.status_code == 200
+    self_accept = client.post(
+        f"/api/games/{game_id}/draw",
+        json={"action": "accept", "player_token": created["player_token"]},
+    )
+    assert self_accept.status_code == 409
+    accepted = client.post(
+        f"/api/games/{game_id}/draw",
+        json={"action": "accept", "player_token": joined["player_token"]},
+    )
+    assert accepted.status_code == 200
+    assert accepted.json()["state"]["termination_reason"] == "draw_agreement"
