@@ -43,3 +43,8 @@
 ## Definition of done
 
 KnightForge is release-ready only when the complete automated test suite passes on the exact release commit; active games and progress survive restarts; multiplayer has authenticated, authorized and reconnect-safe state transitions; all redistributed learning content has reviewed licensing; account recovery is secure and deliverable; Android release artefacts are signed and device-tested; and production deployment, backups, monitoring and rollback have been exercised.
+
+
+### Academy coach runtime note
+
+The Academy voice coach uses the browser/device Web Speech API. The selected voice is available only when installed by the host browser or Android text-to-speech engine; availability and pronunciation must be checked on the target Android WebView and device language settings. When speech is unavailable, the written coach prompt, lesson board, hints and move arrows remain usable.
