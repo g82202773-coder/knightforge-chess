@@ -271,3 +271,70 @@ def test_opening_tree_failure_shows_retry_instead_of_stale_board(
         assert page.locator("#op-train-btn").is_disabled()
         assert "could not load" in page.locator("#opening-tree-status").inner_text().lower()
         browser.close()
+
+
+def test_android_native_coach_tts_bridge_speaks_without_web_speech_api(
+    live_server_url: str,
+) -> None:
+    with playwright.sync_playwright() as p:
+        browser = p.chromium.launch()
+        page = browser.new_page(viewport={"width": 390, "height": 844})
+        page.add_init_script(
+            """(() => {
+                window.__nativeTtsCalls = [];
+                Object.defineProperty(window, "speechSynthesis", {
+                    configurable: true,
+                    value: undefined
+                });
+                window.SpeechSynthesisUtterance = undefined;
+                const nativeTts = {
+                    async getSupportedVoices() {
+                        return { voices: [
+                            { voiceURI: "en-us-test", name: "English US", lang: "en-US" },
+                            { voiceURI: "en-in-test", name: "English India", lang: "en-IN" }
+                        ] };
+                    },
+                    async getSupportedLanguages() {
+                        return { languages: ["en-US", "en-IN"] };
+                    },
+                    async speak(options) {
+                        window.__nativeTtsCalls.push(options);
+                    },
+                    async stop() {},
+                    async openInstall() {}
+                };
+                window.Capacitor = {
+                    Plugins: {},
+                    registerPlugin(name) {
+                        if (name !== "TextToSpeech") throw new Error("Unexpected native plugin: " + name);
+                        this.Plugins[name] = nativeTts;
+                        return nativeTts;
+                    }
+                };
+            })()"""
+        )
+        page.goto(live_server_url, wait_until="networkidle")
+        page.locator('.mobile-tab-btn[data-tab="academy"]').click()
+        page.wait_for_selector("#board .square")
+        page.wait_for_function(
+            "() => document.querySelector('#speak-btn') && !document.querySelector('#speak-btn').disabled",
+            timeout=8000,
+        )
+
+        # Use the explicit Listen control so the test doesn't depend on automatic
+        # narration racing the initial preview-board render.
+        page.locator("#speak-btn").click()
+        page.wait_for_function(
+            "() => window.__nativeTtsCalls && window.__nativeTtsCalls.length > 0",
+            timeout=8000,
+        )
+        calls = page.evaluate("window.__nativeTtsCalls")
+        latest = calls[-1]
+        assert latest["text"].strip()
+        assert latest["lang"] == "en-IN"
+        assert latest["queueStrategy"] == 0
+        assert isinstance(latest["rate"], (int, float))
+        assert "native speech engine" in page.locator("#coach-voice-status").inner_text().lower() or (
+            "finished" in page.locator("#coach-voice-status").inner_text().lower()
+        )
+        browser.close()
