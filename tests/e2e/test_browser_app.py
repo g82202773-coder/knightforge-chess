@@ -69,6 +69,10 @@ def test_academy_mistake_coach_retry_continue_and_voice(live_server_url: str) ->
         page.goto(live_server_url, wait_until="networkidle")
         page.locator('.mobile-tab-btn[data-tab="academy"]').click()
         page.wait_for_selector("#board .square")
+        page.locator("#academy-category").select_option("opening")
+        page.wait_for_function(
+            "() => document.querySelector('#board [data-sq=d2] .piece-wrap') !== null"
+        )
 
         # A legal but off-lesson move should open the coach without changing the board.
         page.locator('#board [data-sq="d2"]').click()
