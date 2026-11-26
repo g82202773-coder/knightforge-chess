@@ -16,8 +16,8 @@
 | Accounts/progress | SQLite-backed users, ratings, lesson/puzzle progress, notes and saved PGN history | Implemented; production identity, recovery and database operations remain |
 | Multiplayer | Invite codes, seat tokens, draw actions, matchmaking and WebSocket updates | Prototype endpoints; active games and queue state remain process-local |
 | Browser client | Responsive web client with Playwright mobile viewport E2E | CI E2E is present; wider device/browser QA remains |
-| Voice-enabled Academy coach | In-lesson tactical mistake coach with danger arrows, plus coach speech bubble, selectable device TTS voice, adjustable pace and Listen/Stop controls | Browser regression coverage added; final integrated CI and real-device voice QA still required |
-| Android | Capacitor wrapper and a workflow that builds a debug APK | Not a signed release; current config points to a test Render URL |
+| Voice-enabled Academy coach | In-lesson tactical mistake coach with danger arrows, plus coach speech bubble, selectable device TTS voice, adjustable pace and Listen/Stop controls | Integrated CI passed on 26 November 2026: Ruff, 159 Python tests (1 skipped), and 3 browser E2E tests; Android WebView voice/device QA still required |
+| Android | Capacitor wrapper; debug APK built and uploaded by GitHub Actions run #45813933651 on 26 November 2026 | Build verified; not a signed release; current config still points to a test Render URL and requires device QA |
 | Hosting | Render Docker template with one worker | Example configuration only; durable storage and production service configuration required |
 
 ## Release blockers
@@ -33,8 +33,8 @@
 
 ## Immediate engineering sequence
 
-- Keep PR #2 and PR #3 unmerged until their integration order and final CI are reviewed.
-- Make the current CI green, including Ruff, complete pytest suite and browser E2E.
+- PR #6 is the consolidated, CI-green release-candidate PR for hardening and the Academy voice coach. PR #2 remains a separate, older full-game/opening-training branch and must be rebased/audited before any integration; PRs #3–#5 were closed as superseded.
+- Preserve the passing Ruff, Python and browser E2E checks on the final release commit; re-run them after every code/content change.
 - Complete server-side multiplayer authorization and regression tests.
 - Verify the entire bulk puzzle dataset and correct provenance metadata.
 - Implement durable match/session persistence and shared multiplayer coordination.
