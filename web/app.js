@@ -174,6 +174,10 @@ function renderBoard({
       if (sq === checkedSquare) b.classList.add("in-check");
       if (lastMove && lastMove.includes(sq)) b.classList.add("last-move");
       if (highlightedSquares.includes(sq)) b.classList.add("coach-threat");
+      if (arrowData && arrowData.highlightEndpoints) {
+        if (sq === arrowData.from) b.classList.add("coach-arrow-source");
+        if (sq === arrowData.to) b.classList.add("coach-arrow-target");
+      }
       if (targets.some((t) => t.to === sq)) {
         b.classList.add(piece ? "capture" : "legal");
       }
@@ -230,17 +234,34 @@ function renderBoard({
     };
     const p = pos(arrowData.from);
     const q = pos(arrowData.to);
+    const markerId = "arrowhead-" + boardId;
+    const arrowColor = arrowData.tone === "danger" ? "#ef806b" : "#d7f18a";
     const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
     svg.setAttribute("viewBox", "0 0 100 100");
     svg.setAttribute("class", "board-arrow" + (arrowData.tone === "danger" ? " danger" : ""));
-    svg.innerHTML =
-      '<defs><marker id="arrowhead" markerWidth="5" markerHeight="5" refX="3.8" refY="2.5" orient="auto">' +
-      '<path d="M0 0 L5 2.5 L0 5Z" fill="#d7f18a"/></marker></defs>';
+    svg.setAttribute("aria-hidden", "true");
+
+    const defs = document.createElementNS("http://www.w3.org/2000/svg", "defs");
+    const marker = document.createElementNS("http://www.w3.org/2000/svg", "marker");
+    marker.setAttribute("id", markerId);
+    marker.setAttribute("markerWidth", "5");
+    marker.setAttribute("markerHeight", "5");
+    marker.setAttribute("refX", "3.8");
+    marker.setAttribute("refY", "2.5");
+    marker.setAttribute("orient", "auto");
+    const head = document.createElementNS("http://www.w3.org/2000/svg", "path");
+    head.setAttribute("d", "M0 0 L5 2.5 L0 5Z");
+    head.setAttribute("fill", arrowColor);
+    marker.append(head);
+    defs.append(marker);
+    svg.append(defs);
+
     const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
     line.setAttribute("x1", p.x);
     line.setAttribute("y1", p.y);
     line.setAttribute("x2", q.x);
     line.setAttribute("y2", q.y);
+    line.setAttribute("marker-end", "url(#" + markerId + ")");
     svg.append(line);
     root.append(svg);
   }
@@ -263,20 +284,136 @@ document.querySelectorAll(".promo-btn").forEach((btn) => {
   });
 });
 
-function speak(t) {
-  if (!window.speechSynthesis || typeof SpeechSynthesisUtterance === "undefined" || !t) return false;
-  window.speechSynthesis.cancel();
-  const u = new SpeechSynthesisUtterance(t);
-  u.lang = document.documentElement.lang || "en-IN";
-  u.rate = 0.94;
-  u.pitch = 1;
-  const voices = window.speechSynthesis.getVoices ? window.speechSynthesis.getVoices() : [];
-  const voice = voices.find((v) => v.lang.toLowerCase() === "en-in")
-    || voices.find((v) => v.lang.toLowerCase().startsWith("en-"))
-    || voices.find((v) => v.lang.toLowerCase().startsWith("en"));
-  if (voice) u.voice = voice;
-  window.speechSynthesis.speak(u);
+let academyCoachVoices = [];
+let academyLastNarration = "";
+
+function speechOutputSupported() {
+  return typeof window.speechSynthesis !== "undefined" &&
+    typeof window.SpeechSynthesisUtterance !== "undefined";
+}
+
+function setCoachSpeechStatus(message, speaking = false) {
+  const status = $("coach-voice-status");
+  const bubbleStatus = $("coach-speaking-status");
+  if (status) status.textContent = message;
+  if (bubbleStatus) {
+    bubbleStatus.textContent = speaking ? "SPEAKING" : "READY";
+    bubbleStatus.classList.toggle("speaking", speaking);
+  }
+}
+
+function refreshCoachVoiceOptions() {
+  const select = $("coach-voice-select");
+  if (!select) return;
+  if (!speechOutputSupported()) {
+    select.disabled = true;
+    setCoachSpeechStatus("Speech synthesis is not available in this browser. Written coaching remains available.");
+    return;
+  }
+
+  const storedVoice = localStorage.getItem("kf_coach_voice") || "";
+  academyCoachVoices = window.speechSynthesis.getVoices
+    ? window.speechSynthesis.getVoices()
+    : [];
+  select.replaceChildren();
+
+  const defaultOption = document.createElement("option");
+  defaultOption.value = "";
+  defaultOption.textContent = "Device default";
+  select.append(defaultOption);
+
+  const sortedVoices = [...academyCoachVoices].sort((a, b) => {
+    const aEnglish = /^en/i.test(a.lang || "") ? 0 : 1;
+    const bEnglish = /^en/i.test(b.lang || "") ? 0 : 1;
+    return aEnglish - bEnglish || a.name.localeCompare(b.name);
+  });
+  for (const voice of sortedVoices) {
+    const option = document.createElement("option");
+    option.value = voice.voiceURI;
+    option.textContent = voice.name + " (" + voice.lang + ")";
+    select.append(option);
+  }
+
+  const preferred = academyCoachVoices.find((voice) => voice.voiceURI === storedVoice)
+    || academyCoachVoices.find((voice) => /^en-in$/i.test(voice.lang || ""))
+    || academyCoachVoices.find((voice) => /^en/i.test(voice.lang || ""));
+  select.value = preferred ? preferred.voiceURI : "";
+  if (preferred) {
+    setCoachSpeechStatus("Voice ready: " + preferred.name);
+  } else if (academyCoachVoices.length) {
+    setCoachSpeechStatus("Choose an installed voice, or use the device default.");
+  } else {
+    setCoachSpeechStatus("Waiting for voices supplied by your browser or Android device.");
+  }
+}
+
+function selectedCoachVoice() {
+  const select = $("coach-voice-select");
+  if (!select || !select.value) return null;
+  return academyCoachVoices.find((voice) => voice.voiceURI === select.value) || null;
+}
+
+function academyNarrationForState(state) {
+  if (!state || !state.coach) return "";
+  const mistake = state.coach.mistake_feedback;
+  if (mistake && !acMistakeDismissed) {
+    return String(mistake.voice_script || mistake.text || "").trim();
+  }
+  const coach = state.coach;
+  const script = typeof coach.voice_script === "string" ? coach.voice_script.trim() : "";
+  if (script) return script;
+  return [coach.text, coach.explanation]
+    .filter((part) => typeof part === "string" && part.trim())
+    .map((part) => part.trim())
+    .join(" ");
+}
+
+function speak(text) {
+  const narration = String(text || "").trim();
+  if (!narration) {
+    setCoachSpeechStatus("There is no coach instruction to read yet.");
+    return false;
+  }
+  if (!speechOutputSupported()) {
+    setCoachSpeechStatus("Speech synthesis is unavailable here. Read the written coaching instead.");
+    return false;
+  }
+
+  const synth = window.speechSynthesis;
+  synth.cancel();
+  const utterance = new window.SpeechSynthesisUtterance(narration);
+  const voice = selectedCoachVoice();
+  const rate = Number($("coach-rate-select").value || 0.96);
+  utterance.lang = voice ? voice.lang : "en-IN";
+  if (voice) utterance.voice = voice;
+  utterance.rate = Number.isFinite(rate) ? rate : 0.96;
+  utterance.pitch = 0.98;
+  utterance.volume = 1;
+  utterance.onstart = () => setCoachSpeechStatus("KnightForge is explaining the position.", true);
+  utterance.onend = () => setCoachSpeechStatus("Explanation finished. Continue when ready.");
+  utterance.onerror = (event) => {
+    if (!event || event.error !== "canceled") {
+      setCoachSpeechStatus("The device could not start speech. Try another voice or use Listen again.");
+    }
+  };
+  synth.speak(utterance);
   return true;
+}
+
+function stopCoachSpeech() {
+  if (speechOutputSupported()) window.speechSynthesis.cancel();
+  setCoachSpeechStatus("Narration stopped.");
+}
+
+if (speechOutputSupported()) {
+  refreshCoachVoiceOptions();
+  if (typeof window.speechSynthesis.addEventListener === "function") {
+    window.speechSynthesis.addEventListener("voiceschanged", refreshCoachVoiceOptions);
+  } else {
+    window.speechSynthesis.onvoiceschanged = refreshCoachVoiceOptions;
+  }
+} else {
+  setCoachSpeechStatus("Speech synthesis is not available in this browser. Written coaching remains active.");
 }
 
 // =========================================================================
@@ -740,9 +877,17 @@ function academyArrow() {
   }
   if (acMode === "mastery") return null;
   const h = academyState.coach.active_hint;
-  if (h && h.arrow_from && h.arrow_to) return { from: h.arrow_from, to: h.arrow_to };
+  if (h && h.arrow_from && h.arrow_to) {
+    return {
+      from: h.arrow_from,
+      to: h.arrow_to,
+      highlightEndpoints: true,
+    };
+  }
   const a = academyState.coach.expected_move && academyState.coach.expected_move.arrow;
-  return acMode === "guided" && a && a.from && a.to ? a : null;
+  return acMode === "guided" && a && a.from && a.to
+    ? { ...a, highlightEndpoints: true }
+    : null;
 }
 
 function renderAcademy() {
@@ -826,8 +971,13 @@ function applyAcademyState(s) {
   $("lesson-title").textContent = s.lesson_title || "KnightForge Lesson";
   $("turn-label").textContent = s.board.turn.toUpperCase() + " TO MOVE";
   $("opening-badge").textContent = "Opening: " + (s.opening && s.opening.name ? s.opening.name : "—");
-  $("coach-text").textContent = s.coach.text || "Lesson line complete.";
-  $("coach-explanation").textContent = s.coach.explanation || "";
+  const mistake = s.coach.mistake_feedback;
+  $("coach-text").textContent = mistake && !acMistakeDismissed
+    ? (mistake.title || "Can I show you something?") + " " + (mistake.text || "")
+    : (s.coach.text || "Lesson line complete.");
+  $("coach-explanation").textContent = mistake && !acMistakeDismissed
+    ? (mistake.detail || "")
+    : (s.coach.explanation || "");
   $("hint-level").textContent = s.coach.active_hint
     ? `LEVEL ${acHintLevel} / 4`
     : acMode === "mastery" ? "HINTS HIDDEN" : "HINT NOT REVEALED";
@@ -847,11 +997,10 @@ function applyAcademyState(s) {
   } else {
     mistakeCard.classList.add("hidden");
   }
-  if ($("voice-toggle").checked) {
-    speak(mistake && !acMistakeDismissed
-      ? (mistake.voice_script || mistake.text)
-      : (s.coach.voice_script || s.coach.text));
-  }
+  const narration = academyNarrationForState(s);
+  const narrationChanged = narration.length > 0 && narration !== academyLastNarration;
+  academyLastNarration = narration;
+  if ($("voice-toggle").checked && narrationChanged) speak(narration);
 }
 
 async function loadLessonsAndStart() {
@@ -880,6 +1029,8 @@ async function createAcademySession() {
   acLastMove = null;
   acSelected = null;
   acTargets = [];
+  acMistakeDismissed = false;
+  academyLastNarration = "";
   acFlipped = r.state.learner_color === "black";
   $("feedback").className = "feedback hidden";
   applyAcademyState(r.state);
@@ -912,7 +1063,33 @@ $("continue-free-btn").addEventListener("click", async () => {
   await startPlayGame(academyState.board.fen);
   showFeedback("play-status", "Continuing your lesson position as a full unrestricted game!", true);
 });
-$("speak-btn").addEventListener("click", () => academyState && speak(academyState.coach.voice_script || academyState.coach.text));
+const savedAutoVoice = localStorage.getItem("kf_coach_auto_voice");
+$("voice-toggle").checked = savedAutoVoice === null ? true : savedAutoVoice === "1";
+const savedCoachRate = localStorage.getItem("kf_coach_rate");
+if (savedCoachRate && [...$("coach-rate-select").options].some((option) => option.value === savedCoachRate)) {
+  $("coach-rate-select").value = savedCoachRate;
+}
+$("voice-toggle").addEventListener("change", () => {
+  localStorage.setItem("kf_coach_auto_voice", $("voice-toggle").checked ? "1" : "0");
+  if ($("voice-toggle").checked && academyState) {
+    const narration = academyNarrationForState(academyState);
+    academyLastNarration = narration;
+    speak(narration);
+  } else {
+    stopCoachSpeech();
+  }
+});
+$("coach-voice-select").addEventListener("change", () => {
+  const voice = selectedCoachVoice();
+  localStorage.setItem("kf_coach_voice", voice ? voice.voiceURI : "");
+  if ($("voice-toggle").checked && academyState) speak(academyNarrationForState(academyState));
+});
+$("coach-rate-select").addEventListener("change", () => {
+  localStorage.setItem("kf_coach_rate", $("coach-rate-select").value);
+  if ($("voice-toggle").checked && academyState) speak(academyNarrationForState(academyState));
+});
+$("speak-btn").addEventListener("click", () => academyState && speak(academyNarrationForState(academyState)));
+$("stop-speak-btn").addEventListener("click", stopCoachSpeech);
 $("mistake-hear-btn").addEventListener("click", () => {
   const mistake = academyState && academyState.coach.mistake_feedback;
   if (mistake) speak(mistake.voice_script || mistake.text);
@@ -922,6 +1099,13 @@ $("mistake-retry-btn").addEventListener("click", () => {
   acSelected = null;
   acTargets = [];
   $("mistake-coach").classList.add("hidden");
+  if (academyState) {
+    $("coach-text").textContent = academyState.coach.text || "Choose your next move.";
+    $("coach-explanation").textContent = academyState.coach.explanation || "";
+    const narration = academyNarrationForState(academyState);
+    if ($("voice-toggle").checked && narration && narration !== academyLastNarration) speak(narration);
+    academyLastNarration = narration;
+  }
   renderAcademy();
   showFeedback("feedback", "Your position is unchanged. Try the move again.", true);
 });
