@@ -18,9 +18,9 @@ def test_all_40_gambits_and_all_210_supplied_lines_are_legal():
     assert len(library.trees) == 40
     assert library.report()["white_count"] == 20
     assert library.report()["black_count"] == 20
-    assert library.report()["source_line_count"] == 210
+    assert library.report()["source_line_count"] == 235
     assert library.issues == (), [issue.to_dict() for issue in library.issues]
-    assert library.report()["validated_line_count"] == 210
+    assert library.report()["validated_line_count"] == 235
 
 
 def test_each_gambit_exposes_named_variations_and_a_guided_coach_lesson():
