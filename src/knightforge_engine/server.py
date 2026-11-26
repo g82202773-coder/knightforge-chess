@@ -839,6 +839,47 @@ def submit_move(
         return payload
 
 
+@app.post("/api/sessions/{session_id}/continue")
+def continue_after_mistake(session_id: str) -> dict[str, Any]:
+    """Apply the reviewed lesson move after the learner chooses Continue."""
+    record = store.get(session_id)
+    if record.mode == "mastery":
+        raise HTTPException(status_code=403, detail="Continue is disabled in Mastery mode.")
+    with record.lock:
+        prompt = record.coach.prompt().prompt
+        if prompt.kind != "correction" or prompt.mistake_feedback is None:
+            raise HTTPException(status_code=409, detail="There is no mistake to continue past.")
+        if prompt.expected_uci is None:
+            raise HTTPException(status_code=409, detail="No reviewed continuation is available.")
+        try:
+            result = record.coach.submit_uci(prompt.expected_uci)
+        except (ValueError, RuntimeError) as exc:
+            raise HTTPException(status_code=409, detail=str(exc)) from exc
+        record.hint_level = 0
+        auto_reply_san: str | None = None
+        if record.auto_reply and result.submission.applied:
+            nxt_prompt = result.state.prompt
+            learner_col = record.coach.session.lesson.learner_color
+            if (
+                nxt_prompt.kind == "move"
+                and nxt_prompt.expected_uci
+                and nxt_prompt.turn != learner_col
+            ):
+                reply_res = record.coach.submit_uci(nxt_prompt.expected_uci)
+                auto_reply_san = reply_res.submission.actual_san
+                result = reply_res
+        if (
+            result.state.prompt.kind in {"complete", "free_play"}
+            and not record.completion_recorded
+        ):
+            store.progress.record_lesson_completion(record.lesson_id, record.mode, 0)
+            record.completion_recorded = True
+        payload = apply_mode_policy(submission_payload(result), record)
+        payload["auto_reply_san"] = auto_reply_san
+        payload["continued_after_feedback"] = True
+        return payload
+
+
 @app.post("/api/sessions/{session_id}/hints")
 def reveal_hint(session_id: str, request: HintRequest) -> dict[str, Any]:
     record = store.get(session_id)
