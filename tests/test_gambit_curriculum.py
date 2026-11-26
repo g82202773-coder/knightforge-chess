@@ -12,7 +12,7 @@ from knightforge_engine.server import app
 client = TestClient(app)
 
 
-def test_all_40_gambits_and_all_210_supplied_lines_are_legal():
+def test_all_40_gambits_and_all_235_supplied_lines_are_legal():
     library = build_gambit_library(Path("data/openings/gambit_curriculum.json"))
     assert len(library.entries) == 40
     assert len(library.trees) == 40
