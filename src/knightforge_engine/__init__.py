@@ -10,6 +10,7 @@ from .curriculum import CurriculumCatalog, LessonEntry
 from .game_analyzer import ChessCoachAssistant, MoveReview, analyze_pgn_game
 from .game_manager import CLOCK_PRESETS, ChessClock, FullChessMatch
 from .guided_learning import (
+    CoachMistakeFeedback,
     CoachPrompt,
     GuidedLesson,
     GuidedLessonSession,
@@ -61,6 +62,7 @@ __all__ = [
     "ChessGame",
     "CoachDecisionLayer",
     "CoachHint",
+    "CoachMistakeFeedback",
     "CoachPrompt",
     "CurriculumCatalog",
     "EngineLine",
