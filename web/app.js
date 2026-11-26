@@ -1423,6 +1423,7 @@ $("coach-rate-select").addEventListener("change", () => {
 });
 $("speak-btn").addEventListener("click", () => academyState && speak(academyNarrationForState(academyState)));
 $("stop-speak-btn").addEventListener("click", stopCoachSpeech);
+$("coach-voice-setup-btn").addEventListener("click", openCoachVoiceSetup);
 $("mistake-hear-btn").addEventListener("click", () => {
   const mistake = academyState && academyState.coach.mistake_feedback;
   if (mistake) speak(mistake.voice_script || mistake.text);
