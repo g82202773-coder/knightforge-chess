@@ -75,7 +75,8 @@ def test_academy_mistake_coach_retry_continue_and_voice(live_server_url: str) ->
         assert "selected" in (page.locator('#board [data-sq="d2"]').get_attribute("class") or "")
         assert "legal" in (page.locator('#board [data-sq="d4"]').get_attribute("class") or "")
         with page.expect_response(
-            lambda response: response.url.endswith(f"/api/sessions/{page.evaluate('academySessionId')}/moves")
+            lambda response: "/api/sessions/" in response.url
+            and response.url.endswith("/moves")
             and response.request.method == "POST",
             timeout=8000,
         ) as move_response:
