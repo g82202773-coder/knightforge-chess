@@ -186,7 +186,7 @@ def test_password_recovery_fails_closed_without_verified_delivery():
 
 def test_online_resignation_requires_the_seated_player_token():
     created = client.post("/api/games", json={"mode": "online_pvp"}).json()
-    joined = client.post(f"/api/games/join/{created['invite_code']}").json()
+
     game_id = created["game_id"]
 
     missing = client.post(f"/api/games/{game_id}/resign")
