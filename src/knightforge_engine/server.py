@@ -21,6 +21,7 @@ from .ai_opponent import AIDifficulty, ChessAIOpponent
 from .analysis import StockfishAnalyzer
 from .coach_presentation import coach_state_payload, submission_payload
 from .curriculum import CurriculumCatalog
+from .gambit_curriculum import build_gambit_library
 from .game_analyzer import ChessCoachAssistant, analyze_pgn_game
 from .game_manager import CLOCK_PRESETS, ColorName, FullChessMatch, MatchMode
 from .guided_learning import GuidedLesson
@@ -117,9 +118,14 @@ class SessionStore:
         default_taxonomy = repo_root / "data/openings/opening_taxonomy.json"
         default_db = repo_root / "data/knightforge.db"
 
-        self.repository = OpeningRepository.load(
+        base_repository = OpeningRepository.load(
             Path(os.environ.get("KNIGHTFORGE_OPENINGS_PATH", str(default_openings)))
         )
+        self.gambit_library = build_gambit_library()
+        # Keep the user-curated Gambit Academy as an in-memory extension of the
+        # canonical opening repository; do not mutate the source JSON on startup.
+        combined_openings = (*base_repository.all(), *self.gambit_library.trees)
+        self.repository = OpeningRepository(base_repository.path, combined_openings)
         taxonomy_path = Path(
             os.environ.get("KNIGHTFORGE_TAXONOMY_PATH", str(default_taxonomy))
         )
@@ -930,6 +936,27 @@ def restart(session_id: str) -> dict[str, Any]:
         record.hint_level = 0
         record.completion_recorded = False
         return {"state": state_for(record)}
+
+
+# ---------------------------------------------------------------------------
+# Gambit Academy — 40 curated repertoires, move validation and coach guides
+# ---------------------------------------------------------------------------
+@app.get("/api/gambits")
+def gambit_academy(side: str = "all", q: str = "") -> dict[str, Any]:
+    if side not in {"all", "white", "black"}:
+        raise HTTPException(status_code=422, detail="side must be all, white, or black")
+    return {
+        "report": store.gambit_library.report(),
+        "gambits": store.gambit_library.list_guides(side=side, query=q),
+    }
+
+
+@app.get("/api/gambits/{gambit_id}")
+def gambit_coach_guide(gambit_id: str) -> dict[str, Any]:
+    guide = store.gambit_library.guide(gambit_id)
+    if guide is None:
+        raise HTTPException(status_code=404, detail=f"Gambit not found: {gambit_id}")
+    return guide
 
 
 # ---------------------------------------------------------------------------

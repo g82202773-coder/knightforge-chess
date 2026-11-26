@@ -1,0 +1,1897 @@
+{
+  "schema_version": "1.0.0",
+  "title": "KnightForge Gambit Academy — 40 Repertoires",
+  "source_note": "Move sequences supplied by the user and replayed from the standard starting position with python-chess. Only legally replayable lines are published as playable branches. Names and classifications are retained from the supplied curriculum; some entries are attacks, counterattacks or trap systems rather than strict pawn gambits.",
+  "sets": [
+    {
+      "id": "white-queens-gambit",
+      "name": "Queen's Gambit",
+      "side": "white",
+      "kind": "gambit",
+      "summary": "White offers the c-pawn to build a strong centre and gain development if Black accepts.",
+      "white_plan": "Build a d4-e4 centre, develop rapidly, and use the open c-file if the c-pawn is accepted.",
+      "black_plan": "Challenge White's centre with ...c5 or ...e5; develop smoothly and avoid clinging to the pawn.",
+      "finish_plan": "Convert the central space advantage into active pieces, pressure on the c-file, and a favourable endgame.",
+      "key_ideas": [
+        "Space versus pawn material",
+        "Central break: e4 or cxd5 depending on Black's setup",
+        "Develop before trying to recover the pawn"
+      ],
+      "common_traps": [
+        "Do not assume the gambit pawn must be recovered immediately",
+        "Watch ...Bb4 pins and ...e5 central counterplay"
+      ],
+      "lines": [
+        {
+          "label": "Queen's Gambit setup",
+          "moves": "d4 d5 c4",
+          "coach": ""
+        },
+        {
+          "label": "QGD · Orthodox",
+          "moves": "d4 d5 c4 e6 Nc3 Nf6 Bg5 Be7",
+          "coach": ""
+        },
+        {
+          "label": "QGD · Ragozin",
+          "moves": "d4 d5 c4 e6 Nc3 Nf6 Nf3 Bb4",
+          "coach": ""
+        },
+        {
+          "label": "QGD · Tarrasch",
+          "moves": "d4 d5 c4 e6 Nc3 c5",
+          "coach": ""
+        },
+        {
+          "label": "Slav · Main line",
+          "moves": "d4 d5 c4 c6 Nf3 Nf6 Nc3 dxc4",
+          "coach": ""
+        },
+        {
+          "label": "Semi-Slav",
+          "moves": "d4 d5 c4 c6 Nf3 Nf6 Nc3 e6",
+          "coach": ""
+        },
+        {
+          "label": "Queen's Gambit Accepted",
+          "moves": "d4 d5 c4 dxc4 Nf3 Nf6 e3",
+          "coach": ""
+        },
+        {
+          "label": "Chigorin Defence",
+          "moves": "d4 d5 c4 Nc6 Nc3 Nf6",
+          "coach": ""
+        },
+        {
+          "label": "Baltic Defence",
+          "moves": "d4 d5 c4 Bf5 Nc3 e6",
+          "coach": ""
+        },
+        {
+          "label": "Albin Countergambit",
+          "moves": "d4 d5 c4 e5 dxe5 d4 Nf3 Nc6",
+          "coach": ""
+        }
+      ]
+    },
+    {
+      "id": "white-kings-gambit",
+      "name": "King's Gambit",
+      "side": "white",
+      "kind": "gambit",
+      "summary": "White offers the f-pawn to open the f-file and accelerate kingside development.",
+      "white_plan": "Develop with Nf3, Bc4 or Bb5, castle quickly, and attack before Black consolidates.",
+      "black_plan": "If accepting, use ...g5 or ...d5 accurately; if declining, strike the centre and complete development.",
+      "finish_plan": "Use the open f-file and piece activity to build an attack; if queens come off, convert the lead in development into a sound position.",
+      "key_ideas": [
+        "King safety is more important than grabbing pawns",
+        "Open lines: f-file and diagonals toward f7",
+        "Know the accepted and declined move orders"
+      ],
+      "common_traps": [
+        "Do not castle automatically if the centre is opening against your king",
+        "After ...g5, calculate ...g4 before moving the f3-knight"
+      ],
+      "lines": [
+        {
+          "label": "King's Gambit setup",
+          "moves": "e4 e5 f4",
+          "coach": ""
+        },
+        {
+          "label": "King's Knight Gambit · Classical",
+          "moves": "e4 e5 f4 exf4 Nf3 g5",
+          "coach": ""
+        },
+        {
+          "label": "Fischer Defence",
+          "moves": "e4 e5 f4 exf4 Nf3 d6",
+          "coach": ""
+        },
+        {
+          "label": "Modern Defence",
+          "moves": "e4 e5 f4 exf4 Nf3 d5",
+          "coach": ""
+        },
+        {
+          "label": "Cunningham Defence",
+          "moves": "e4 e5 f4 exf4 Nf3 Be7",
+          "coach": ""
+        },
+        {
+          "label": "Kieseritzky Gambit",
+          "moves": "e4 e5 f4 exf4 Nf3 g5 h4 g4 Ne5",
+          "coach": ""
+        },
+        {
+          "label": "Muzio Gambit",
+          "moves": "e4 e5 f4 exf4 Nf3 g5 Bc4 g4 O-O gxf3 Qxf3",
+          "coach": ""
+        },
+        {
+          "label": "Bishop's Gambit",
+          "moves": "e4 e5 f4 exf4 Bc4 Nf6",
+          "coach": ""
+        },
+        {
+          "label": "King's Gambit Declined · Classical",
+          "moves": "e4 e5 f4 Bc5",
+          "coach": ""
+        },
+        {
+          "label": "Falkbeer Countergambit",
+          "moves": "e4 e5 f4 d5 exd5 e4 d3 Nf6",
+          "coach": ""
+        }
+      ]
+    },
+    {
+      "id": "white-evans-gambit",
+      "name": "Evans Gambit",
+      "side": "white",
+      "kind": "gambit",
+      "summary": "White offers the b-pawn to gain tempi against the bishop and establish a powerful centre.",
+      "white_plan": "Play c3 and d4, develop with tempo, and castle before Black untangles.",
+      "black_plan": "Return material if needed, develop the queenside, and strike the centre with ...d6 or ...d5.",
+      "finish_plan": "Use the central pawn mass and lead in development to create threats against the king; transition to an active rook ending if the attack fades.",
+      "key_ideas": [
+        "Tempo against the bishop",
+        "Build the d4-e5 centre when possible",
+        "Do not let development advantage disappear"
+      ],
+      "common_traps": [
+        "Do not grab extra material before castling",
+        "Watch ...d5 counterstrikes"
+      ],
+      "lines": [
+        {
+          "label": "Evans Gambit · Accepted main line",
+          "moves": "e4 e5 Nf3 Nc6 Bc4 Bc5 b4 Bxb4 c3 Ba5 d4",
+          "coach": ""
+        },
+        {
+          "label": "Lasker Defence",
+          "moves": "e4 e5 Nf3 Nc6 Bc4 Bc5 b4 Bxb4 c3 Ba5 d4 d6 O-O Bb6",
+          "coach": ""
+        },
+        {
+          "label": "Compromised Defence",
+          "moves": "e4 e5 Nf3 Nc6 Bc4 Bc5 b4 Bxb4 c3 Ba5 d4 exd4 O-O dxc3",
+          "coach": ""
+        },
+        {
+          "label": "Retreat · ...Be7",
+          "moves": "e4 e5 Nf3 Nc6 Bc4 Bc5 b4 Bxb4 c3 Be7",
+          "coach": ""
+        },
+        {
+          "label": "Retreat · ...Bc5",
+          "moves": "e4 e5 Nf3 Nc6 Bc4 Bc5 b4 Bxb4 c3 Bc5",
+          "coach": ""
+        },
+        {
+          "label": "Retreat · ...Bd6",
+          "moves": "e4 e5 Nf3 Nc6 Bc4 Bc5 b4 Bxb4 c3 Bd6",
+          "coach": ""
+        },
+        {
+          "label": "Evans Gambit Declined",
+          "moves": "e4 e5 Nf3 Nc6 Bc4 Bc5 b4 Bb6 a4 a6",
+          "coach": ""
+        }
+      ]
+    },
+    {
+      "id": "white-smith-morra",
+      "name": "Smith-Morra Gambit",
+      "side": "white",
+      "kind": "gambit",
+      "summary": "White sacrifices a central pawn against the Sicilian to obtain rapid development and open lines.",
+      "white_plan": "Develop Nc3, Nf3 and Bc4; use open files and pressure on d6 and e6.",
+      "black_plan": "Black should return material at the right moment, complete development, and neutralize White's initiative.",
+      "finish_plan": "If the attack does not produce tactics, keep active pieces and use the open c- and d-files to create lasting pressure.",
+      "key_ideas": [
+        "Activity for the pawn",
+        "Pressure on d6 and e6",
+        "Use Bc4 and Qe2 with accurate timing"
+      ],
+      "common_traps": [
+        "The Siberian motif depends on White's queen placement and loose back rank",
+        "Do not play a routine attack if Black can consolidate with ...d5"
+      ],
+      "lines": [
+        {
+          "label": "Smith-Morra · Accepted Classical",
+          "moves": "e4 c5 d4 cxd4 c3 dxc3 Nxc3 Nc6 Nf3 e6 Bc4",
+          "coach": ""
+        },
+        {
+          "label": "Chicago Defence",
+          "moves": "e4 c5 d4 cxd4 c3 dxc3 Nxc3 Nc6 Nf3 d6 Bc4 e6 O-O a6 Qe2 Nge7",
+          "coach": ""
+        },
+        {
+          "label": "Siberian Trap setup",
+          "moves": "e4 c5 d4 cxd4 c3 dxc3 Nxc3 Nc6 Nf3 e6 Bc4 Nf6 O-O Qc7 Qe2 Ng4",
+          "coach": ""
+        },
+        {
+          "label": "Fianchetto setup",
+          "moves": "e4 c5 d4 cxd4 c3 dxc3 Nxc3 g6",
+          "coach": ""
+        },
+        {
+          "label": "Declined · ...Nf6",
+          "moves": "e4 c5 d4 cxd4 c3 Nf6 e5 Nd5",
+          "coach": ""
+        },
+        {
+          "label": "Declined · ...d3",
+          "moves": "e4 c5 d4 cxd4 c3 d3 Bxd3",
+          "coach": ""
+        },
+        {
+          "label": "Declined · ...d5",
+          "moves": "e4 c5 d4 cxd4 c3 d5 exd5 Qxd5",
+          "coach": ""
+        }
+      ]
+    },
+    {
+      "id": "white-vienna-gambit",
+      "name": "Vienna Gambit",
+      "side": "white",
+      "kind": "gambit",
+      "summary": "White uses f4 to challenge e5 and create open attacking lines from a flexible Vienna move order.",
+      "white_plan": "Choose e5 or fxe5 according to Black's central reply; develop quickly and keep the king safe.",
+      "black_plan": "Use ...d5 or ...exf4 at the right moment, then develop and contest the centre.",
+      "finish_plan": "Convert initiative into a kingside attack or a favourable central endgame; avoid speculative pawn pushes after Black has consolidated.",
+      "key_ideas": [
+        "Central break timing",
+        "The e5 advance can gain space but also create weaknesses",
+        "Know when to trade on e5"
+      ],
+      "common_traps": [
+        "Do not push e5 without checking ...Qe7 and ...Ng8 ideas",
+        "Calculate the ...d5 counterstrike before accepting a pawn"
+      ],
+      "lines": [
+        {
+          "label": "Vienna Gambit setup",
+          "moves": "e4 e5 Nc3 Nf6 f4",
+          "coach": ""
+        },
+        {
+          "label": "Main counterstrike · ...d5",
+          "moves": "e4 e5 Nc3 Nf6 f4 d5 fxe5 Nxe4",
+          "coach": ""
+        },
+        {
+          "label": "Counterstrike · 5.Nf3",
+          "moves": "e4 e5 Nc3 Nf6 f4 d5 fxe5 Nxe4 Nf3",
+          "coach": ""
+        },
+        {
+          "label": "Accepted · ...exf4",
+          "moves": "e4 e5 Nc3 Nf6 f4 exf4 e5 Ng8",
+          "coach": ""
+        },
+        {
+          "label": "Accepted · ...Qe7",
+          "moves": "e4 e5 Nc3 Nf6 f4 exf4 e5 Qe7 Qe2 Ng8",
+          "coach": ""
+        },
+        {
+          "label": "Declined · ...d6",
+          "moves": "e4 e5 Nc3 Nf6 f4 d6",
+          "coach": ""
+        },
+        {
+          "label": "Declined · ...Bc5",
+          "moves": "e4 e5 Nc3 Nf6 f4 Bc5",
+          "coach": ""
+        }
+      ]
+    },
+    {
+      "id": "white-scotch-gambit",
+      "name": "Scotch Gambit",
+      "side": "white",
+      "kind": "gambit",
+      "summary": "White develops the bishop actively after the Scotch central exchange and aims for rapid piece pressure.",
+      "white_plan": "Develop Bc4, castle, and use c3 or e5 to open lines.",
+      "black_plan": "Black should challenge the bishop and centre with ...Bc5, ...Nf6 or timely ...d5.",
+      "finish_plan": "Use the open centre to activate rooks; if the attack ends, retain central control and avoid hanging pieces.",
+      "key_ideas": [
+        "Rapid castling and central pressure",
+        "The e5 thrust can dislodge a knight",
+        "Tactical motifs on f7"
+      ],
+      "common_traps": [
+        "Do not sacrifice on f7 without calculating king captures and checks",
+        "Keep track of the d4 pawn and the e-file"
+      ],
+      "lines": [
+        {
+          "label": "Scotch Gambit · Classical",
+          "moves": "e4 e5 Nf3 Nc6 d4 exd4 Bc4 Bc5 c3 Nf6",
+          "coach": ""
+        },
+        {
+          "label": "Dubois Variation",
+          "moves": "e4 e5 Nf3 Nc6 d4 exd4 Bc4 Bc5 c3 d3",
+          "coach": ""
+        },
+        {
+          "label": "Two Knights · ...d5",
+          "moves": "e4 e5 Nf3 Nc6 d4 exd4 Bc4 Nf6 e5 d5",
+          "coach": ""
+        },
+        {
+          "label": "Two Knights · ...Nxe4",
+          "moves": "e4 e5 Nf3 Nc6 d4 exd4 Bc4 Nf6 O-O Nxe4",
+          "coach": ""
+        },
+        {
+          "label": "Nakhmanson Gambit",
+          "moves": "e4 e5 Nf3 Nc6 d4 exd4 Bc4 Nf6 O-O Nxe4 Nc3 dxc3 Bxf7+ Kxf7 Qd5+",
+          "coach": ""
+        },
+        {
+          "label": "Max Lange Attack setup",
+          "moves": "e4 e5 Nf3 Nc6 d4 exd4 Bc4 Bc5 O-O Nf6 e5",
+          "coach": ""
+        },
+        {
+          "label": "Haxo / London line",
+          "moves": "e4 e5 Nf3 Nc6 d4 exd4 Bc4 Bb4+ c3 dxc3 O-O",
+          "coach": ""
+        }
+      ]
+    },
+    {
+      "id": "white-danish-gambit",
+      "name": "Danish Gambit",
+      "side": "white",
+      "kind": "gambit",
+      "summary": "White offers one or two central pawns for open bishops and rapid development.",
+      "white_plan": "Develop Bc4 and Bxb2, use the long diagonals, and castle quickly.",
+      "black_plan": "Black can accept one pawn and return it to finish development, or decline with a central counter.",
+      "finish_plan": "Use bishop pair activity and open lines; if queens trade, keep the bishops active and target weak pawns.",
+      "key_ideas": [
+        "Bishop pair and open diagonals",
+        "Development is worth more than a pawn when the king is in the centre",
+        "Be ready to recover material later"
+      ],
+      "common_traps": [
+        "Do not leave the bishops exposed to tempo-gaining attacks",
+        "Avoid premature queen moves while development is incomplete"
+      ],
+      "lines": [
+        {
+          "label": "Danish · Full accepted",
+          "moves": "e4 e5 d4 exd4 c3 dxc3 Bc4 cxb2 Bxb2",
+          "coach": ""
+        },
+        {
+          "label": "Schlechter Defence",
+          "moves": "e4 e5 d4 exd4 c3 dxc3 Bc4 cxb2 Bxb2 d5 Bxd5 Nf6",
+          "coach": ""
+        },
+        {
+          "label": "Half-Danish · Capablanca",
+          "moves": "e4 e5 d4 exd4 c3 dxc3 Nxc3",
+          "coach": ""
+        },
+        {
+          "label": "Sorensen Defence",
+          "moves": "e4 e5 d4 exd4 c3 d5 exd5 Qxd5",
+          "coach": ""
+        },
+        {
+          "label": "Declined · ...Qe7",
+          "moves": "e4 e5 d4 exd4 c3 Qe7",
+          "coach": ""
+        },
+        {
+          "label": "Declined · ...Nf6",
+          "moves": "e4 e5 d4 exd4 c3 Nf6",
+          "coach": ""
+        }
+      ]
+    },
+    {
+      "id": "white-goring-gambit",
+      "name": "Göring Gambit",
+      "side": "white",
+      "kind": "gambit",
+      "summary": "White gives a pawn after the Scotch move order to open lines and accelerate development.",
+      "white_plan": "Develop Nc3 and Bc4, castle, and make Black spend tempi defending material.",
+      "black_plan": "Black should return the pawn at a good moment and complete development without weakening the king.",
+      "finish_plan": "Use the lead in development to attack; if Black consolidates, play for central breaks rather than forcing a mate.",
+      "key_ideas": [
+        "Fast development after c3",
+        "Open c-file and bishop activity",
+        "Central pawn breaks"
+      ],
+      "common_traps": [
+        "Do not chase the b-pawn if it gives Black time to develop",
+        "Check ...Bb4 pins before playing Nc3"
+      ],
+      "lines": [
+        {
+          "label": "Göring · Single pawn accepted",
+          "moves": "e4 e5 Nf3 Nc6 d4 exd4 c3 dxc3 Nxc3 Bb4 Bc4",
+          "coach": ""
+        },
+        {
+          "label": "Göring · Double pawn accepted",
+          "moves": "e4 e5 Nf3 Nc6 d4 exd4 c3 dxc3 Bc4 cxb2 Bxb2",
+          "coach": ""
+        },
+        {
+          "label": "Declined · ...d5",
+          "moves": "e4 e5 Nf3 Nc6 d4 exd4 c3 d5 exd5 Qxd5 cxd4",
+          "coach": ""
+        },
+        {
+          "label": "Declined · ...Nf6",
+          "moves": "e4 e5 Nf3 Nc6 d4 exd4 c3 Nf6 e5 Ne4",
+          "coach": ""
+        },
+        {
+          "label": "Declined · ...d3",
+          "moves": "e4 e5 Nf3 Nc6 d4 exd4 c3 d3",
+          "coach": ""
+        }
+      ]
+    },
+    {
+      "id": "white-blackmar-diemer",
+      "name": "Blackmar-Diemer Gambit",
+      "side": "white",
+      "kind": "gambit",
+      "summary": "White sacrifices the e-pawn and f-pawn to open lines and develop quickly against the Queen's Pawn structures.",
+      "white_plan": "Develop Nc3 and Nxf3, use open files, and keep pressure on the king.",
+      "black_plan": "Black should return material only when it reduces White's initiative; develop and challenge the centre.",
+      "finish_plan": "If the attack does not break through, use the open f-file and piece activity to seek a favourable ending.",
+      "key_ideas": [
+        "Piece activity for the pawn",
+        "Open f-file",
+        "Rapid queen and bishop coordination"
+      ],
+      "common_traps": [
+        "Do not bring the queen out without a concrete threat",
+        "Watch ...Bg4 pins and ...e6 consolidation"
+      ],
+      "lines": [
+        {
+          "label": "Blackmar-Diemer · Accepted",
+          "moves": "d4 d5 e4 dxe4 Nc3 Nf6 f3 exf3 Nxf3",
+          "coach": ""
+        },
+        {
+          "label": "Teichmann Defence",
+          "moves": "d4 d5 e4 dxe4 Nc3 Nf6 f3 exf3 Nxf3 Bg4",
+          "coach": ""
+        },
+        {
+          "label": "Euwe Defence",
+          "moves": "d4 d5 e4 dxe4 Nc3 Nf6 f3 exf3 Nxf3 e6",
+          "coach": ""
+        },
+        {
+          "label": "Bogoljubov Defence",
+          "moves": "d4 d5 e4 dxe4 Nc3 Nf6 f3 exf3 Nxf3 g6",
+          "coach": ""
+        },
+        {
+          "label": "Ziegler Defence",
+          "moves": "d4 d5 e4 dxe4 Nc3 Nf6 f3 exf3 Nxf3 c6",
+          "coach": ""
+        },
+        {
+          "label": "Ryder Gambit",
+          "moves": "d4 d5 e4 dxe4 Nc3 Nf6 f3 exf3 Qxf3",
+          "coach": ""
+        },
+        {
+          "label": "Declined · Vienna",
+          "moves": "d4 d5 e4 dxe4 Nc3 Nf6 f3 Bf5",
+          "coach": ""
+        },
+        {
+          "label": "Declined · Langeheinicke",
+          "moves": "d4 d5 e4 dxe4 Nc3 Nf6 f3 e3",
+          "coach": ""
+        }
+      ]
+    },
+    {
+      "id": "white-urusov-gambit",
+      "name": "Urusov Gambit",
+      "side": "white",
+      "kind": "gambit",
+      "summary": "White opens the centre in the Bishop's Opening and sacrifices a pawn for rapid development.",
+      "white_plan": "Develop Nf3, Qxd4 when legal, Bg5 and Nc3; exploit the exposed black king.",
+      "black_plan": "Black should return material if needed and use ...d5 or ...Nc6 to challenge the centre.",
+      "finish_plan": "Convert development into active piece play; if the attack ends, keep central control and target the backward d-pawn.",
+      "key_ideas": [
+        "Central development",
+        "Queen recapture only when the route is clear",
+        "Bishop pressure on g5"
+      ],
+      "common_traps": [
+        "Check that Qxd4 is a legal recapture and not a queen-losing tempo",
+        "Do not ignore the king's safety while attacking"
+      ],
+      "lines": [
+        {
+          "label": "Urusov · Main accepted line",
+          "moves": "e4 e5 Bc4 Nf6 d4 exd4 Nf3 Nxe4 Qxd4 Nf6 Bg5 Be7 Nc3",
+          "coach": ""
+        },
+        {
+          "label": "Keidansky Variation",
+          "moves": "e4 e5 Bc4 Nf6 d4 exd4 Nf3 Nxe4 Qxd4 Nf6 Nc3",
+          "coach": ""
+        },
+        {
+          "label": "Declined · ...d5",
+          "moves": "e4 e5 Bc4 Nf6 d4 exd4 Nf3 d5 exd5 Bb4+",
+          "coach": ""
+        },
+        {
+          "label": "Declined · ...Nc6",
+          "moves": "e4 e5 Bc4 Nf6 d4 exd4 Nf3 Nc6",
+          "coach": ""
+        },
+        {
+          "label": "Boden-Kieseritzky cousin",
+          "moves": "e4 e5 Bc4 Nf6 Nf3 Nxe4 Nc3 Nxc3 dxc3 f6",
+          "coach": ""
+        }
+      ]
+    },
+    {
+      "id": "white-fried-liver",
+      "name": "Fried Liver Attack",
+      "side": "white",
+      "kind": "attack",
+      "summary": "A tactical Italian/Two Knights attack in which White may sacrifice a knight to expose Black's king.",
+      "white_plan": "Use the Nxf7 idea only after checking the forcing sequence; bring the queen and remaining pieces into the attack.",
+      "black_plan": "Black must know the ...Kxf7 defence and earlier sidesteps such as ...Na5, ...b5 and ...Bc5.",
+      "finish_plan": "If the forcing attack does not lead to a decisive result, use the initiative to win material or reach a safer position; finish with king-and-pawn technique if queens trade.",
+      "key_ideas": [
+        "Forcing checks and king exposure",
+        "The f7 square",
+        "Calculate all king escapes before sacrificing"
+      ],
+      "common_traps": [
+        "Do not assume Nxf7 is automatically winning",
+        "Against ...Bc5, switch to Traxler-specific theory"
+      ],
+      "lines": [
+        {
+          "label": "Fried Liver · Main tactical line",
+          "moves": "e4 e5 Nf3 Nc6 Bc4 Nf6 Ng5 d5 exd5 Nxd5 Nxf7 Kxf7 Qf3+ Ke6 Nc3",
+          "coach": ""
+        },
+        {
+          "label": "Lolli Attack",
+          "moves": "e4 e5 Nf3 Nc6 Bc4 Nf6 Ng5 d5 exd5 Nxd5 d4 exd4 O-O",
+          "coach": ""
+        },
+        {
+          "label": "Polerio sidestep",
+          "moves": "e4 e5 Nf3 Nc6 Bc4 Nf6 Ng5 d5 exd5 Na5",
+          "coach": ""
+        },
+        {
+          "label": "Ulvestad sidestep",
+          "moves": "e4 e5 Nf3 Nc6 Bc4 Nf6 Ng5 d5 exd5 b5",
+          "coach": ""
+        },
+        {
+          "label": "Fritz sidestep",
+          "moves": "e4 e5 Nf3 Nc6 Bc4 Nf6 Ng5 d5 exd5 Nd4",
+          "coach": ""
+        },
+        {
+          "label": "Traxler counterattack",
+          "moves": "e4 e5 Nf3 Nc6 Bc4 Nf6 Ng5 Bc5",
+          "coach": ""
+        }
+      ]
+    },
+    {
+      "id": "white-halloween-gambit",
+      "name": "Halloween Gambit",
+      "side": "white",
+      "kind": "gambit",
+      "summary": "White gives a knight for central pawns and rapid space in the Four Knights structure.",
+      "white_plan": "Advance d4 and e5 when justified, gain space, and use the centre to restrict Black's pieces.",
+      "black_plan": "Return material or blockade the centre; develop quickly and attack the overextended pawns.",
+      "finish_plan": "Use the space advantage to restrict pieces and create passed pawns; do not let Black trade into a comfortable extra-piece ending.",
+      "key_ideas": [
+        "Space and pawn storms",
+        "Keep the centre closed when it restrains the extra piece",
+        "Use f4 and d5 with timing"
+      ],
+      "common_traps": [
+        "Do not allow exchanges that leave Black's extra piece dominant",
+        "Avoid pushing every pawn before development"
+      ],
+      "lines": [
+        {
+          "label": "Halloween · Old main line",
+          "moves": "e4 e5 Nf3 Nc6 Nc3 Nf6 Nxe5 Nxe5 d4 Ng6 e5 Ng8",
+          "coach": ""
+        },
+        {
+          "label": "Plasma / Modern defence",
+          "moves": "e4 e5 Nf3 Nc6 Nc3 Nf6 Nxe5 Nxe5 d4 Nc6 d5 Ne5 f4 Ng6",
+          "coach": ""
+        },
+        {
+          "label": "Counterattack line",
+          "moves": "e4 e5 Nf3 Nc6 Nc3 Nf6 Nxe5 Nxe5 d4 Bb4 dxe5 Nxe4 Qd4",
+          "coach": ""
+        }
+      ]
+    },
+    {
+      "id": "white-belgrade-gambit",
+      "name": "Belgrade Gambit",
+      "side": "white",
+      "kind": "gambit",
+      "summary": "White uses Nd5 in the Four Knights Game to disrupt Black's coordination and seek tactical chances.",
+      "white_plan": "Use Qe2 or Bc4, develop quickly, and exploit a misplaced black knight.",
+      "black_plan": "Black can decline the complications with ...Be7 or exchange the advanced knight.",
+      "finish_plan": "If the attack fades, keep central control and transition into a favourable structure rather than overextending.",
+      "key_ideas": [
+        "Outpost on d5",
+        "Queen coordination",
+        "Maintain development after the knight sacrifice"
+      ],
+      "common_traps": [
+        "Calculate ...Nxe4 before playing Nd5",
+        "Do not confuse a forcing line with a forced win"
+      ],
+      "lines": [
+        {
+          "label": "Belgrade · Accepted",
+          "moves": "e4 e5 Nf3 Nc6 Nc3 Nf6 d4 exd4 Nd5 Nxe4 Qe2 f5 Ng5",
+          "coach": ""
+        },
+        {
+          "label": "Accepted · Bc4 alternative",
+          "moves": "e4 e5 Nf3 Nc6 Nc3 Nf6 d4 exd4 Nd5 Nxe4 Bc4",
+          "coach": ""
+        },
+        {
+          "label": "Solid decline · ...Be7",
+          "moves": "e4 e5 Nf3 Nc6 Nc3 Nf6 d4 exd4 Nd5 Be7 Nxd4",
+          "coach": ""
+        },
+        {
+          "label": "Knight exchange",
+          "moves": "e4 e5 Nf3 Nc6 Nc3 Nf6 d4 exd4 Nd5 Nxd5 exd5 Bb4+",
+          "coach": ""
+        },
+        {
+          "label": "Active counter · ...Nb4",
+          "moves": "e4 e5 Nf3 Nc6 Nc3 Nf6 d4 exd4 Nd5 Nb4 Nxf6+ Qxf6",
+          "coach": ""
+        }
+      ]
+    },
+    {
+      "id": "white-cochrane-gambit",
+      "name": "Cochrane Gambit",
+      "side": "white",
+      "kind": "gambit",
+      "summary": "White sacrifices a knight in the Petrov to drag Black's king into the open.",
+      "white_plan": "Play d4 or Bc4+ with tempo, develop rapidly, and keep the king exposed.",
+      "black_plan": "Black must calculate king safety carefully and use central counterplay to neutralize White's attack.",
+      "finish_plan": "If the attack does not produce a decisive result, convert the initiative into material or a favourable ending; learn the king-and-pawn transition.",
+      "key_ideas": [
+        "King exposure",
+        "Checks with development",
+        "Open centre"
+      ],
+      "common_traps": [
+        "Do not sacrifice without a follow-up",
+        "Black should not try to hide the king while the centre is open"
+      ],
+      "lines": [
+        {
+          "label": "Cochrane · Main line",
+          "moves": "e4 e5 Nf3 Nf6 Nxe5 d6 Nxf7 Kxf7 d4 c5",
+          "coach": ""
+        },
+        {
+          "label": "Bishop-check line",
+          "moves": "e4 e5 Nf3 Nf6 Nxe5 d6 Nxf7 Kxf7 Bc4+ d5 Bb3",
+          "coach": ""
+        },
+        {
+          "label": "Knight development",
+          "moves": "e4 e5 Nf3 Nf6 Nxe5 d6 Nxf7 Kxf7 Nc3",
+          "coach": ""
+        }
+      ]
+    },
+    {
+      "id": "white-staunton-gambit",
+      "name": "Staunton Gambit",
+      "side": "white",
+      "kind": "gambit",
+      "summary": "White challenges the Dutch immediately with e4 and opens lines after ...fxe4.",
+      "white_plan": "Develop Nc3 and Bg5, create pressure on f6 and the kingside, and use f3 or g4 with calculation.",
+      "black_plan": "Black should challenge the centre with ...d5 or complete development while holding the extra pawn.",
+      "finish_plan": "Use active pieces and kingside space to create threats; if queens trade, use the open files and central control.",
+      "key_ideas": [
+        "Immediate central challenge to the Dutch",
+        "Open f-file and Bg5 pressure",
+        "King safety"
+      ],
+      "common_traps": [
+        "Do not overextend g-pawns when the centre is still open",
+        "Black should seek ...d5 at the right moment"
+      ],
+      "lines": [
+        {
+          "label": "Staunton · Main line",
+          "moves": "d4 f5 e4 fxe4 Nc3 Nf6 Bg5",
+          "coach": ""
+        },
+        {
+          "label": "Classical line",
+          "moves": "d4 f5 e4 fxe4 Nc3 Nf6 f3 d5",
+          "coach": ""
+        },
+        {
+          "label": "Tartakower Variation",
+          "moves": "d4 f5 e4 fxe4 Nc3 Nf6 g4",
+          "coach": ""
+        },
+        {
+          "label": "Balogh Defence",
+          "moves": "d4 f5 e4 d6",
+          "coach": ""
+        }
+      ]
+    },
+    {
+      "id": "white-sicilian-wing",
+      "name": "Sicilian Wing Gambit",
+      "side": "white",
+      "kind": "gambit",
+      "summary": "White offers the b-pawn to divert Black's c-pawn and attack the centre from the flank.",
+      "white_plan": "Use a3 and c4 or d4 to open the queenside and central files.",
+      "black_plan": "Black should accept only if the centre remains controlled; otherwise develop and strike with ...d5.",
+      "finish_plan": "Use the open a- and b-files for activity, or switch to central play if Black returns the pawn.",
+      "key_ideas": [
+        "Pawn diversion",
+        "Queenside open files",
+        "Central break d4"
+      ],
+      "common_traps": [
+        "Do not sacrifice the b-pawn without a concrete follow-up",
+        "Watch ...d5 counterplay"
+      ],
+      "lines": [
+        {
+          "label": "Wing Gambit · Accepted main line",
+          "moves": "e4 c5 b4 cxb4 a3 d5 exd5 Qxd5",
+          "coach": ""
+        },
+        {
+          "label": "Carlsbad line",
+          "moves": "e4 c5 b4 cxb4 a3 bxa3",
+          "coach": ""
+        },
+        {
+          "label": "Marshall line",
+          "moves": "e4 c5 b4 cxb4 a3 e5",
+          "coach": ""
+        },
+        {
+          "label": "Santasiere idea",
+          "moves": "e4 c5 b4 cxb4 c4",
+          "coach": ""
+        },
+        {
+          "label": "Declined · ...b6",
+          "moves": "e4 c5 b4 b6",
+          "coach": ""
+        },
+        {
+          "label": "Deferred Wing Gambit",
+          "moves": "e4 c5 Nf3 d6 b4",
+          "coach": ""
+        }
+      ]
+    },
+    {
+      "id": "white-milner-barry",
+      "name": "Milner-Barry Gambit",
+      "side": "white",
+      "kind": "gambit",
+      "summary": "White sacrifices a central pawn in the French Advance to accelerate development and attack Black's king.",
+      "white_plan": "Develop Bd3, O-O and Nc3, use open files, and coordinate queen and bishops.",
+      "black_plan": "Black should return material if required and complete development before seeking a kingside attack.",
+      "finish_plan": "Use the lead in development to maintain pressure; if queens are exchanged, convert the active piece placement into a better endgame.",
+      "key_ideas": [
+        "Development against the pawn",
+        "Pressure on h7 and the centre",
+        "Use Nc3 and Qe2 when appropriate"
+      ],
+      "common_traps": [
+        "Do not let the queen become a target after ...Qxd4",
+        "Keep the centre open while ahead in development"
+      ],
+      "lines": [
+        {
+          "label": "Milner-Barry · Main line",
+          "moves": "e4 e6 d4 d5 e5 c5 c3 Nc6 Nf3 Qb6 Bd3 cxd4 cxd4 Bd7 O-O Nxd4 Nxd4 Qxd4 Nc3",
+          "coach": ""
+        },
+        {
+          "label": "Immediate development · Nbd2",
+          "moves": "e4 e6 d4 d5 e5 c5 c3 Nc6 Nf3 Qb6 Bd3 cxd4 cxd4 Bd7 O-O Nxd4 Nbd2",
+          "coach": ""
+        },
+        {
+          "label": "Declined · ...Nb4",
+          "moves": "e4 e6 d4 d5 e5 c5 c3 Nc6 Nf3 Qb6 Bd3 Nb4",
+          "coach": ""
+        },
+        {
+          "label": "Declined · ...Rc8",
+          "moves": "e4 e6 d4 d5 e5 c5 c3 Nc6 Nf3 Qb6 Bd3 Rc8",
+          "coach": ""
+        }
+      ]
+    },
+    {
+      "id": "white-alekhine-chatard",
+      "name": "Alekhine-Chatard Attack",
+      "side": "white",
+      "kind": "attack",
+      "summary": "White advances the h-pawn in the French Classical to create attacking chances against the kingside.",
+      "white_plan": "Use h4-h5 ideas, open the h-file, and bring the knight toward f4 or g5.",
+      "black_plan": "Black can strike with ...c5 or challenge the flank with ...f6 and ...h6.",
+      "finish_plan": "Keep the king safe while attacking; if the centre opens, prioritize development over automatic pawn storms.",
+      "key_ideas": [
+        "Open h-file",
+        "Attack the kingside before the centre opens",
+        "Use f4 and Nf4 only with calculation"
+      ],
+      "common_traps": [
+        "Do not push h-pawn if Black can open the centre with ...c5",
+        "Keep the queen from being trapped after ...Qxg5"
+      ],
+      "lines": [
+        {
+          "label": "Alekhine-Chatard · Accepted",
+          "moves": "e4 e6 d4 d5 Nc3 Nf6 Bg5 Be7 e5 Nfd7 h4 Bxg5 hxg5 Qxg5 Nh3 Qe7 Nf4",
+          "coach": ""
+        },
+        {
+          "label": "Declined · ...c5",
+          "moves": "e4 e6 d4 d5 Nc3 Nf6 Bg5 Be7 e5 Nfd7 h4 c5",
+          "coach": ""
+        },
+        {
+          "label": "Declined · ...a6",
+          "moves": "e4 e6 d4 d5 Nc3 Nf6 Bg5 Be7 e5 Nfd7 h4 a6",
+          "coach": ""
+        },
+        {
+          "label": "Declined · ...f6",
+          "moves": "e4 e6 d4 d5 Nc3 Nf6 Bg5 Be7 e5 Nfd7 h4 f6",
+          "coach": ""
+        },
+        {
+          "label": "Declined · ...O-O",
+          "moves": "e4 e6 d4 d5 Nc3 Nf6 Bg5 Be7 e5 Nfd7 h4 O-O",
+          "coach": ""
+        }
+      ]
+    },
+    {
+      "id": "white-tennison",
+      "name": "Tennison Gambit (ICBM)",
+      "side": "white",
+      "kind": "gambit",
+      "summary": "White uses Nf3 and e4 to tempt ...dxe4 and create tactical chances against Black's queen and king.",
+      "white_plan": "Develop quickly, use Ng5 and d3, and exploit pins and exposed queen squares.",
+      "black_plan": "Black should prefer solid development such as ...Bf5 and ...e6; do not chase material blindly.",
+      "finish_plan": "If the trap is not available, continue with development and central control; do not treat the trap as forced.",
+      "key_ideas": [
+        "Queen-trap pattern recognition",
+        "Develop with tempo",
+        "Check whether the queen escape squares are covered"
+      ],
+      "common_traps": [
+        "The ICBM line requires Black's inaccurate ...h6??; it is not forced",
+        "Do not sacrifice if Black chooses ...Bf5"
+      ],
+      "lines": [
+        {
+          "label": "Tennison · ICBM queen trap",
+          "moves": "Nf3 d5 e4 dxe4 Ng5 Nf6 d3 exd3 Bxd3 h6 Nxf7 Kxf7 Bg6+ Kxg6 Qxd8",
+          "coach": ""
+        },
+        {
+          "label": "Solid defence · ...Bf5",
+          "moves": "Nf3 d5 e4 dxe4 Ng5 Bf5 Nc3 Nf6 Bc4 e6",
+          "coach": ""
+        },
+        {
+          "label": "Queen defence · ...Qd5",
+          "moves": "Nf3 d5 e4 dxe4 Ng5 Qd5 d3 exd3 Bxd3",
+          "coach": ""
+        },
+        {
+          "label": "Declined · ...d4",
+          "moves": "Nf3 d5 e4 d4",
+          "coach": ""
+        },
+        {
+          "label": "Declined · ...e6",
+          "moves": "Nf3 d5 e4 e6",
+          "coach": ""
+        }
+      ]
+    },
+    {
+      "id": "white-alien-gambit",
+      "name": "Alien Gambit",
+      "side": "white",
+      "kind": "gambit",
+      "summary": "A sharp Caro-Kann sideline where White sacrifices a knight on f7 to expose Black's king.",
+      "white_plan": "Use Nf3, Ne5+ and active bishops; calculate the king chase carefully.",
+      "black_plan": "Black can choose solid development or return the material to reduce the attack.",
+      "finish_plan": "Use the exposed king to create forcing threats; if Black survives, prioritize king safety and a playable endgame.",
+      "key_ideas": [
+        "Checks with tempo",
+        "Do not overcommit before the king is exposed",
+        "Develop remaining pieces while attacking"
+      ],
+      "common_traps": [
+        "Nxf7 is a sacrifice, not an automatic win",
+        "Calculate ...Kxf7 and safe king routes"
+      ],
+      "lines": [
+        {
+          "label": "Alien Gambit · Main line",
+          "moves": "e4 c6 d4 d5 Nc3 dxe4 Nxe4 Nf6 Ng5 h6 Nxf7 Kxf7 Nf3 Bf5 Ne5+",
+          "coach": ""
+        },
+        {
+          "label": "Solid setup · ...e6",
+          "moves": "e4 c6 d4 d5 Nc3 dxe4 Nxe4 Nf6 Ng5 h6 Nxf7 Kxf7 Nf3 e6 Bd3",
+          "coach": ""
+        },
+        {
+          "label": "Knight development · ...Nbd7",
+          "moves": "e4 c6 d4 d5 Nc3 dxe4 Nxe4 Nf6 Ng5 h6 Nxf7 Kxf7 Nf3 Nbd7 Bc4+",
+          "coach": ""
+        },
+        {
+          "label": "Aggressive defence · ...g5",
+          "moves": "e4 c6 d4 d5 Nc3 dxe4 Nxe4 Nf6 Ng5 h6 Nxf7 Kxf7 Nf3 g5 Ne5+",
+          "coach": ""
+        },
+        {
+          "label": "Sidestep · ...Bf5",
+          "moves": "e4 c6 d4 d5 Nc3 dxe4 Nxe4 Bf5",
+          "coach": ""
+        },
+        {
+          "label": "Sidestep · ...e6",
+          "moves": "e4 c6 d4 d5 Nc3 dxe4 Nxe4 e6",
+          "coach": ""
+        }
+      ]
+    },
+    {
+      "id": "black-benko",
+      "name": "Benko Gambit (Volga Gambit)",
+      "side": "black",
+      "kind": "gambit",
+      "summary": "Black offers the a- and b-pawns for long-term pressure on the queenside files and diagonals.",
+      "white_plan": "White should choose whether to accept fully, half-accept, or decline; develop quickly and keep the extra pawn only if safe.",
+      "black_plan": "Open the a- and b-files, fianchetto the bishop, and pressure White's queenside pawns for the long term.",
+      "finish_plan": "The Benko is a positional gambit: maintain rook activity, invade on a- and b-files, and convert weak pawns rather than force a quick mate.",
+      "key_ideas": [
+        "Long-term queenside pressure",
+        "Open files are compensation for pawns",
+        "The fianchetto bishop is a key attacker"
+      ],
+      "common_traps": [
+        "Do not chase a quick mate; the compensation is positional",
+        "Keep rooks active and avoid closing your own files"
+      ],
+      "lines": [
+        {
+          "label": "Benko · Fully accepted, fianchetto",
+          "moves": "d4 Nf6 c4 c5 d5 b5 cxb5 a6 bxa6 Bxa6 Nc3 d6 Nf3 g6 g3",
+          "coach": ""
+        },
+        {
+          "label": "Benko · Accepted, king walk setup",
+          "moves": "d4 Nf6 c4 c5 d5 b5 cxb5 a6 bxa6 Bxa6 Nc3 d6 e4 Bxf1 Kxf1",
+          "coach": ""
+        },
+        {
+          "label": "Benko · Half-accepted b6",
+          "moves": "d4 Nf6 c4 c5 d5 b5 cxb5 a6 b6",
+          "coach": ""
+        },
+        {
+          "label": "Benko · Half-accepted e3",
+          "moves": "d4 Nf6 c4 c5 d5 b5 cxb5 a6 e3",
+          "coach": ""
+        },
+        {
+          "label": "Benko · Declined Nf3",
+          "moves": "d4 Nf6 c4 c5 d5 b5 Nf3",
+          "coach": ""
+        },
+        {
+          "label": "Benko · Declined a4",
+          "moves": "d4 Nf6 c4 c5 d5 b5 a4",
+          "coach": ""
+        },
+        {
+          "label": "Benko · Declined Qc2",
+          "moves": "d4 Nf6 c4 c5 d5 b5 Qc2",
+          "coach": ""
+        }
+      ]
+    },
+    {
+      "id": "black-budapest",
+      "name": "Budapest Gambit",
+      "side": "black",
+      "kind": "gambit",
+      "summary": "Black gives up the e-pawn for rapid piece activity and pressure against White's centre.",
+      "white_plan": "White should develop, return material if needed, and avoid opening the king without reason.",
+      "black_plan": "Develop the knights and bishops quickly, use ...Bb4+ or ...Bc5, and generate threats before White consolidates.",
+      "finish_plan": "Convert the initiative into active piece placement and pressure on e5; if White consolidates, seek a drawish or dynamic endgame rather than overpress.",
+      "key_ideas": [
+        "Rapid development",
+        "Pressure on e5 and f2",
+        "Use checks to gain tempi"
+      ],
+      "common_traps": [
+        "Do not sacrifice more material without development",
+        "The Kieninger trap depends on White's inaccurate axb4??"
+      ],
+      "lines": [
+        {
+          "label": "Budapest · Adler",
+          "moves": "d4 Nf6 c4 e5 dxe5 Ng4 Nf3 Nc6",
+          "coach": ""
+        },
+        {
+          "label": "Budapest · Alekhine",
+          "moves": "d4 Nf6 c4 e5 dxe5 Ng4 e4 Nxe5 f4",
+          "coach": ""
+        },
+        {
+          "label": "Budapest · Rubinstein",
+          "moves": "d4 Nf6 c4 e5 dxe5 Ng4 Bf4 Nc6",
+          "coach": ""
+        },
+        {
+          "label": "Budapest · Kieninger trap idea",
+          "moves": "d4 Nf6 c4 e5 dxe5 Ng4 Bf4 Nc6 Nf3 Bb4+ Nbd2 Qe7 a3 Ngxe5",
+          "coach": ""
+        },
+        {
+          "label": "Budapest · Fajarowicz",
+          "moves": "d4 Nf6 c4 e5 dxe5 Ne4",
+          "coach": ""
+        },
+        {
+          "label": "Budapest · Declined d5",
+          "moves": "d4 Nf6 c4 e5 d5",
+          "coach": ""
+        },
+        {
+          "label": "Budapest · Declined e3",
+          "moves": "d4 Nf6 c4 e5 e3",
+          "coach": ""
+        }
+      ]
+    },
+    {
+      "id": "black-albin",
+      "name": "Albin Countergambit",
+      "side": "black",
+      "kind": "countergambit",
+      "summary": "Black offers a pawn to establish a dangerous advanced d-pawn and disrupt White's centre.",
+      "white_plan": "White should challenge the advanced pawn with Nf3, g3 or e4 and develop carefully.",
+      "black_plan": "Use ...d4 to gain space, develop the queenside pieces, and create tactical threats such as ...Bb4+.",
+      "finish_plan": "Keep the advanced d-pawn supported and use it to tie White down; if it falls, seek active piece play and an endgame with targets.",
+      "key_ideas": [
+        "Advanced passed pawn",
+        "...Bb4+ tactical motifs",
+        "Development while White blocks the pawn"
+      ],
+      "common_traps": [
+        "Do not overprotect the d-pawn at the cost of development",
+        "The Lasker trap requires exact king and promotion-square calculation"
+      ],
+      "lines": [
+        {
+          "label": "Albin · Main line",
+          "moves": "d4 d5 c4 e5 dxe5 d4 Nf3 Nc6",
+          "coach": ""
+        },
+        {
+          "label": "Albin · Lasker trap idea",
+          "moves": "d4 d5 c4 e5 dxe5 d4 e3 Bb4+ Bd2 dxe3 Bxb4 exf2+ Ke2 fxg1=N+",
+          "coach": ""
+        },
+        {
+          "label": "Albin · Spassky setup",
+          "moves": "d4 d5 c4 e5 dxe5 d4 e4",
+          "coach": ""
+        },
+        {
+          "label": "Albin · Declined e3",
+          "moves": "d4 d5 c4 e5 e3",
+          "coach": ""
+        },
+        {
+          "label": "Albin · Declined Nf3",
+          "moves": "d4 d5 c4 e5 Nf3",
+          "coach": ""
+        }
+      ]
+    },
+    {
+      "id": "black-stafford",
+      "name": "Stafford Gambit",
+      "side": "black",
+      "kind": "gambit",
+      "summary": "Black gives up the e-pawn in the Petrov to accelerate development and create tactical threats against White's king.",
+      "white_plan": "White should return the pawn when needed, develop and avoid tempting queen-side traps.",
+      "black_plan": "Develop Bc5 and Qh4 ideas, use open lines, and keep tactical pressure on f2 and g2.",
+      "finish_plan": "Use the initiative to win back material or force a lasting attack; if White neutralizes it, exchange into a playable position rather than force unsound tactics.",
+      "key_ideas": [
+        "Rapid development and piece activity",
+        "Queen and bishop coordination",
+        "Tactical targets on f2"
+      ],
+      "common_traps": [
+        "The gambit is not a forced win",
+        "Do not play ...Qh4 if White can safely defend and exchange queens"
+      ],
+      "lines": [
+        {
+          "label": "Stafford · Main d3 line",
+          "moves": "e4 e5 Nf3 Nf6 Nxe5 Nc6 Nxc6 dxc6 d3 Bc5",
+          "coach": ""
+        },
+        {
+          "label": "Stafford · Nc3 setup",
+          "moves": "e4 e5 Nf3 Nf6 Nxe5 Nc6 Nxc6 dxc6 Nc3 Bc5",
+          "coach": ""
+        },
+        {
+          "label": "Stafford · e5 push",
+          "moves": "e4 e5 Nf3 Nf6 Nxe5 Nc6 Nxc6 dxc6 e5 Ne4 d4 Qh4",
+          "coach": ""
+        },
+        {
+          "label": "Stafford · f3 setup",
+          "moves": "e4 e5 Nf3 Nf6 Nxe5 Nc6 Nxc6 dxc6 f3 Nh5 g3",
+          "coach": ""
+        },
+        {
+          "label": "Petrov fallback after 4.Nf3",
+          "moves": "e4 e5 Nf3 Nf6 Nxe5 Nc6 Nf3 Nxe4",
+          "coach": ""
+        }
+      ]
+    },
+    {
+      "id": "black-englund",
+      "name": "Englund Gambit",
+      "side": "black",
+      "kind": "gambit",
+      "summary": "Black challenges 1.d4 immediately with ...e5 and tries to gain time against White's queen and centre.",
+      "white_plan": "White should accept only with accurate development and be ready to return material to neutralize threats.",
+      "black_plan": "Use ...Nc6 and ...Qe7 to create threats; develop quickly and avoid overcommitting the queen.",
+      "finish_plan": "If White survives the opening traps, seek active piece play and central breaks; do not continue speculative queen raids.",
+      "key_ideas": [
+        "Queen-side tactics against b2",
+        "Fast development after pawn sacrifice",
+        "Exploit inaccurate queen moves"
+      ],
+      "common_traps": [
+        "The queen trap is a tactical line, not a forced win",
+        "Do not neglect king safety while chasing b2"
+      ],
+      "lines": [
+        {
+          "label": "Englund · Main queen trap",
+          "moves": "d4 e5 dxe5 Nc6 Nf3 Qe7 Bf4 Qb4+ Bd2 Qxb2 Nc3",
+          "coach": ""
+        },
+        {
+          "label": "Hartlaub-Charlick Gambit",
+          "moves": "d4 e5 dxe5 d6",
+          "coach": ""
+        },
+        {
+          "label": "Zilbermints Gambit",
+          "moves": "d4 e5 dxe5 Nc6 Nf3 Nge7",
+          "coach": ""
+        },
+        {
+          "label": "Soller Gambit",
+          "moves": "d4 e5 dxe5 f6",
+          "coach": ""
+        },
+        {
+          "label": "Englund · Declined e4",
+          "moves": "d4 e5 e4",
+          "coach": ""
+        },
+        {
+          "label": "Englund · Declined d5",
+          "moves": "d4 e5 d5",
+          "coach": ""
+        }
+      ]
+    },
+    {
+      "id": "black-traxler",
+      "name": "Traxler Counterattack",
+      "side": "black",
+      "kind": "counterattack",
+      "summary": "Black counterattacks the Fried Liver move order with ...Bc5, inviting a tactical race against White's king.",
+      "white_plan": "White's safest practical response is to decline the knight capture and develop with d4 or Bxf7+ only after calculation.",
+      "black_plan": "Use ...Bxf2+ and ...Nxe4+ to open lines and bring the queen into the attack.",
+      "finish_plan": "Keep the attack forcing; if White escapes, use the initiative to recover material and transition to a safe king position.",
+      "key_ideas": [
+        "Checks before material",
+        "Use queen and bishop diagonals",
+        "Know the king's escape squares"
+      ],
+      "common_traps": [
+        "Do not assume every king move loses",
+        "The Nxf7 line is tactical and must be calculated to the end"
+      ],
+      "lines": [
+        {
+          "label": "Traxler · Nxf7 chaos line",
+          "moves": "e4 e5 Nf3 Nc6 Bc4 Nf6 Ng5 Bc5 Nxf7 Bxf2+ Kxf2 Nxe4+",
+          "coach": ""
+        },
+        {
+          "label": "Traxler · 7.Kg1 line",
+          "moves": "e4 e5 Nf3 Nc6 Bc4 Nf6 Ng5 Bc5 Nxf7 Bxf2+ Kxf2 Nxe4+ Kg1 Qh4",
+          "coach": ""
+        },
+        {
+          "label": "Traxler · 7.Ke3 line",
+          "moves": "e4 e5 Nf3 Nc6 Bc4 Nf6 Ng5 Bc5 Nxf7 Bxf2+ Kxf2 Nxe4+ Ke3 Qh4",
+          "coach": ""
+        },
+        {
+          "label": "Traxler · 7.Ke1 line",
+          "moves": "e4 e5 Nf3 Nc6 Bc4 Nf6 Ng5 Bc5 Nxf7 Bxf2+ Kxf2 Nxe4+ Ke1 Qh4+",
+          "coach": ""
+        },
+        {
+          "label": "Traxler · Bishop capture",
+          "moves": "e4 e5 Nf3 Nc6 Bc4 Nf6 Ng5 Bc5 Bxf7+ Ke7 Bb3",
+          "coach": ""
+        },
+        {
+          "label": "Traxler · Centre strike",
+          "moves": "e4 e5 Nf3 Nc6 Bc4 Nf6 Ng5 Bc5 d4",
+          "coach": ""
+        }
+      ]
+    },
+    {
+      "id": "black-marshall",
+      "name": "Marshall Attack",
+      "side": "black",
+      "kind": "attack",
+      "summary": "Black sacrifices a central pawn in the Ruy Lopez to obtain active pieces and kingside attacking chances.",
+      "white_plan": "White can accept the pawn only with accurate defence, or avoid the Marshall with anti-Marshall systems.",
+      "black_plan": "Use the open e-file and active pieces to attack; coordinate the queen and bishops toward the white king.",
+      "finish_plan": "Maintain active pieces and pressure; if the attack is neutralized, use the central structure and rook activity to seek equality.",
+      "key_ideas": [
+        "Central pawn sacrifice for piece activity",
+        "Open e-file and queen-side rook lift",
+        "Kingside initiative"
+      ],
+      "common_traps": [
+        "The Marshall is a dynamic equalizer, not an automatic attack",
+        "Check whether White can return the pawn to neutralize activity"
+      ],
+      "lines": [
+        {
+          "label": "Marshall · Modern main line",
+          "moves": "e4 e5 Nf3 Nc6 Bb5 a6 Ba4 Nf6 O-O Be7 Re1 b5 Bb3 O-O c3 d5 exd5 Nxd5 Nxe5 Nxe5 Rxe5 c6 d4 Bd6 Re1 Qh4 g3 Qh3",
+          "coach": ""
+        },
+        {
+          "label": "Marshall · Original ...Nf6",
+          "moves": "e4 e5 Nf3 Nc6 Bb5 a6 Ba4 Nf6 O-O Be7 Re1 b5 Bb3 O-O c3 d5 exd5 Nxd5 Nxe5 Nxe5 Rxe5 Nf6",
+          "coach": ""
+        },
+        {
+          "label": "Anti-Marshall · a4",
+          "moves": "e4 e5 Nf3 Nc6 Bb5 a6 Ba4 Nf6 O-O Be7 Re1 b5 Bb3 O-O a4",
+          "coach": ""
+        },
+        {
+          "label": "Anti-Marshall · h3",
+          "moves": "e4 e5 Nf3 Nc6 Bb5 a6 Ba4 Nf6 O-O Be7 Re1 b5 Bb3 O-O h3",
+          "coach": ""
+        },
+        {
+          "label": "Anti-Marshall · d4",
+          "moves": "e4 e5 Nf3 Nc6 Bb5 a6 Ba4 Nf6 O-O Be7 Re1 b5 Bb3 O-O d4",
+          "coach": ""
+        }
+      ]
+    },
+    {
+      "id": "black-schliemann",
+      "name": "Schliemann Defence (Jaenisch Gambit)",
+      "side": "black",
+      "kind": "gambit",
+      "summary": "Black challenges the Ruy Lopez immediately with ...f5 and seeks central counterplay.",
+      "white_plan": "White should choose a stable centre or accept only with a concrete plan.",
+      "black_plan": "Open the f-file and strike with ...d5; use ...Nf6 and piece activity.",
+      "finish_plan": "Use the open lines to generate pressure; if White consolidates, seek counterplay against the centre rather than force a kingside attack.",
+      "key_ideas": [
+        "Immediate ...f5 challenge",
+        "Open f-file",
+        "Central ...d5 break"
+      ],
+      "common_traps": [
+        "Do not expose the king before development",
+        "Avoid unsupported pawn advances"
+      ],
+      "lines": [
+        {
+          "label": "Schliemann · Main line",
+          "moves": "e4 e5 Nf3 Nc6 Bb5 f5 Nc3 fxe4 Nxe4 d5",
+          "coach": ""
+        },
+        {
+          "label": "Schliemann · ...Nf6",
+          "moves": "e4 e5 Nf3 Nc6 Bb5 f5 Nc3 fxe4 Nxe4 Nf6",
+          "coach": ""
+        },
+        {
+          "label": "Schliemann · Solid line",
+          "moves": "e4 e5 Nf3 Nc6 Bb5 f5 d3 fxe4 dxe4 Nf6",
+          "coach": ""
+        },
+        {
+          "label": "Schliemann · Accepted",
+          "moves": "e4 e5 Nf3 Nc6 Bb5 f5 exf5 e4",
+          "coach": ""
+        },
+        {
+          "label": "Delayed Schliemann",
+          "moves": "e4 e5 Nf3 Nc6 Bb5 a6 Ba4 f5",
+          "coach": ""
+        }
+      ]
+    },
+    {
+      "id": "black-rousseau",
+      "name": "Rousseau Gambit",
+      "side": "black",
+      "kind": "gambit",
+      "summary": "Black plays ...f5 in the Italian and tries to open lines before White completes development.",
+      "white_plan": "White should decline with d3 or challenge the centre with d4 only if calculated.",
+      "black_plan": "Use ...fxe4 and ...e4 ideas to gain space and open diagonals.",
+      "finish_plan": "Use the central pawn chain and open f-file for activity; if White stabilizes, finish development and avoid overextension.",
+      "key_ideas": [
+        "...f5 space and open lines",
+        "Use ...e4 to gain tempi",
+        "Tactical pressure on the white king"
+      ],
+      "common_traps": [
+        "Do not sacrifice a pawn without development",
+        "Watch the central d4 break"
+      ],
+      "lines": [
+        {
+          "label": "Rousseau · Declined d3",
+          "moves": "e4 e5 Nf3 Nc6 Bc4 f5 d3 Nf6",
+          "coach": ""
+        },
+        {
+          "label": "Rousseau · Centre counterstrike",
+          "moves": "e4 e5 Nf3 Nc6 Bc4 f5 d4 fxe4 Nxe5",
+          "coach": ""
+        },
+        {
+          "label": "Rousseau · Accepted",
+          "moves": "e4 e5 Nf3 Nc6 Bc4 f5 exf5 e4",
+          "coach": ""
+        },
+        {
+          "label": "Rousseau · Bishop capture",
+          "moves": "e4 e5 Nf3 Nc6 Bc4 f5 Bxg8 Rxg8 exf5",
+          "coach": ""
+        }
+      ]
+    },
+    {
+      "id": "black-elephant",
+      "name": "Elephant Gambit",
+      "side": "black",
+      "kind": "gambit",
+      "summary": "Black challenges White's centre with ...d5 and sacrifices a pawn or structure for active play.",
+      "white_plan": "White should keep the centre stable and avoid taking extra material if development lags.",
+      "black_plan": "Develop quickly, use ...e4 or ...Bd6 ideas, and attack the advanced centre.",
+      "finish_plan": "Seek active piece play and central breaks; if White consolidates, avoid a weak endgame with no compensation.",
+      "key_ideas": [
+        "Central counterattack",
+        "Use development to compensate for material",
+        "The e4-pawn can become a target"
+      ],
+      "common_traps": [
+        "Do not push ...e4 without checking the queen and knight tactics",
+        "Avoid losing the d-pawn without activity"
+      ],
+      "lines": [
+        {
+          "label": "Elephant · Maroczy Gambit",
+          "moves": "e4 e5 Nf3 d5 exd5 Bd6",
+          "coach": ""
+        },
+        {
+          "label": "Elephant · Paulsen Countergambit",
+          "moves": "e4 e5 Nf3 d5 exd5 e4 Qe2 Nf6",
+          "coach": ""
+        },
+        {
+          "label": "Elephant · Wasp Variation",
+          "moves": "e4 e5 Nf3 d5 Nxe5 Bd6 d4 dxe4",
+          "coach": ""
+        },
+        {
+          "label": "Elephant · Declined Nc3",
+          "moves": "e4 e5 Nf3 d5 Nc3",
+          "coach": ""
+        }
+      ]
+    },
+    {
+      "id": "black-latvian",
+      "name": "Latvian Gambit",
+      "side": "black",
+      "kind": "gambit",
+      "summary": "Black uses ...f5 after the King's Knight opening to create immediate tactical complications.",
+      "white_plan": "White should develop with d4 or Nxe5 only after calculating the queen checks.",
+      "black_plan": "Use ...Qf6 and ...d6 to challenge the knight and open lines.",
+      "finish_plan": "Maintain initiative and use the open f-file; if White survives, prioritize king safety and development.",
+      "key_ideas": [
+        "Open f-file",
+        "Queen activity",
+        "Tactical pressure on e5"
+      ],
+      "common_traps": [
+        "Do not expose the king chasing the knight",
+        "The line is sharp and not a forced win"
+      ],
+      "lines": [
+        {
+          "label": "Latvian · Main line",
+          "moves": "e4 e5 Nf3 f5 Nxe5 Qf6 d4 d6 Nc4 fxe4",
+          "coach": ""
+        },
+        {
+          "label": "Fraser Defence",
+          "moves": "e4 e5 Nf3 f5 Nxe5 Nc6",
+          "coach": ""
+        },
+        {
+          "label": "Corkscrew Countergambit",
+          "moves": "e4 e5 Nf3 f5 Nxe5 Nf6",
+          "coach": ""
+        },
+        {
+          "label": "Svedenborg / Bishop line",
+          "moves": "e4 e5 Nf3 f5 Bc4 fxe4 Nxe5 d5",
+          "coach": ""
+        },
+        {
+          "label": "Latvian · Accepted",
+          "moves": "e4 e5 Nf3 f5 exf5 e4",
+          "coach": ""
+        }
+      ]
+    },
+    {
+      "id": "black-falkbeer",
+      "name": "Falkbeer Countergambit",
+      "side": "black",
+      "kind": "countergambit",
+      "summary": "Black challenges the King's Gambit with ...d5 and attempts to seize the centre.",
+      "white_plan": "White should choose exd5 or Nf3 according to the central structure.",
+      "black_plan": "Use ...e4 to gain space, or ...c6 to challenge White's pawn chain.",
+      "finish_plan": "Convert the central space into active development and king safety; do not overextend the e-pawn.",
+      "key_ideas": [
+        "Central counterstrike",
+        "Use ...e4 space",
+        "Develop with tempo"
+      ],
+      "common_traps": [
+        "Do not assume White must accept the gambit",
+        "Check whether ...Qh4+ is actually a forcing check before relying on it"
+      ],
+      "lines": [
+        {
+          "label": "Falkbeer · Staunton / Charousek",
+          "moves": "e4 e5 f4 d5 exd5 e4 d3 Nf6",
+          "coach": ""
+        },
+        {
+          "label": "Falkbeer · Modern ...c6",
+          "moves": "e4 e5 f4 d5 exd5 c6",
+          "coach": ""
+        },
+        {
+          "label": "Falkbeer · Declined Nf3",
+          "moves": "e4 e5 f4 d5 Nf3 dxe4 Nxe5",
+          "coach": ""
+        },
+        {
+          "label": "Falkbeer · Mistake trap",
+          "moves": "e4 e5 f4 d5 fxe5 Qh4+",
+          "coach": ""
+        }
+      ]
+    },
+    {
+      "id": "black-two-knights-lines",
+      "name": "Two Knights Defence · Polerio / Ulvestad / Fritz",
+      "side": "black",
+      "kind": "counterattack",
+      "summary": "These sharp Two Knights branches use ...Na5, ...b5 or ...Nd4 to challenge White's advanced bishop and create tactical counterplay.",
+      "white_plan": "White should retreat accurately, keep control of e4 and avoid tactical pins.",
+      "black_plan": "Use active knight moves and pawn breaks to gain tempi against the bishop and centre.",
+      "finish_plan": "Convert tactical activity into development and central control; if White neutralizes the tactics, consolidate the extra pawn or seek equality.",
+      "key_ideas": [
+        "Tempo against the bishop",
+        "Use ...Na5 and ...b5 motifs",
+        "Central counterplay"
+      ],
+      "common_traps": [
+        "Do not lose time with repeated knight moves",
+        "Check the bishop's retreat squares before advancing pawns"
+      ],
+      "lines": [
+        {
+          "label": "Polerio Defence",
+          "moves": "e4 e5 Nf3 Nc6 Bc4 Nf6 Ng5 d5 exd5 Na5 Bb5+ c6 dxc6 bxc6",
+          "coach": ""
+        },
+        {
+          "label": "Ulvestad Variation",
+          "moves": "e4 e5 Nf3 Nc6 Bc4 Nf6 Ng5 d5 exd5 b5 Bf1",
+          "coach": ""
+        },
+        {
+          "label": "Ulvestad · ...Qxd5 idea",
+          "moves": "e4 e5 Nf3 Nc6 Bc4 Nf6 Ng5 d5 exd5 b5 Bxb5 Qxd5",
+          "coach": ""
+        },
+        {
+          "label": "Fritz Variation",
+          "moves": "e4 e5 Nf3 Nc6 Bc4 Nf6 Ng5 d5 exd5 Nd4 c3 b5 Bf1 Nxd5",
+          "coach": ""
+        }
+      ]
+    },
+    {
+      "id": "black-blumenfeld",
+      "name": "Blumenfeld Countergambit",
+      "side": "black",
+      "kind": "countergambit",
+      "summary": "Black offers a pawn in the Queen's Pawn structure to gain central space and open lines.",
+      "white_plan": "White should decide whether to accept and avoid allowing a broad black centre.",
+      "black_plan": "Use ...fxe6 and ...d5 to establish central control, then develop the bishops and rooks.",
+      "finish_plan": "Use central space and open files to create long-term pressure; if White keeps material, target the c- and d-pawns.",
+      "key_ideas": [
+        "Central space",
+        "Open files for rooks",
+        "Piece activity against d5"
+      ],
+      "common_traps": [
+        "Do not allow White to build an uncontested centre",
+        "The pawn sacrifice is for activity, not a quick mate"
+      ],
+      "lines": [
+        {
+          "label": "Blumenfeld · Accepted",
+          "moves": "d4 Nf6 c4 e6 Nf3 c5 d5 b5 dxe6 fxe6 cxb5 d5",
+          "coach": ""
+        },
+        {
+          "label": "Blumenfeld · Main declined",
+          "moves": "d4 Nf6 c4 e6 Nf3 c5 d5 b5 Bg5 exd5 cxd5",
+          "coach": ""
+        },
+        {
+          "label": "Blumenfeld · e4 setup",
+          "moves": "d4 Nf6 c4 e6 Nf3 c5 d5 b5 e4",
+          "coach": ""
+        },
+        {
+          "label": "Blumenfeld · a4 setup",
+          "moves": "d4 Nf6 c4 e6 Nf3 c5 d5 b5 a4",
+          "coach": ""
+        }
+      ]
+    },
+    {
+      "id": "black-froms",
+      "name": "From's Gambit",
+      "side": "black",
+      "kind": "gambit",
+      "summary": "Black answers Bird's Opening with ...e5 and seeks to open the f-file and accelerate kingside development.",
+      "white_plan": "White can accept but should be prepared for ...d6 and rapid piece activity.",
+      "black_plan": "Use ...d6 and ...Bxd6 to recover the pawn and develop with tempo.",
+      "finish_plan": "Use the open f-file and kingside piece activity; if White declines, transpose into a King's Gambit-like structure.",
+      "key_ideas": [
+        "Open f-file",
+        "Bishop development to d6",
+        "Fast kingside initiative"
+      ],
+      "common_traps": [
+        "Do not sacrifice the e-pawn without a follow-up",
+        "Watch White's central e4 transposition"
+      ],
+      "lines": [
+        {
+          "label": "From's · Lasker",
+          "moves": "f4 e5 fxe5 d6 exd6 Bxd6 Nf3 g5",
+          "coach": ""
+        },
+        {
+          "label": "From's · Lipke",
+          "moves": "f4 e5 fxe5 d6 exd6 Bxd6 Nf3 Nf6",
+          "coach": ""
+        },
+        {
+          "label": "From's · Mestel",
+          "moves": "f4 e5 fxe5 d6 exd6 Bxd6 Nf3 Bg4",
+          "coach": ""
+        },
+        {
+          "label": "King's Gambit transposition",
+          "moves": "f4 e5 e4",
+          "coach": ""
+        }
+      ]
+    },
+    {
+      "id": "black-icelandic",
+      "name": "Icelandic Gambit (Palme Gambit)",
+      "side": "black",
+      "kind": "gambit",
+      "summary": "Black gives up the d-pawn in the Scandinavian to open lines and gain development.",
+      "white_plan": "White should develop and avoid weakening the king while holding the extra pawn.",
+      "black_plan": "Use ...Bxe6 and rapid piece development to compensate for the pawn.",
+      "finish_plan": "Use active bishops and open lines; if White consolidates, seek a dynamic middlegame rather than forced tactics.",
+      "key_ideas": [
+        "Development for the pawn",
+        "Bishop activity",
+        "Open e- and d-files"
+      ],
+      "common_traps": [
+        "Do not let White close the centre with tempo",
+        "Avoid premature queen checks"
+      ],
+      "lines": [
+        {
+          "label": "Icelandic · Accepted",
+          "moves": "e4 d5 exd5 Nf6 c4 e6 dxe6 Bxe6 Nf3 Nc6",
+          "coach": ""
+        },
+        {
+          "label": "Icelandic · Check idea",
+          "moves": "e4 d5 exd5 Nf6 c4 e6 dxe6 Bxe6 d4 Bb4+",
+          "coach": ""
+        },
+        {
+          "label": "Icelandic · Declined",
+          "moves": "e4 d5 exd5 Nf6 c4 e6 d4 exd5",
+          "coach": ""
+        }
+      ]
+    },
+    {
+      "id": "black-portuguese",
+      "name": "Portuguese Gambit",
+      "side": "black",
+      "kind": "gambit",
+      "summary": "Black develops the bishop actively with ...Bg4 in the Scandinavian and tries to provoke weaknesses.",
+      "white_plan": "White should challenge the bishop and develop with Nf3, Be2 or c4.",
+      "black_plan": "Use ...Bf5 and ...Qxd5 ideas to develop while maintaining pressure.",
+      "finish_plan": "Use active piece placement and the bishop pair; if White consolidates, seek equality through central breaks.",
+      "key_ideas": [
+        "Active bishop development",
+        "Use ...Qxd5 only when safe",
+        "Central counterplay"
+      ],
+      "common_traps": [
+        "Do not trade the active bishop without a reason",
+        "Watch for White's c4 and f3 space gains"
+      ],
+      "lines": [
+        {
+          "label": "Portuguese · Main line",
+          "moves": "e4 d5 exd5 Nf6 d4 Bg4 f3 Bf5 Bb5+ Nbd7 c4",
+          "coach": ""
+        },
+        {
+          "label": "Portuguese · Knight block",
+          "moves": "e4 d5 exd5 Nf6 d4 Bg4 Nf3 Qxd5 Be2",
+          "coach": ""
+        },
+        {
+          "label": "Portuguese · Bishop trade",
+          "moves": "e4 d5 exd5 Nf6 d4 Bg4 Be2 Bxe2 Qxe2 Qxd5",
+          "coach": ""
+        },
+        {
+          "label": "Portuguese · ...e6 setup",
+          "moves": "e4 d5 exd5 Nf6 d4 Bg4 f3 Bf5 c4 e6",
+          "coach": ""
+        }
+      ]
+    },
+    {
+      "id": "black-blackburne",
+      "name": "Blackburne Shilling Gambit",
+      "side": "black",
+      "kind": "trap",
+      "summary": "Black tempts White to take the e5-pawn and aims for a queen invasion and mating net.",
+      "white_plan": "White should decline the trap with Nxd4 or castle and complete development.",
+      "black_plan": "Use ...Qg5 and ...Qxg2 only when the tactical sequence is sound; the final knight jump can create mate.",
+      "finish_plan": "If White declines the trap, return to normal development and central control; never force the trap against a prepared defence.",
+      "key_ideas": [
+        "Queen invasion on g2",
+        "Back-rank and f3 mating motif",
+        "Know when the trap is not available"
+      ],
+      "common_traps": [
+        "The Nxe5? line is a blunder by White, not a forced gambit win",
+        "Against Nxd4 or O-O, play normal chess"
+      ],
+      "lines": [
+        {
+          "label": "Blackburne · Famous trap line",
+          "moves": "e4 e5 Nf3 Nc6 Bc4 Nd4 Nxe5 Qg5 Nxf7 Qxg2 Rf1 Qxe4+ Be2 Nf3#",
+          "coach": ""
+        },
+        {
+          "label": "Main refutation · Nxd4",
+          "moves": "e4 e5 Nf3 Nc6 Bc4 Nd4 Nxd4 exd4 O-O",
+          "coach": ""
+        },
+        {
+          "label": "Main refutation · O-O",
+          "moves": "e4 e5 Nf3 Nc6 Bc4 Nd4 O-O",
+          "coach": ""
+        }
+      ]
+    },
+    {
+      "id": "black-hennig-schara",
+      "name": "Hennig-Schara Gambit",
+      "side": "black",
+      "kind": "gambit",
+      "summary": "Black sacrifices a central pawn in the Tarrasch structure to open lines and gain active piece play.",
+      "white_plan": "White should calculate Qxd4 and Qa4+ carefully and avoid falling behind in development.",
+      "black_plan": "Use ...Nc6 and ...Bd7 to gain tempi on the queen and create central pressure.",
+      "finish_plan": "Use piece activity and open files to compensate for the pawn; if queens trade, seek active rook placement and targets.",
+      "key_ideas": [
+        "Open lines for development",
+        "Gain tempi on the queen",
+        "Pressure on d4 and d5"
+      ],
+      "common_traps": [
+        "Do not rush to win back the pawn with the queen",
+        "Check ...Bd7 tempo ideas"
+      ],
+      "lines": [
+        {
+          "label": "Hennig-Schara · Main line",
+          "moves": "d4 d5 c4 e6 Nc3 c5 cxd5 cxd4 Qxd4 Nc6 Qd1 exd5 Qxd5 Bd7",
+          "coach": ""
+        },
+        {
+          "label": "Hennig-Schara · Queen check line",
+          "moves": "d4 d5 c4 e6 Nc3 c5 cxd5 cxd4 Qa4+ Bd7 Qxd4 exd5 Qxd5 Nc6",
+          "coach": ""
+        }
+      ]
+    },
+    {
+      "id": "black-winawer",
+      "name": "Winawer Countergambit (vs. Slav)",
+      "side": "black",
+      "kind": "countergambit",
+      "summary": "Black challenges the Slav structure with ...e5 and seeks to gain space after White captures.",
+      "white_plan": "White should decide between taking on e5 or maintaining the centre with e3 or Nf3.",
+      "black_plan": "Use ...d4 to gain space and open lines for the queen and bishops.",
+      "finish_plan": "Use the advanced d-pawn and active queen to generate pressure; if White blocks the centre, regroup and target the queenside.",
+      "key_ideas": [
+        "Central ...e5 break",
+        "Space with ...d4",
+        "Queen activity"
+      ],
+      "common_traps": [
+        "Do not allow White to develop with tempo on the queen",
+        "Calculate the queen route after Bd2"
+      ],
+      "lines": [
+        {
+          "label": "Winawer · Main line",
+          "moves": "d4 d5 c4 c6 Nc3 e5 dxe5 d4 Ne4 Qa5+ Bd2 Qxe5",
+          "coach": ""
+        },
+        {
+          "label": "Winawer · Exchange line",
+          "moves": "d4 d5 c4 c6 Nc3 e5 cxd5 cxd5 dxe5 d4",
+          "coach": ""
+        },
+        {
+          "label": "Winawer · Declined e3",
+          "moves": "d4 d5 c4 c6 Nc3 e5 e3",
+          "coach": ""
+        },
+        {
+          "label": "Winawer · Declined Nf3",
+          "moves": "d4 d5 c4 c6 Nc3 e5 Nf3",
+          "coach": ""
+        }
+      ]
+    }
+  ]
+}

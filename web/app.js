@@ -1231,24 +1231,27 @@ let opFlipped = false;
 
 async function loadOpenings(query = "") {
   openingsLoaded = true;
-  const [tax, repo] = await Promise.all([
+  const [tax, repo, gambits] = await Promise.all([
     api("/api/openings/taxonomy"),
     api("/api/openings/repository" + (query ? `?q=${encodeURIComponent(query)}` : "")),
+    api("/api/gambits"),
   ]);
-  if (tax.coverage) {
-    $("coverage-summary").innerHTML = `
-      <span class="tag">${tax.coverage.stored_tree_count} Trees</span>
-      <span class="tag">${tax.coverage.total_move_nodes} Legal Nodes</span>
-      <span class="tag">${tax.coverage.matched_system_ids.length}/${tax.coverage.taxonomy_system_count} Systems</span>
-    `;
-  }
+  $("coverage-summary").innerHTML = `
+    <span class="tag">${gambits.report.gambit_count} Gambits</span>
+    <span class="tag">${gambits.report.validated_line_count}/${gambits.report.source_line_count} legal lines</span>
+    <span class="tag">${tax.coverage ? tax.coverage.stored_tree_count + 40 : repo.openings.length} Study trees</span>
+    <span class="tag">${gambits.report.rejected_line_count} rejected lines</span>
+  `;
   const box = $("repo-openings-list");
   box.innerHTML = "";
-  repo.openings.forEach((o) => {
+  const sideFilter = $("opening-side-filter").value;
+  repo.openings.filter((o) => sideFilter === "all" || o.side === sideFilter).forEach((o) => {
     const btn = document.createElement("button");
     btn.type = "button";
     btn.className = "list-card" + (activeOpeningTree && activeOpeningTree.opening_id === o.opening_id ? " active-card" : "");
-    btn.innerHTML = `<div><strong>${o.name} (${o.eco || "—"})</strong><small>${o.mainline_san.join(" ")}</small></div><span class="tag">${o.branch_count} nodes</span>`;
+    const sideLabel = o.side === "black" ? "BLACK" : "WHITE";
+    const reviewLabel = o.review_status === "in_review" ? "CURATED" : (o.review_status || "TREE").toUpperCase();
+    btn.innerHTML = `<div><strong>${o.name}</strong><small>${sideLabel} · ${reviewLabel} · ${o.mainline_san.slice(0, 10).join(" ")}</small></div><span class="tag">${o.branch_count} nodes</span>`;
     btn.addEventListener("click", () => openInteractiveTree(o.opening_id));
     box.append(btn);
   });
@@ -1257,12 +1260,28 @@ async function loadOpenings(query = "") {
   }
 }
 
+function renderGambitCoachGuide(guide) {
+  const panel = $("gambit-coach-guide");
+  panel.classList.remove("hidden");
+  $("gambit-guide-title").textContent = `${guide.name} · ${guide.side.toUpperCase()} repertoire`;
+  $("gambit-guide-summary").textContent = guide.summary;
+  $("gambit-guide-plans").textContent = `White plan: ${guide.white_plan} Black plan: ${guide.black_plan}`;
+  $("gambit-guide-ideas").textContent = `Key ideas: ${(guide.key_ideas || []).join(" · ")}`;
+  $("gambit-guide-traps").textContent = `Traps to calculate: ${(guide.common_traps || []).join(" · ")}`;
+  $("gambit-guide-finish").textContent = `After the opening line: ${guide.finish_plan} The coach then continues in free play; no opening line is presented as a forced checkmate.`;
+}
+
 async function openInteractiveTree(openingId) {
-  const [treeData, varData] = await Promise.all([
+  const requests = [
     api(`/api/openings/${openingId}/tree`),
     api(`/api/openings/${openingId}/variations`),
-  ]);
+  ];
+  const isGambitAcademy = openingId.startsWith("white-") || openingId.startsWith("black-");
+  if (isGambitAcademy) requests.push(api(`/api/gambits/${openingId}`));
+  const [treeData, varData, guide] = await Promise.all(requests);
   activeOpeningTree = treeData;
+  if (guide) renderGambitCoachGuide(guide);
+  else $("gambit-coach-guide").classList.add("hidden");
   opPath = [];
   opFlipped = activeOpeningTree.side === "black";
   $("op-explorer-title").textContent = activeOpeningTree.name;
@@ -1272,9 +1291,12 @@ async function openInteractiveTree(openingId) {
   (varData.variations || []).forEach((v) => {
     const opt = document.createElement("option");
     opt.value = v.variation_id;
-    opt.textContent = `${v.label} (${v.moves_san.slice(0, 6).join(" ")})`;
+    opt.textContent = `${v.label} (${v.moves_san.slice(0, 8).join(" ")})`;
     sel.append(opt);
   });
+  if (varData.variations && varData.variations.length) {
+    sel.value = varData.variations[0].variation_id;
+  }
   renderOpeningExplorer();
 }
 
@@ -1340,6 +1362,7 @@ $("op-play-here-btn").addEventListener("click", async () => {
   showFeedback("play-status", `Practicing ${activeOpeningTree.name} from your selected branch!`, true);
 });
 $("opening-search-input").addEventListener("input", (e) => loadOpenings(e.target.value));
+$("opening-side-filter").addEventListener("change", () => loadOpenings($("opening-search-input").value));
 
 async function runRecognize() {
   const raw = $("recognize-input").value.trim();
