@@ -203,11 +203,9 @@ function renderBoard({
               onSquareClick,
               onDropMove,
             };
-          } else if (onSquareClick) {
-            onSquareClick(sq, piece);
           }
         });
-        if (piece && onSquareClick) {
+        if (onSquareClick) {
           b.addEventListener("click", () => {
             if (suppressNextPieceClick) {
               suppressNextPieceClick = false;
