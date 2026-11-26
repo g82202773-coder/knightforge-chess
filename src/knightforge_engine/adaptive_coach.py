@@ -120,9 +120,9 @@ class AdaptiveOpeningCoach:
             self._decision = None
             self._analysis_error = None
         state = self._build_state()
-        if not result.submission.applied and result.submission.prompt.kind == "correction":
+        if not result.applied and result.prompt.kind == "correction":
             # Preserve the attempted-move explanation in the public session snapshot.
-            state = replace(state, prompt=result.submission.prompt)
+            state = replace(state, prompt=result.prompt)
         self.state = state
         return OpeningCoachSubmission(result, state)
 
