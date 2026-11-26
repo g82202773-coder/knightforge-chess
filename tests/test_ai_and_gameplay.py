@@ -102,3 +102,11 @@ def test_fen_history_and_material_summary_track_captures_and_undo():
     state_after_undo = match.state_dict()
     assert len(state_after_undo["fen_history"]) == 3
     assert state_after_undo["material"]["white_advantage"] == 0
+
+def test_online_draw_claim_requires_the_side_to_move():
+    match = FullChessMatch(mode="local_pvp", time_control="unlimited")
+    for uci in ("g1f3", "g8f6", "f3g1", "f6g8", "g1f3", "g8f6", "f3g1", "f6g8"):
+        match.submit_move(uci)
+    with pytest.raises(ValueError, match="side to move"):
+        match.handle_draw_action("claim", actor="black")
+    assert "threefold" in match.handle_draw_action("claim").lower()
