@@ -287,24 +287,28 @@ def test_android_native_coach_tts_bridge_speaks_without_web_speech_api(
                     value: undefined
                 });
                 window.SpeechSynthesisUtterance = undefined;
+                const nativeTts = {
+                    async getSupportedVoices() {
+                        return { voices: [
+                            { voiceURI: "en-us-test", name: "English US", lang: "en-US" },
+                            { voiceURI: "en-in-test", name: "English India", lang: "en-IN" }
+                        ] };
+                    },
+                    async getSupportedLanguages() {
+                        return { languages: ["en-US", "en-IN"] };
+                    },
+                    async speak(options) {
+                        window.__nativeTtsCalls.push(options);
+                    },
+                    async stop() {},
+                    async openInstall() {}
+                };
                 window.Capacitor = {
-                    Plugins: {
-                        TextToSpeech: {
-                            async getSupportedVoices() {
-                                return { voices: [
-                                    { voiceURI: "en-us-test", name: "English US", lang: "en-US" },
-                                    { voiceURI: "en-in-test", name: "English India", lang: "en-IN" }
-                                ] };
-                            },
-                            async getSupportedLanguages() {
-                                return { languages: ["en-US", "en-IN"] };
-                            },
-                            async speak(options) {
-                                window.__nativeTtsCalls.push(options);
-                            },
-                            async stop() {},
-                            async openInstall() {}
-                        }
+                    Plugins: {},
+                    registerPlugin(name) {
+                        if (name !== "TextToSpeech") throw new Error("Unexpected native plugin: " + name);
+                        this.Plugins[name] = nativeTts;
+                        return nativeTts;
                     }
                 };
             }"""
