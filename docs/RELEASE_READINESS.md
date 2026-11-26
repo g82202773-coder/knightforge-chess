@@ -15,9 +15,9 @@
 | Tactics | 15 curated puzzles plus 1,064 bulk records (1,079 total) | Loader now validates positions and every solution move; bulk source/licence metadata is not recorded |
 | Accounts/progress | SQLite-backed users, ratings, lesson/puzzle progress, notes and saved PGN history | Implemented; production identity, recovery and database operations remain |
 | Multiplayer | Invite codes, seat tokens, draw actions, matchmaking and WebSocket updates | Prototype endpoints; active games and queue state remain process-local |
-| Browser client | Responsive web client with Playwright mobile viewport E2E | CI E2E is present; wider device/browser QA remains |
-| Voice-enabled Academy coach | In-lesson tactical mistake coach with danger arrows, plus coach speech bubble, selectable device TTS voice, adjustable pace and Listen/Stop controls | Integrated CI passed on 26 November 2026: Ruff, 159 Python tests (1 skipped), and 3 browser E2E tests; Android WebView voice/device QA still required |
-| Android | Capacitor wrapper; debug APK built and uploaded by GitHub Actions run #45813933651 on 26 November 2026 | Build verified; not a signed release; current config still points to a test Render URL and requires device QA |
+| Browser client | Responsive web client with redesigned board-first mobile Academy, immediate 64-square offline preview, visible retry state, and professional course/board hierarchy | 4 mobile-browser E2E tests passed, including offline API fallback; physical Android viewport QA remains |
+| Voice-enabled Academy coach | In-lesson tactical mistake coach with danger arrows, speech bubble, selectable device TTS voice, adjustable pace and Listen/Stop controls | Integrated CI on 26 November 2026: Ruff passed, 161 Python tests passed (1 skipped), and 4 browser E2E tests passed; Android WebView voice/device QA still required |
+| Android | Capacitor wrapper; Academy/CORS/offline-board debug APK built and uploaded by GitHub Actions run #45821782139 on 26 November 2026 | Build and bundled assets verified; not a signed release; uses the test Render API and requires backend redeploy plus physical-device QA |
 | Hosting | Render Docker template with one worker | Example configuration only; durable storage and production service configuration required |
 
 ## Release blockers
@@ -30,6 +30,8 @@
 6. **Online multiplayer authorization.** Continue security review around every game mutation, WebSocket admission, invite-code entropy/rate limiting, reconnect/resume, clock authority, draw/resignation semantics, matchmaking abuse and per-user game ownership.
 7. **Release build and QA.** Run all CI jobs successfully on the final commit; run Android debug and signed release build; test on real Android devices and mobile browsers; test long-running games, network loss/reconnect, persistence restart and multi-instance behavior.
 8. **Deployment and secrets.** Replace test backend URLs, configure production domain/TLS, secrets, CORS/rate limits, logging/alerts, database backups and privacy/legal pages before launch.
+
+9. **Academy API CORS deployment.** The code now permits the Capacitor `https://localhost`/`capacitor://localhost` origins and has preflight tests, but the running test Render service must be redeployed from the CORS-enabled source before Android lesson requests can succeed. The board preview and Retry UI remain visible when the service is unavailable.
 
 ## Immediate engineering sequence
 
