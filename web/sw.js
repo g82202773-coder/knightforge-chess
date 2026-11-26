@@ -1,4 +1,4 @@
-const CACHE = "knightforge-v4-1-coach";
+const CACHE = "knightforge-v4-2-academy-coach-voice";
 const ASSETS = ["/", "/assets/styles.css", "/assets/pieces.js", "/assets/audio.js", "/assets/app.js", "/icon.svg"];
 
 self.addEventListener("install", (ev) => {
