@@ -72,8 +72,16 @@ def test_academy_mistake_coach_retry_continue_and_voice(live_server_url: str) ->
 
         # A legal but off-lesson move should open the coach without changing the board.
         page.locator('#board [data-sq="d2"]').click()
-        page.locator('#board [data-sq="d4"]').click()
-        page.wait_for_selector("#mistake-coach:not(.hidden)")
+        assert "selected" in (page.locator('#board [data-sq="d2"]').get_attribute("class") or "")
+        assert "legal" in (page.locator('#board [data-sq="d4"]').get_attribute("class") or "")
+        with page.expect_response(
+            lambda response: response.url.endswith(f"/api/sessions/{page.evaluate('academySessionId')}/moves")
+            and response.request.method == "POST",
+            timeout=8000,
+        ) as move_response:
+            page.locator('#board [data-sq="d4"]').click()
+        assert move_response.value.status == 200
+        page.wait_for_selector("#mistake-coach:not(.hidden)", timeout=8000)
         assert "legal" in page.locator("#mistake-coach-text").inner_text().lower()
         assert page.locator("#mistake-hear-btn").is_visible()
         assert page.locator("#voice-toggle").is_checked()
