@@ -172,3 +172,40 @@ def test_academy_renders_board_preview_and_retry_when_training_api_is_offline(
         assert page.locator("#undo-btn").is_disabled()
         assert page.locator("#flip-btn").is_enabled()
         browser.close()
+
+
+def test_gambit_academy_filters_guides_and_starts_a_selected_coach_line(
+    live_server_url: str,
+) -> None:
+    with playwright.sync_playwright() as p:
+        browser = p.chromium.launch()
+        page = browser.new_page(viewport={"width": 390, "height": 844})
+        page.goto(live_server_url, wait_until="networkidle")
+        page.locator('.tab-btn[data-tab="openings"]').click()
+        page.wait_for_selector("#repo-openings-list .list-card")
+        assert "40 Gambits" in page.locator("#coverage-summary").inner_text()
+
+        page.locator("#opening-side-filter").select_option("white")
+        page.wait_for_timeout(150)
+        visible_cards = page.locator("#repo-openings-list .list-card")
+        assert visible_cards.count() >= 20
+        assert "Queen's Gambit" in page.locator("#repo-openings-list").inner_text()
+
+        page.locator("#opening-side-filter").select_option("all")
+        page.locator("#opening-search-input").fill("Benko")
+        page.wait_for_selector('#repo-openings-list button:has-text("Benko Gambit")')
+        page.locator('#repo-openings-list button:has-text("Benko Gambit")').click()
+        page.wait_for_selector("#gambit-coach-guide:not(.hidden)")
+        assert "queenside" in page.locator("#gambit-guide-summary").inner_text().lower()
+        assert page.locator("#op-variation-select option").count() >= 3
+
+        page.locator("#op-train-btn").click()
+        page.wait_for_selector("#tab-academy.active #board .square", timeout=8000)
+        page.wait_for_function(
+            "() => document.querySelector('#coach-text')?.textContent.includes('Play')"
+            " || document.querySelector('#coach-text')?.textContent.length > 0",
+            timeout=8000,
+        )
+        assert page.locator("#board .square").count() == 64
+        assert page.locator("#board .piece-wrap").count() == 32
+        browser.close()
