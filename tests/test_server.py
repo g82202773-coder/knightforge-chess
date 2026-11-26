@@ -282,3 +282,26 @@ def test_mastery_mode_cannot_continue_by_revealing_the_expected_move():
 
     continued = client.post(f"/api/sessions/{session_id}/continue")
     assert continued.status_code == 403
+
+
+
+def test_capacitor_webview_preflight_allows_local_app_origin():
+    origin = "https://localhost"
+    response = client.options(
+        "/api/sessions",
+        headers={
+            "Origin": origin,
+            "Access-Control-Request-Method": "POST",
+            "Access-Control-Request-Headers": "authorization,content-type",
+        },
+    )
+    assert response.status_code == 200
+    assert response.headers["access-control-allow-origin"] == origin
+    assert response.headers["access-control-allow-credentials"] == "true"
+    assert "POST" in response.headers["access-control-allow-methods"]
+
+
+def test_cors_does_not_reflect_an_untrusted_origin():
+    response = client.get("/api/health", headers={"Origin": "https://example.com"})
+    assert response.status_code == 200
+    assert "access-control-allow-origin" not in response.headers
