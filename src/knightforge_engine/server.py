@@ -11,6 +11,7 @@ from typing import Any, Literal
 
 import chess
 from fastapi import FastAPI, Header, HTTPException, WebSocket, WebSocketDisconnect
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
@@ -263,6 +264,18 @@ class SessionStore:
 store = SessionStore()
 ws_manager = ConnectionManager()
 app = FastAPI(title="KnightForge Chess Platform", version="4.0.0")
+# Capacitor serves the bundled Android UI from https://localhost (Android WebView).
+# Allow only the local app/dev origins; do not use a wildcard with credentials.
+app.add_middleware(
+    CORSMiddleware,
+    allow_origin_regex=(
+        r"^(https?://localhost(?::\\d+)?|capacitor://localhost|ionic://localhost|"
+        r"http://127\\.0\\.0\\.1(?::\\d+)?)$"
+    ),
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 def _user_id_from_header(authorization: str | None) -> int:
