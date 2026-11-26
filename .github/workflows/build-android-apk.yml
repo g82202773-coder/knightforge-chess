@@ -1,0 +1,58 @@
+name: Build KnightForge Android APK
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main, fix/test-mode-answer-privacy]
+    paths:
+      - "android-app/**"
+      - "web/**"
+  pull_request:
+    branches: [main, fix/test-mode-answer-privacy]
+    paths:
+      - "android-app/**"
+      - "web/**"
+      - ".github/workflows/build-android-apk.yml"
+
+jobs:
+  build-apk:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - uses: actions/setup-java@v4
+        with:
+          distribution: "temurin"
+          java-version: "17"
+      - name: Prepare bundled web assets
+        run: |
+          mkdir -p web/assets
+          cp web/styles.css web/assets/styles.css
+          cp web/pieces.js web/assets/pieces.js
+          cp web/audio.js web/assets/audio.js
+          cp web/app.js web/assets/app.js
+      - name: Setup Capacitor Android Project
+        working-directory: android-app
+        run: |
+          npm install
+          npx cap add android
+          npx cap sync android
+      - name: Build Debug APK
+        working-directory: android-app/android
+        shell: bash
+        run: |
+          for attempt in 1 2 3; do
+            if ./gradlew --no-daemon --max-workers=2 assembleDebug; then
+              exit 0
+            fi
+            echo "Gradle dependency/build attempt ${attempt} failed; retrying after a short pause."
+            sleep 20
+          done
+          exit 1
+      - name: Upload KnightForge APK Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: KnightForge-Android-APK
+          path: android-app/android/app/build/outputs/apk/debug/app-debug.apk
