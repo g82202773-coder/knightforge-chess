@@ -204,7 +204,7 @@ def test_online_resignation_requires_the_seated_player_token():
     )
     assert resigned.status_code == 200
     assert resigned.json()["state"]["winner"] == "black"
-    assert resigned.json()["state"]["termination_reason"] == "resignation"
+    assert resigned.json()["state"]["termination"] == "resignation"
 
 
 def test_online_draw_actions_require_tokens_and_opponent_response():
@@ -242,4 +242,4 @@ def test_online_draw_actions_require_tokens_and_opponent_response():
         json={"action": "accept", "player_token": joined["player_token"]},
     )
     assert accepted.status_code == 200
-    assert accepted.json()["state"]["termination_reason"] == "draw_agreement"
+    assert accepted.json()["state"]["termination"] == "draw_agreement"
