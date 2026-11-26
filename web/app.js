@@ -12,11 +12,43 @@ let authToken = localStorage.getItem("kf_token") || "";
 let authUsername = localStorage.getItem("kf_user") || "guest";
 
 async function api(path, options = {}) {
-  const headers = { "Content-Type": "application/json", ...(options.headers || {}) };
+  const method = String(options.method || "GET").toUpperCase();
+  const headers = { Accept: "application/json", ...(options.headers || {}) };
+  // Content-Type on GET is unnecessary and forces a CORS preflight on every
+  // read request in Android WebView. Only JSON writes need this header.
+  if (options.body !== undefined && !Object.keys(headers).some((key) => key.toLowerCase() === "content-type")) {
+    headers["Content-Type"] = "application/json";
+  }
   if (authToken) headers.Authorization = "Bearer " + authToken;
-  const res = await fetch(new URL(path, API_BASE_URL), { ...options, headers });
-  const body = await res.json().catch(() => ({}));
-  if (!res.ok) throw new Error(body.detail || "Request failed");
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 25000);
+  let response;
+  try {
+    response = await fetch(new URL(path, API_BASE_URL), {
+      ...options,
+      headers,
+      signal: controller.signal,
+    });
+  } catch (error) {
+    if (error && error.name === "AbortError") {
+      throw new Error(`KnightForge timed out after 25 seconds: ${method} ${path}`);
+    }
+    throw new Error(`Cannot reach KnightForge API for ${method} ${path}. Check the connection and retry.`);
+  } finally {
+    clearTimeout(timeoutId);
+  }
+  const contentType = response.headers.get("content-type") || "";
+  let body = {};
+  if (contentType.includes("application/json")) {
+    body = await response.json().catch(() => ({}));
+  } else {
+    const text = await response.text().catch(() => "");
+    body = text ? { detail: text.slice(0, 240) } : {};
+  }
+  if (!response.ok) {
+    const detail = body.detail || body.message || `HTTP ${response.status}`;
+    throw new Error(`${detail} [${method} ${path}]`);
+  }
   return body;
 }
 
@@ -1228,35 +1260,99 @@ let openingsLoaded = false;
 let activeOpeningTree = null;
 let opPath = []; // array of enriched node objects stepped through
 let opFlipped = false;
+let selectedOpeningId = null;
+let openingListCache = [];
+let openingMetadataCache = null;
+let openingMetadataPromise = null;
+let openingSearchTimer = null;
+let openingListRequestId = 0;
+let openingTreeRequestId = 0;
 
-async function loadOpenings(query = "") {
-  openingsLoaded = true;
-  const [tax, repo, gambits] = await Promise.all([
-    api("/api/openings/taxonomy"),
-    api("/api/openings/repository" + (query ? `?q=${encodeURIComponent(query)}` : "")),
-    api("/api/gambits"),
-  ]);
-  $("coverage-summary").innerHTML = `
-    <span class="tag">${gambits.report.gambit_count} Gambits</span>
-    <span class="tag">${gambits.report.validated_line_count}/${gambits.report.source_line_count} legal lines</span>
-    <span class="tag">${tax.coverage ? tax.coverage.stored_tree_count + 40 : repo.openings.length} Study trees</span>
-    <span class="tag">${gambits.report.rejected_line_count} rejected lines</span>
-  `;
+async function loadOpeningMetadata() {
+  if (openingMetadataCache) return openingMetadataCache;
+  if (!openingMetadataPromise) {
+    openingMetadataPromise = Promise.all([
+      api("/api/openings/taxonomy"),
+      api("/api/gambits"),
+    ]).then(([taxonomy, gambits]) => {
+      openingMetadataCache = { taxonomy, gambits };
+      return openingMetadataCache;
+    }).finally(() => {
+      openingMetadataPromise = null;
+    });
+  }
+  return openingMetadataPromise;
+}
+
+function renderOpeningList() {
   const box = $("repo-openings-list");
   box.innerHTML = "";
   const sideFilter = $("opening-side-filter").value;
-  repo.openings.filter((o) => sideFilter === "all" || o.side === sideFilter).forEach((o) => {
-    const btn = document.createElement("button");
-    btn.type = "button";
-    btn.className = "list-card" + (activeOpeningTree && activeOpeningTree.opening_id === o.opening_id ? " active-card" : "");
-    const sideLabel = o.side === "black" ? "BLACK" : "WHITE";
-    const reviewLabel = o.review_status === "in_review" ? "CURATED" : (o.review_status || "TREE").toUpperCase();
-    btn.innerHTML = `<div><strong>${o.name}</strong><small>${sideLabel} · ${reviewLabel} · ${o.mainline_san.slice(0, 10).join(" ")}</small></div><span class="tag">${o.branch_count} nodes</span>`;
-    btn.addEventListener("click", () => openInteractiveTree(o.opening_id));
-    box.append(btn);
+  const visible = openingListCache.filter((opening) =>
+    sideFilter === "all" || opening.side === sideFilter
+  );
+  if (!visible.length) {
+    const empty = document.createElement("p");
+    empty.className = "explanation";
+    empty.textContent = "No openings match this search and side filter.";
+    box.append(empty);
+    return;
+  }
+  visible.forEach((opening) => {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "list-card" + (selectedOpeningId === opening.opening_id ? " active-card" : "");
+    const copy = document.createElement("div");
+    const title = document.createElement("strong");
+    title.textContent = opening.name;
+    const meta = document.createElement("small");
+    const sideLabel = opening.side === "black" ? "BLACK" : "WHITE";
+    const reviewLabel = opening.review_status === "in_review"
+      ? "CURATED"
+      : (opening.review_status || "TREE").toUpperCase();
+    meta.textContent = `${sideLabel} · ${reviewLabel} · ${(opening.mainline_san || []).slice(0, 10).join(" ")}`;
+    copy.append(title, meta);
+    const count = document.createElement("span");
+    count.className = "tag";
+    count.textContent = `${opening.branch_count} nodes`;
+    button.append(copy, count);
+    button.addEventListener("click", () => { void openInteractiveTree(opening.opening_id); });
+    box.append(button);
   });
-  if (!activeOpeningTree && repo.openings.length) {
-    openInteractiveTree(repo.openings[0].opening_id);
+}
+
+async function loadOpenings(query = "") {
+  const requestId = ++openingListRequestId;
+  const status = $("opening-list-status");
+  status.textContent = "Loading opening library…";
+  status.className = "feedback";
+  try {
+    const [metadata, repository] = await Promise.all([
+      loadOpeningMetadata(),
+      api("/api/openings/repository" + (query ? `?q=${encodeURIComponent(query)}` : "")),
+    ]);
+    if (requestId !== openingListRequestId) return;
+    openingListCache = Array.isArray(repository.openings) ? repository.openings : [];
+    const { taxonomy, gambits } = metadata;
+    $("coverage-summary").innerHTML = `
+      <span class="tag">${gambits.report.gambit_count} Gambits</span>
+      <span class="tag">${gambits.report.validated_line_count}/${gambits.report.source_line_count} legal lines</span>
+      <span class="tag">${taxonomy.coverage ? taxonomy.coverage.stored_tree_count + gambits.report.gambit_count : openingListCache.length} Study trees</span>
+      <span class="tag">${gambits.report.rejected_line_count} rejected lines</span>
+    `;
+    openingsLoaded = true;
+    status.textContent = `${openingListCache.length} opening systems loaded`;
+    status.className = "feedback hidden";
+    renderOpeningList();
+    if (!activeOpeningTree && openingListCache.length) {
+      void openInteractiveTree(openingListCache[0].opening_id);
+    }
+  } catch (error) {
+    if (requestId !== openingListRequestId) return;
+    openingsLoaded = false;
+    status.textContent = `Could not load openings: ${error.message}`;
+    status.className = "feedback bad";
+    $("repo-openings-list").innerHTML = "";
   }
 }
 
@@ -1271,34 +1367,88 @@ function renderGambitCoachGuide(guide) {
   $("gambit-guide-finish").textContent = `After the opening line: ${guide.finish_plan} The coach then continues in free play; no opening line is presented as a forced checkmate.`;
 }
 
-async function openInteractiveTree(openingId) {
-  const requests = [
-    api(`/api/openings/${openingId}/tree`),
-    api(`/api/openings/${openingId}/variations`),
-  ];
-  const isGambitAcademy = openingId.startsWith("white-") || openingId.startsWith("black-");
-  if (isGambitAcademy) requests.push(api(`/api/gambits/${openingId}`));
-  const [treeData, varData, guide] = await Promise.all(requests);
-  activeOpeningTree = treeData;
-  if (guide) renderGambitCoachGuide(guide);
-  else $("gambit-coach-guide").classList.add("hidden");
-  opPath = [];
-  opFlipped = activeOpeningTree.side === "black";
-  $("op-explorer-title").textContent = activeOpeningTree.name;
-  $("op-explorer-eco").textContent = `ECO ${activeOpeningTree.eco || "—"}`;
-  const sel = $("op-variation-select");
-  sel.innerHTML = `<option value="">Full Repertoire Tree (All Branches)</option>`;
-  (varData.variations || []).forEach((v) => {
-    const opt = document.createElement("option");
-    opt.value = v.variation_id;
-    opt.textContent = `${v.label} (${v.moves_san.slice(0, 8).join(" ")})`;
-    sel.append(opt);
+function renderOpeningBoardPreview() {
+  renderBoard({
+    boardId: "opening-board",
+    coordIds: ["op-files-top", "op-files-bottom", "op-ranks-left", "op-ranks-right"],
+    fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+    flipped: false,
+    selected: null,
+    targets: [],
+    lastMove: null,
+    checkedSquare: null,
+    arrowData: null,
+    interactive: false,
   });
-  if (varData.variations && varData.variations.length) {
-    sel.value = varData.variations[0].variation_id;
-  }
-  renderOpeningExplorer();
 }
+
+async function openInteractiveTree(openingId) {
+  const requestId = ++openingTreeRequestId;
+  selectedOpeningId = openingId;
+  renderOpeningList();
+  $("opening-tree-status").textContent = "Loading selected opening and variations…";
+  $("opening-tree-status").className = "feedback";
+  $("opening-retry-btn").classList.add("hidden");
+  $("op-train-btn").disabled = true;
+  $("op-variation-select").disabled = true;
+  $("op-explorer-title").textContent = "Loading opening…";
+  $("op-explorer-eco").textContent = "LOADING";
+  try {
+    const requests = [
+      api(`/api/openings/${encodeURIComponent(openingId)}/tree`),
+      api(`/api/openings/${encodeURIComponent(openingId)}/variations`),
+    ];
+    const isGambitAcademy = openingId.startsWith("white-") || openingId.startsWith("black-");
+    if (isGambitAcademy) requests.push(api(`/api/gambits/${encodeURIComponent(openingId)}`));
+    const [treeData, variationData, guide] = await Promise.all(requests);
+    if (requestId !== openingTreeRequestId) return;
+    if (!treeData || !Array.isArray(treeData.roots) || !treeData.starting_fen) {
+      throw new Error("The server returned an incomplete opening tree.");
+    }
+    activeOpeningTree = treeData;
+    if (guide) renderGambitCoachGuide(guide);
+    else $("gambit-coach-guide").classList.add("hidden");
+    opPath = [];
+    opFlipped = activeOpeningTree.side === "black";
+    $("op-explorer-title").textContent = activeOpeningTree.name;
+    $("op-explorer-eco").textContent = `ECO ${activeOpeningTree.eco || "—"}`;
+    const select = $("op-variation-select");
+    select.innerHTML = '<option value="">Full Repertoire Tree (All Branches)</option>';
+    (variationData.variations || []).forEach((variation) => {
+      const option = document.createElement("option");
+      option.value = variation.variation_id;
+      option.textContent = `${variation.label} (${(variation.moves_san || []).slice(0, 8).join(" ")})`;
+      select.append(option);
+    });
+    if (variationData.variations && variationData.variations.length) {
+      select.value = variationData.variations[0].variation_id;
+    }
+    select.disabled = false;
+    $("op-train-btn").disabled = false;
+    $("opening-tree-status").textContent = `${activeOpeningTree.name} loaded · ${(variationData.variations || []).length} selectable variations`;
+    $("opening-tree-status").className = "feedback hidden";
+    renderOpeningExplorer();
+  } catch (error) {
+    if (requestId !== openingTreeRequestId) return;
+    activeOpeningTree = null;
+    $("op-explorer-title").textContent = "Could not load this opening";
+    $("op-explorer-eco").textContent = "LOAD ERROR";
+    $("op-branches").innerHTML = "";
+    $("op-node-explanation").textContent = "Retry the selection. Your previous board has not been used as a substitute.";
+    $("op-node-plans").textContent = "";
+    $("gambit-coach-guide").classList.add("hidden");
+    $("op-train-btn").disabled = true;
+    $("op-variation-select").disabled = true;
+    renderOpeningBoardPreview();
+    $("opening-tree-status").textContent = `Could not load ${openingId}: ${error.message}`;
+    $("opening-tree-status").className = "feedback bad";
+    $("opening-retry-btn").classList.remove("hidden");
+  }
+}
+
+$("opening-retry-btn").addEventListener("click", () => {
+  if (selectedOpeningId) void openInteractiveTree(selectedOpeningId);
+});
 
 function renderOpeningExplorer() {
   if (!activeOpeningTree) return;
@@ -1356,13 +1506,28 @@ $("op-reset-btn").addEventListener("click", () => { opPath = []; renderOpeningEx
 $("op-flip-btn").addEventListener("click", () => { opFlipped = !opFlipped; renderOpeningExplorer(); });
 $("op-play-here-btn").addEventListener("click", async () => {
   if (!activeOpeningTree) return;
+  const name = activeOpeningTree.name;
   const fen = opPath.length ? opPath[opPath.length - 1].fen : activeOpeningTree.starting_fen;
-  switchTab("play");
-  await startPlayGame(fen);
-  showFeedback("play-status", `Practicing ${activeOpeningTree.name} from your selected branch!`, true);
+  try {
+    $("op-play-here-btn").disabled = true;
+    $("op-play-here-btn").textContent = "Starting game…";
+    await startPlayGame(fen);
+    switchTab("play");
+    showFeedback("play-status", `Practicing ${name} from your selected branch!`, true);
+  } catch (error) {
+    $("opening-tree-status").textContent = `Could not start practice game: ${error.message}`;
+    $("opening-tree-status").className = "feedback bad";
+  } finally {
+    $("op-play-here-btn").disabled = false;
+    $("op-play-here-btn").textContent = "Play From Here →";
+  }
 });
-$("opening-search-input").addEventListener("input", (e) => loadOpenings(e.target.value));
-$("opening-side-filter").addEventListener("change", () => loadOpenings($("opening-search-input").value));
+$("opening-search-input").addEventListener("input", (event) => {
+  const query = event.target.value;
+  if (openingSearchTimer) clearTimeout(openingSearchTimer);
+  openingSearchTimer = setTimeout(() => { void loadOpenings(query); }, 280);
+});
+$("opening-side-filter").addEventListener("change", renderOpeningList);
 
 async function runRecognize() {
   const raw = $("recognize-input").value.trim();
@@ -1699,11 +1864,17 @@ boot();
 // V4.0 ULTIMATE ADDONS: VARIATION TRAINER, 1,079+ PUZZLES, VISION & DRILLS
 // =========================================================================
 $("op-train-btn").addEventListener("click", async () => {
-  if (!activeOpeningTree) return;
+  if (!activeOpeningTree || $("op-train-btn").disabled) return;
   const variationId = $("op-variation-select").value || null;
   const learnerColor = activeOpeningTree.side === "black" ? "black" : "white";
+  const openingName = activeOpeningTree.name;
+  const button = $("op-train-btn");
   try {
-    const r = await api(`/api/openings/${activeOpeningTree.opening_id}/train`, {
+    button.disabled = true;
+    button.textContent = "Starting guided lesson…";
+    $("opening-tree-status").textContent = "Preparing your coach-led lesson…";
+    $("opening-tree-status").className = "feedback";
+    const r = await api(`/api/openings/${encodeURIComponent(activeOpeningTree.opening_id)}/train`, {
       method: "POST",
       body: JSON.stringify({
         variation_id: variationId,
@@ -1712,6 +1883,7 @@ $("op-train-btn").addEventListener("click", async () => {
         auto_reply: true,
       }),
     });
+    if (!r.session_id || !r.state) throw new Error("The training server returned an incomplete lesson.");
     academySessionId = r.session_id;
     acHistory = [];
     acLastMove = null;
@@ -1721,13 +1893,13 @@ $("op-train-btn").addEventListener("click", async () => {
     $("feedback").className = "feedback hidden";
     switchTab("academy");
     applyAcademyState(r.state);
-    showFeedback(
-      "feedback",
-      `Training ${r.state.lesson_title}! Follow the green arrow — opponent replies automatically.`,
-      true
-    );
-  } catch (e) {
-    showFeedback("feedback", e.message, false);
+    showFeedback("feedback", `Training ${r.state.lesson_title || openingName}! Follow the coach's arrow and play the highlighted move.`, true);
+  } catch (error) {
+    $("opening-tree-status").textContent = `Could not start the lesson: ${error.message}`;
+    $("opening-tree-status").className = "feedback bad";
+  } finally {
+    button.disabled = !activeOpeningTree;
+    button.textContent = "🎓 Train Selected Variation";
   }
 });
 
