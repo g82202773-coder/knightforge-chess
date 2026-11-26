@@ -1,4 +1,4 @@
-const API_BASE_URL = "https://knightforge-chess-test.onrender.com";
+const API_BASE_URL = (window.Capacitor && typeof window.Capacitor.isNativePlatform === "function" && window.Capacitor.isNativePlatform()) ? "https://knightforge-chess-test.onrender.com" : window.location.origin;
 const FILES = "abcdefgh";
 const $ = (id) => document.getElementById(id);
 const SVG_PIECES = window.KF_PIECES_SVG || {};
