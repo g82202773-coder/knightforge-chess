@@ -26,6 +26,13 @@ jobs:
         with:
           distribution: "temurin"
           java-version: "17"
+      - name: Prepare bundled web assets
+        run: |
+          mkdir -p web/assets
+          cp web/styles.css web/assets/styles.css
+          cp web/pieces.js web/assets/pieces.js
+          cp web/audio.js web/assets/audio.js
+          cp web/app.js web/assets/app.js
       - name: Setup Capacitor Android Project
         working-directory: android-app
         run: |
