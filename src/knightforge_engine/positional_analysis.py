@@ -81,18 +81,6 @@ def _weak_squares(board: chess.Board, color: chess.Color) -> list[str]:
     ]
 
 
-def _weak_squares(board: chess.Board, color: chess.Color) -> list[str]:
-    """Central squares in enemy territory that enemy pawns cannot challenge."""
-    enemy_half = range(4, 8) if color else range(4)
-    return [
-        chess.square_name(square) for square in chess.SQUARES
-        if chess.square_rank(square) in enemy_half
-        and chess.square_file(square) in {2, 3, 4, 5}
-        and board.piece_at(square) is None
-        and not _pawn_attacks(board, not color, square)
-    ]
-
-
 def _outposts(board: chess.Board, color: chess.Color) -> list[str]:
     result = []
     enemy_half = range(4, 8) if color else range(4)

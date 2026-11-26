@@ -73,6 +73,117 @@ class GuidedLesson:
 
 
 @dataclass(frozen=True, slots=True)
+class CoachMistakeFeedback:
+    """Concrete, rules-checked explanation for a rejected learner move."""
+
+    title: str
+    text: str
+    detail: str
+    voice_script: str
+    severity: Literal["warning", "info"]
+    threat_arrow_from: str | None = None
+    threat_arrow_to: str | None = None
+    threatened_square: str | None = None
+
+
+def _mistake_feedback(board: chess.Board, attempted: chess.Move) -> CoachMistakeFeedback:
+    """Explain a concrete hanging piece only when a legal capture cannot be recaptured."""
+    attempted_san = board.san(attempted)
+    mover = board.turn
+    after = board.copy()
+    after.push(attempted)
+
+    piece_names = {
+        chess.PAWN: "pawn",
+        chess.KNIGHT: "knight",
+        chess.BISHOP: "bishop",
+        chess.ROOK: "rook",
+        chess.QUEEN: "queen",
+    }
+    piece_values = {
+        chess.PAWN: 1,
+        chess.KNIGHT: 3,
+        chess.BISHOP: 3,
+        chess.ROOK: 5,
+        chess.QUEEN: 9,
+    }
+    hanging: list[tuple[int, chess.Move, chess.Piece, int, bool]] = []
+    for reply in list(after.legal_moves):
+        if not after.is_capture(reply):
+            continue
+        captured_square = reply.to_square
+        if after.is_en_passant(reply):
+            captured_square += -8 if after.turn == chess.WHITE else 8
+        victim = after.piece_at(captured_square)
+        if victim is None or victim.color != mover or victim.piece_type == chess.KING:
+            continue
+
+        capture_san = after.san(reply)
+        after_capture = after.copy()
+        after_capture.push(reply)
+        recaptures = [
+            response
+            for response in after_capture.legal_moves
+            if response.to_square == reply.to_square and after_capture.is_capture(response)
+        ]
+        if not recaptures:
+            hanging.append(
+                (piece_values[victim.piece_type], reply, victim, captured_square,
+                 after_capture.is_checkmate())
+            )
+
+    if hanging:
+        _, capture, victim, victim_square, is_mate = max(hanging, key=lambda item: item[0])
+        attacker = after.piece_at(capture.from_square)
+        attacker_name = piece_names.get(attacker.piece_type, "piece") if attacker else "piece"
+        victim_name = piece_names[victim.piece_type]
+        attacker_square = chess.square_name(capture.from_square).upper()
+        target_square = chess.square_name(victim_square).upper()
+        capture_san = after.san(capture)
+        if is_mate:
+            text = (
+                f"After {attempted_san}, your opponent has {capture_san} — "
+                f"a checkmating capture."
+            )
+            detail = f"The {attacker_name} on {attacker_square} can capture on {target_square} with checkmate."
+        else:
+            text = (
+                f"This move leaves your {victim_name} on {target_square} "
+                f"vulnerable to capture by the {attacker_name}."
+            )
+            detail = (
+                f"{capture_san} is legal, and there is no legal immediate recapture. "
+                "That loses material."
+            )
+        return CoachMistakeFeedback(
+            title="Can I show you something?",
+            text=text,
+            detail=detail,
+            voice_script=f"Can I show you something? {text} {detail}",
+            severity="warning",
+            threat_arrow_from=chess.square_name(capture.from_square),
+            threat_arrow_to=chess.square_name(victim_square),
+            threatened_square=chess.square_name(victim_square),
+        )
+
+    text = (
+        f"{attempted_san} is legal, but it does not follow the reviewed continuation "
+        "for this lesson. Your move has not been played, so you can try again."
+    )
+    detail = (
+        "Look at the task and the position before choosing another move. "
+        "The coach will not label a piece as hanging unless a legal capture is verified."
+    )
+    return CoachMistakeFeedback(
+        title="Let's review that move",
+        text=text,
+        detail=detail,
+        voice_script=f"Let's review that move. {text} {detail}",
+        severity="info",
+    )
+
+
+@dataclass(frozen=True, slots=True)
 class CoachPrompt:
     """Presentation-ready instruction derived from the live chess position."""
     kind: Literal["move", "correction", "opponent_deviation", "complete", "free_play"]
@@ -88,6 +199,7 @@ class CoachPrompt:
     fen: str
     turn: str
     game_status: str
+    mistake_feedback: CoachMistakeFeedback | None = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -202,8 +314,9 @@ class GuidedLessonSession:
                 legal_moves_uci=expected.legal_moves_uci,
                 fen=self.game.fen, turn=self.game.turn,
                 game_status=self.game.status.value,
+                mistake_feedback=_mistake_feedback(board, move),
             )
-            return MoveSubmission(False, False, False, None, corrected, "Retry the lesson move.")
+            return MoveSubmission(False, False, False, None, corrected, "Review the feedback, then retry or continue.")
 
         self._history.append((self.game.fen, self._nodes))
         result = self.game.push_uci(move.uci())
