@@ -233,6 +233,26 @@
             <span id="turn-label" class="turn-pill">WHITE TO MOVE</span>
           </div>
         </div>
+        <div class="academy-session-meta" aria-label="Training session status">
+          <span id="academy-session-tag" class="academy-session-tag">GUIDED TRAINING</span>
+          <span id="academy-board-status" class="academy-board-status">PREVIEW BOARD</span>
+        </div>
+        <section id="academy-connection-alert" class="academy-connection-alert hidden" role="alert">
+          <div class="academy-alert-copy">
+            <strong>Training server unavailable</strong>
+            <p id="academy-connection-message">The board preview is ready. Reconnect to start a lesson.</p>
+          </div>
+          <button id="academy-retry-btn" class="button secondary mini" type="button">↻ Retry</button>
+        </section>
+        <div class="board-wrap academy-board-wrap">
+          <div id="files-top" class="board-coordinates files-top"></div>
+          <div class="board-row">
+            <div id="ranks-left" class="ranks"></div>
+            <div id="board" class="board" role="grid" aria-label="Academy chessboard"></div>
+            <div id="ranks-right" class="ranks right"></div>
+          </div>
+          <div id="files-bottom" class="board-coordinates files-bottom"></div>
+        </div>
         <section class="academy-coach-callout" aria-label="KnightForge coach explanation">
           <div class="academy-coach-avatar" aria-hidden="true">
             <svg viewBox="0 0 96 112" role="presentation" focusable="false">
@@ -254,19 +274,10 @@
               <span class="eyebrow">KNIGHTFORGE CHESS COACH</span>
               <span id="coach-speaking-status" class="coach-speaking-status">READY</span>
             </div>
-            <p id="coach-text">Loading your lesson…</p>
+            <p id="coach-text">Connecting to your lesson…</p>
             <p id="coach-explanation" class="explanation"></p>
           </div>
         </section>
-        <div class="board-wrap">
-          <div id="files-top" class="board-coordinates files-top"></div>
-          <div class="board-row">
-            <div id="ranks-left" class="ranks"></div>
-            <div id="board" class="board" role="grid" aria-label="Academy chessboard"></div>
-            <div id="ranks-right" class="ranks right"></div>
-          </div>
-          <div id="files-bottom" class="board-coordinates files-bottom"></div>
-        </div>
         <div class="board-actions">
           <button id="undo-btn" class="button secondary">↶ Undo</button>
           <button id="restart-btn" class="button secondary">↻ Restart</button>
