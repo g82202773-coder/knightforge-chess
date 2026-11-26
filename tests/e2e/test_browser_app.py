@@ -93,7 +93,7 @@ def test_academy_mistake_coach_retry_continue_and_voice(live_server_url: str) ->
 
         # Retry keeps the same position and lets the learner choose again.
         page.locator("#mistake-retry-btn").click()
-        page.wait_for_selector("#mistake-coach.hidden")
+        page.locator("#mistake-coach").wait_for(state="hidden")
         assert page.locator("#move-count").inner_text() == "0 half-moves"
 
         # Continue applies the curated lesson move, advances the board and closes the card.
@@ -101,6 +101,6 @@ def test_academy_mistake_coach_retry_continue_and_voice(live_server_url: str) ->
         page.locator('#board [data-sq="d4"]').click()
         page.wait_for_selector("#mistake-coach:not(.hidden)")
         page.locator("#mistake-continue-btn").click()
-        page.wait_for_selector("#mistake-coach.hidden")
+        page.locator("#mistake-coach").wait_for(state="hidden")
         assert "e4" in page.locator("#moves").inner_text().lower()
         browser.close()
