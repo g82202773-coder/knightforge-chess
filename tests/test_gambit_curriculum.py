@@ -72,3 +72,18 @@ def test_learner_can_select_variation_and_start_coach_training():
     payload = started.json()
     assert payload["session_id"]
     assert payload["state"]["coach"]["expected_move"]["uci"] == selected["moves_uci"][0]
+
+
+def test_opening_list_returns_lightweight_metadata_and_tree_is_loaded_separately():
+    listing = client.get("/api/openings/repository?q=Benko")
+    assert listing.status_code == 200
+    payload = listing.json()
+    assert len(payload["openings"]) == 1
+    card = payload["openings"][0]
+    assert card["opening_id"] == "black-benko"
+    assert "tree" not in card
+
+    detail = client.get("/api/openings/black-benko/tree")
+    assert detail.status_code == 200
+    assert detail.json()["roots"]
+    assert detail.json()["starting_fen"]
