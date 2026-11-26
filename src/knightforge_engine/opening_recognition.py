@@ -91,8 +91,7 @@ class OpeningRecognizer:
                         raise ValueError(f"Illegal UCI move at ply {index}: {token}")
                 else:
                     move = board.parse_san(token)
-            except (ValueError, chess.InvalidMoveError, chess.IllegalMoveError,
-                    chess.AmbiguousMoveError) as exc:
+            except ValueError as exc:
                 raise ValueError(f"Invalid {selected_kind.upper()} move at ply {index}: {token}") from exc
             san_moves.append(board.san(move))
             uci_moves.append(move.uci())
