@@ -152,7 +152,7 @@ window.addEventListener("pointercancel", finishPointerDrag);
 
 function renderBoard({
   boardId, coordIds, fen, flipped, selected, targets, lastMove,
-  checkedSquare, arrowData, interactive = true, onSquareClick, onDropMove,
+  checkedSquare, arrowData, highlightedSquares = [], interactive = true, onSquareClick, onDropMove,
 }) {
   renderCoords(coordIds, flipped);
   const root = $(boardId);
@@ -172,6 +172,7 @@ function renderBoard({
       if (sq === selected) b.classList.add("selected");
       if (sq === checkedSquare) b.classList.add("in-check");
       if (lastMove && lastMove.includes(sq)) b.classList.add("last-move");
+      if (highlightedSquares.includes(sq)) b.classList.add("coach-threat");
       if (targets.some((t) => t.to === sq)) {
         b.classList.add(piece ? "capture" : "legal");
       }
@@ -222,7 +223,7 @@ function renderBoard({
     const q = pos(arrowData.to);
     const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
     svg.setAttribute("viewBox", "0 0 100 100");
-    svg.setAttribute("class", "board-arrow");
+    svg.setAttribute("class", "board-arrow" + (arrowData.tone === "danger" ? " danger" : ""));
     svg.innerHTML =
       '<defs><marker id="arrowhead" markerWidth="5" markerHeight="5" refX="3.8" refY="2.5" orient="auto">' +
       '<path d="M0 0 L5 2.5 L0 5Z" fill="#d7f18a"/></marker></defs>';
@@ -254,11 +255,19 @@ document.querySelectorAll(".promo-btn").forEach((btn) => {
 });
 
 function speak(t) {
-  if (!window.speechSynthesis || !t) return;
+  if (!window.speechSynthesis || typeof SpeechSynthesisUtterance === "undefined" || !t) return false;
   window.speechSynthesis.cancel();
   const u = new SpeechSynthesisUtterance(t);
+  u.lang = document.documentElement.lang || "en-IN";
   u.rate = 0.94;
+  u.pitch = 1;
+  const voices = window.speechSynthesis.getVoices ? window.speechSynthesis.getVoices() : [];
+  const voice = voices.find((v) => v.lang.toLowerCase() === "en-in")
+    || voices.find((v) => v.lang.toLowerCase().startsWith("en-"))
+    || voices.find((v) => v.lang.toLowerCase().startsWith("en"));
+  if (voice) u.voice = voice;
   window.speechSynthesis.speak(u);
+  return true;
 }
 
 // =========================================================================
@@ -708,9 +717,19 @@ let acHistory = [];
 let acHintLevel = 1;
 let acMode = "guided";
 let acFlipped = false;
+let acMistakeDismissed = false;
 
 function academyArrow() {
-  if (!academyState || acMode === "mastery") return null;
+  if (!academyState) return null;
+  const mistake = academyState.coach.mistake_feedback;
+  if (!acMistakeDismissed && mistake && mistake.threat_arrow_from && mistake.threat_arrow_to) {
+    return {
+      from: mistake.threat_arrow_from,
+      to: mistake.threat_arrow_to,
+      tone: "danger",
+    };
+  }
+  if (acMode === "mastery") return null;
   const h = academyState.coach.active_hint;
   if (h && h.arrow_from && h.arrow_to) return { from: h.arrow_from, to: h.arrow_to };
   const a = academyState.coach.expected_move && academyState.coach.expected_move.arrow;
@@ -729,6 +748,11 @@ function renderAcademy() {
     lastMove: acLastMove,
     checkedSquare: null,
     arrowData: academyArrow(),
+    highlightedSquares: (
+      !acMistakeDismissed && academyState.coach.mistake_feedback?.threatened_square
+        ? [academyState.coach.mistake_feedback.threatened_square]
+        : []
+    ),
     onSquareClick: clickAcademySquare,
     onDropMove: dropAcademyMove,
   });
@@ -787,6 +811,7 @@ async function clickAcademySquare(sq, piece) {
 function applyAcademyState(s) {
   academyState = s;
   acMode = s.mode || acMode;
+  acMistakeDismissed = false;
   acHintLevel = s.coach.active_hint ? s.coach.active_hint.level : 0;
   renderAcademy();
   $("lesson-title").textContent = s.lesson_title || "KnightForge Lesson";
@@ -802,7 +827,22 @@ function applyAcademyState(s) {
   $("move-count").textContent = `${acHistory.length} half-moves`;
   $("moves").className = acHistory.length ? "move-list" : "moves-empty";
   $("moves").textContent = formatMoves(acHistory);
-  if ($("voice-toggle").checked) speak(s.coach.voice_script || s.coach.text);
+  const mistake = s.coach.mistake_feedback;
+  const mistakeCard = $("mistake-coach");
+  if (mistake && !acMistakeDismissed) {
+    $("mistake-coach-title").textContent = mistake.title || "Let's review that move";
+    $("mistake-coach-text").textContent = mistake.text || "Let's look at the position again.";
+    $("mistake-coach-detail").textContent = mistake.detail || "";
+    $("mistake-continue-btn").classList.toggle("hidden", acMode === "mastery");
+    mistakeCard.classList.remove("hidden");
+  } else {
+    mistakeCard.classList.add("hidden");
+  }
+  if ($("voice-toggle").checked) {
+    speak(mistake && !acMistakeDismissed
+      ? (mistake.voice_script || mistake.text)
+      : (s.coach.voice_script || s.coach.text));
+  }
 }
 
 async function loadLessonsAndStart() {
@@ -864,6 +904,37 @@ $("continue-free-btn").addEventListener("click", async () => {
   showFeedback("play-status", "Continuing your lesson position as a full unrestricted game!", true);
 });
 $("speak-btn").addEventListener("click", () => academyState && speak(academyState.coach.voice_script || academyState.coach.text));
+$("mistake-hear-btn").addEventListener("click", () => {
+  const mistake = academyState && academyState.coach.mistake_feedback;
+  if (mistake) speak(mistake.voice_script || mistake.text);
+});
+$("mistake-retry-btn").addEventListener("click", () => {
+  acMistakeDismissed = true;
+  acSelected = null;
+  acTargets = [];
+  $("mistake-coach").classList.add("hidden");
+  renderAcademy();
+  showFeedback("feedback", "Your position is unchanged. Try the move again.", true);
+});
+$("mistake-continue-btn").addEventListener("click", async () => {
+  if (!academySessionId) return;
+  const button = $("mistake-continue-btn");
+  button.disabled = true;
+  try {
+    const r = await api(`/api/sessions/${academySessionId}/continue`, { method: "POST" });
+    if (r.move && r.move.actual_san) acHistory.push(r.move.actual_san);
+    if (r.auto_reply_san) acHistory.push(r.auto_reply_san);
+    acLastMove = null;
+    acSelected = null;
+    acTargets = [];
+    applyAcademyState(r.state);
+    showFeedback("feedback", "We continued with the reviewed lesson move. Follow the next coach instruction.", true);
+  } catch (e) {
+    showFeedback("feedback", e.message, false);
+  } finally {
+    button.disabled = false;
+  }
+});
 
 // =========================================================================
 // TAB 3: INTERACTIVE OPENING & GAMBIT TREE EXPLORER
