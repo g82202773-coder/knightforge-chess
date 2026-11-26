@@ -11,6 +11,7 @@ from typing import Literal
 
 import chess
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
@@ -100,6 +101,18 @@ class SessionStore:
 
 store = SessionStore()
 app = FastAPI(title="KnightForge Chess Sessions", version="0.1.0")
+# The Android Capacitor WebView serves the bundled UI from a local HTTPS origin.
+# Allow only known local app/dev origins; do not reflect arbitrary web origins.
+app.add_middleware(
+    CORSMiddleware,
+    allow_origin_regex=(
+        r"^(https?://localhost(?::[0-9]+)?|capacitor://localhost|ionic://localhost|"
+        r"http://127[.]0[.]0[.]1(?::[0-9]+)?)$"
+    ),
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 def apply_mode_policy(payload: dict, record: SessionRecord) -> dict:
     """Enforce hint disclosure on every session response, not only the UI."""
