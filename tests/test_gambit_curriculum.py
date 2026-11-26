@@ -2,11 +2,12 @@
 
 from pathlib import Path
 
+from fastapi.testclient import TestClient
+
 from knightforge_engine.gambit_curriculum import build_gambit_library
 from knightforge_engine.guided_learning import GuidedLessonSession
 from knightforge_engine.opening_trainer import build_opening_lesson, list_opening_variations
 from knightforge_engine.server import app
-from fastapi.testclient import TestClient
 
 client = TestClient(app)
 
