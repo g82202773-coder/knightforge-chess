@@ -87,6 +87,7 @@ function renderCoords(ids, flipped) {
 // UNIFIED POINTER-EVENT DRAG-AND-DROP (ANDROID TOUCH + DESKTOP MOUSE) + TAP
 // =========================================================================
 let activeDrag = null;
+let suppressNextPieceClick = false;
 
 function squareFromPoint(boardEl, clientX, clientY, flipped) {
   const rect = boardEl.getBoundingClientRect();
@@ -140,12 +141,12 @@ function finishPointerDrag(ev) {
   if (drag.dragging) {
     const destSq = squareFromPoint(drag.boardEl, ev.clientX, ev.clientY, drag.flipped);
     if (destSq && destSq !== drag.fromSq && drag.onDropMove) {
+      suppressNextPieceClick = true;
       drag.onDropMove(drag.fromSq, destSq);
       return;
     }
   }
-  // Short tap (not a drag) -> normal click-to-select / click-to-move
-  if (drag.onSquareClick) drag.onSquareClick(drag.fromSq, drag.piece);
+  // Short taps are handled by the button click fallback below.
 }
 window.addEventListener("pointerup", finishPointerDrag);
 window.addEventListener("pointercancel", finishPointerDrag);
@@ -186,6 +187,7 @@ function renderBoard({
       b.setAttribute("aria-label", sq + (piece ? " " + piece : " empty"));
       if (interactive) {
         b.addEventListener("pointerdown", (ev) => {
+          suppressNextPieceClick = false;
           if (ev.button !== 0 && ev.pointerType === "mouse") return;
           if (piece && onDropMove) {
             activeDrag = {
@@ -205,6 +207,15 @@ function renderBoard({
             onSquareClick(sq, piece);
           }
         });
+        if (piece && onSquareClick) {
+          b.addEventListener("click", () => {
+            if (suppressNextPieceClick) {
+              suppressNextPieceClick = false;
+              return;
+            }
+            onSquareClick(sq, piece);
+          });
+        }
       }
       root.append(b);
     }
