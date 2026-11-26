@@ -19,14 +19,8 @@ def test_all_40_gambits_and_all_210_supplied_lines_are_legal():
     assert library.report()["white_count"] == 20
     assert library.report()["black_count"] == 20
     assert library.report()["source_line_count"] == 210
-    # One source item is withheld exactly as supplied: ...Rc8 is illegal here
-    # because the a8 rook is blocked by Black's b8 knight. It remains visible
-    # in the validation report and is never exposed as a playable coach line.
-    assert len(library.issues) == 1
-    assert library.issues[0].gambit_id == "white-milner-barry"
-    assert library.issues[0].line_label == "Declined · ...Rc8"
-    assert "illegal san" in library.issues[0].message
-    assert library.report()["validated_line_count"] == 209
+    assert library.issues == (), [issue.to_dict() for issue in library.issues]
+    assert library.report()["validated_line_count"] == 210
 
 
 def test_each_gambit_exposes_named_variations_and_a_guided_coach_lesson():
