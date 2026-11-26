@@ -633,7 +633,10 @@ $("play-pause-btn").addEventListener("click", async () => {
   } catch (e) { showFeedback("play-status", e.message, false); }
 });
 $("play-resign-btn").addEventListener("click", async () => {
-  const r = await api(`/api/games/${playGameId}/resign`, { method: "POST" });
+  const r = await api(`/api/games/${playGameId}/resign`, {
+    method: "POST",
+    body: JSON.stringify({ player_token: playToken }),
+  });
   playState = r.state; playViewPly = null; renderPlay();
 });
 $("play-draw-btn").addEventListener("click", async () => {
@@ -642,7 +645,7 @@ $("play-draw-btn").addEventListener("click", async () => {
   try {
     const r = await api(`/api/games/${playGameId}/draw`, {
       method: "POST",
-      body: JSON.stringify({ action }),
+      body: JSON.stringify({ action, player_token: playToken }),
     });
     playState = r.state;
     showFeedback("play-status", r.message, true);
