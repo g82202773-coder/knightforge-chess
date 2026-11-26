@@ -246,7 +246,7 @@ def test_opening_search_is_debounced_and_metadata_is_not_refetched(
         ]
         metadata_reads = [
             url for url in requests
-            if url.endswith("/api/openings/taxonomy") or url.endswith("/api/gambits")
+            if url.endswith(("/api/openings/taxonomy", "/api/gambits"))
         ]
         assert len(repository_reads) == 1, repository_reads
         assert metadata_reads == [], metadata_reads
