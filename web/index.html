@@ -439,7 +439,7 @@
           <span class="eyebrow">GUIDED VARIATION TRAINER (TELLS YOU EVERY MOVE)</span>
           <div class="recognize-row">
             <select id="op-variation-select" class="text-input"></select>
-            <button id="op-train-btn" class="button hint-button">🎯 Train Line</button>
+            <button id="op-train-btn" class="button hint-button">🎓 Train Selected Variation</button>
           </div>
           <p class="explanation">Pick any variation (e.g. Jobava London or Classical London) and KnightForge will guide you move-by-move with opponent replies.</p>
         </div>
@@ -453,10 +453,25 @@
       </div>
 
       <aside class="coach-panel">
-        <span class="eyebrow">SEARCH 31 REVIEWED OPENINGS & GAMBITS</span>
-        <h2 class="panel-title">Opening &amp; Gambit Library</h2>
+        <span class="eyebrow">KNIGHTFORGE GAMBIT ACADEMY · 40 REPERTOIRES</span>
+        <h2 class="panel-title">Gambit &amp; Opening Mastery</h2>
         <div id="coverage-summary" class="stat-strip"></div>
-        <input id="opening-search-input" class="text-input full-width section-mt" type="text" placeholder="Search Ruy Lopez, Sicilian, Gambit, C60, B90...">
+        <label class="field-label" for="opening-side-filter">Choose repertoire side</label>
+        <select id="opening-side-filter" class="text-input full-width">
+          <option value="all">All openings and gambits</option>
+          <option value="white">White · 20 repertoires</option>
+          <option value="black">Black · 20 repertoires</option>
+        </select>
+        <input id="opening-search-input" class="text-input full-width section-mt" type="text" placeholder="Search Evans, Benko, King's Gambit, Stafford...">
+        <section id="gambit-coach-guide" class="coach-message hidden" aria-live="polite">
+          <span class="eyebrow">KNIGHTFORGE COACH · STRATEGY BRIEFING</span>
+          <h3 id="gambit-guide-title">Select a gambit</h3>
+          <p id="gambit-guide-summary" class="explanation"></p>
+          <p id="gambit-guide-plans" class="explanation"></p>
+          <p id="gambit-guide-ideas" class="explanation"></p>
+          <p id="gambit-guide-traps" class="explanation"></p>
+          <p id="gambit-guide-finish" class="explanation"></p>
+        </section>
         <div id="repo-openings-list" class="card-list"></div>
 
         <div class="section-spacer">
