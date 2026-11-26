@@ -1,8 +1,8 @@
 {
   "name": "knightforge-android",
-  "version": "4.0.1",
+  "version": "4.0.2",
   "private": true,
-  "description": "Capacitor Android wrapper for KnightForge Chess v4.0.1 — 40-repertoire Gambit Academy test build",
+  "description": "KnightForge Chess Android test build 4.0.2 — mobile opening performance, recovery and Gambit Academy",
   "dependencies": {
     "@capacitor/android": "^6.1.0",
     "@capacitor/core": "^6.1.0"
