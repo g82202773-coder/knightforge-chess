@@ -269,8 +269,8 @@ app = FastAPI(title="KnightForge Chess Platform", version="4.0.0")
 app.add_middleware(
     CORSMiddleware,
     allow_origin_regex=(
-        r"^(https?://localhost(?::\\d+)?|capacitor://localhost|ionic://localhost|"
-        r"http://127\\.0\\.0\\.1(?::\\d+)?)$"
+        r"^(https?://localhost(?::[0-9]+)?|capacitor://localhost|ionic://localhost|"
+        r"http://127[.]0[.]0[.]1(?::[0-9]+)?)$"
     ),
     allow_credentials=True,
     allow_methods=["*"],
