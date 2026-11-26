@@ -7,6 +7,12 @@ on:
     paths:
       - "android-app/**"
       - "web/**"
+  pull_request:
+    branches: [main]
+    paths:
+      - "android-app/**"
+      - "web/**"
+      - ".github/workflows/build-android-apk.yml"
 
 jobs:
   build-apk:
