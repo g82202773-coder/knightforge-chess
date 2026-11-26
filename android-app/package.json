@@ -1,0 +1,13 @@
+{
+  "name": "knightforge-android",
+  "version": "4.0.0",
+  "private": true,
+  "description": "Capacitor Android wrapper for KnightForge Chess",
+  "dependencies": {
+    "@capacitor/android": "^6.1.0",
+    "@capacitor/core": "^6.1.0"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^6.1.0"
+  }
+}
