@@ -1,0 +1,9 @@
+{
+  "appId": "com.knightforge.chess",
+  "appName": "KnightForge Chess",
+  "webDir": "../web",
+  "android": {
+    "allowMixedContent": false,
+    "backgroundColor": "#0f1613"
+  }
+}
