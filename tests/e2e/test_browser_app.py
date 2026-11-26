@@ -61,3 +61,33 @@ def test_v3_svg_board_mobile_overflow_and_openings(live_server_url: str) -> None
         page.wait_for_selector("#puzzle-board .square")
         assert page.locator("#puzzle-board .square").count() == 64
         browser.close()
+
+def test_academy_mistake_coach_retry_continue_and_voice(live_server_url: str) -> None:
+    with playwright.sync_playwright() as p:
+        browser = p.chromium.launch()
+        page = browser.new_page(viewport={"width": 390, "height": 844})
+        page.goto(live_server_url, wait_until="networkidle")
+        page.locator('.mobile-tab-btn[data-tab="academy"]').click()
+        page.wait_for_selector("#board .square")
+
+        # A legal but off-lesson move should open the coach without changing the board.
+        page.locator('#board [data-sq="d2"]').click()
+        page.locator('#board [data-sq="d4"]').click()
+        page.wait_for_selector("#mistake-coach:not(.hidden)")
+        assert "legal" in page.locator("#mistake-coach-text").inner_text().lower()
+        assert page.locator("#mistake-hear-btn").is_visible()
+        assert page.locator("#voice-toggle").is_checked()
+
+        # Retry keeps the same position and lets the learner choose again.
+        page.locator("#mistake-retry-btn").click()
+        page.wait_for_selector("#mistake-coach.hidden")
+        assert page.locator("#move-count").inner_text() == "0 half-moves"
+
+        # Continue applies the curated lesson move, advances the board and closes the card.
+        page.locator('#board [data-sq="d2"]').click()
+        page.locator('#board [data-sq="d4"]').click()
+        page.wait_for_selector("#mistake-coach:not(.hidden)")
+        page.locator("#mistake-continue-btn").click()
+        page.wait_for_selector("#mistake-coach.hidden")
+        assert "e4" in page.locator("#moves").inner_text().lower()
+        browser.close()
