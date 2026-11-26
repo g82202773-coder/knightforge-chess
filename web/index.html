@@ -298,6 +298,24 @@
         </div>
         <div id="feedback" class="feedback hidden" aria-live="polite"></div>
 
+        <section id="mistake-coach" class="mistake-coach hidden" aria-live="assertive" aria-atomic="true">
+          <div class="mistake-coach-header">
+            <div class="mistake-coach-avatar" aria-hidden="true">♞</div>
+            <div>
+              <span class="eyebrow">KNIGHTFORGE COACH</span>
+              <h3 id="mistake-coach-title">Can I show you something?</h3>
+            </div>
+          </div>
+          <p id="mistake-coach-text" class="mistake-coach-text"></p>
+          <p id="mistake-coach-detail" class="mistake-coach-detail"></p>
+          <span class="mistake-coach-note">Your move has not been played. You can retry or continue with the reviewed lesson move.</span>
+          <div class="mistake-coach-actions">
+            <button id="mistake-hear-btn" class="button secondary" type="button">🔊 Hear</button>
+            <button id="mistake-continue-btn" class="button hint-button" type="button">Continue →</button>
+            <button id="mistake-retry-btn" class="button secondary" type="button">↻ Retry</button>
+          </div>
+        </section>
+
         <div class="hint-area">
           <div class="hint-title">
             <span class="eyebrow">PROGRESSIVE HINTS</span>
@@ -308,7 +326,7 @@
         </div>
 
         <div class="coach-controls">
-          <label class="toggle"><input id="voice-toggle" type="checkbox"><span>Read coach aloud</span></label>
+          <label class="toggle"><input id="voice-toggle" type="checkbox" checked><span>Coach speaks automatically</span></label>
           <button id="speak-btn" class="icon-button" title="Read instruction">🔊</button>
         </div>
         <div class="engine-note">
