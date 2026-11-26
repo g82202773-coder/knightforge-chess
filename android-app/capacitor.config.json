@@ -2,10 +2,6 @@
   "appId": "com.knightforge.chess",
   "appName": "KnightForge Chess",
   "webDir": "../web",
-  "server": {
-    "url": "https://knightforge-chess-test.onrender.com",
-    "cleartext": false
-  },
   "android": {
     "allowMixedContent": false,
     "backgroundColor": "#0f1613"

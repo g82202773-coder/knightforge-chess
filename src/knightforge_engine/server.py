@@ -11,6 +11,7 @@ from typing import Any, Literal
 
 import chess
 from fastapi import FastAPI, Header, HTTPException, WebSocket, WebSocketDisconnect
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
@@ -95,7 +96,7 @@ class ConnectionManager:
         for ws in room:
             try:
                 await ws.send_json(payload)
-            except Exception:
+            except (WebSocketDisconnect, RuntimeError):
                 self.disconnect(game_id, ws)
 
 
@@ -263,6 +264,18 @@ class SessionStore:
 store = SessionStore()
 ws_manager = ConnectionManager()
 app = FastAPI(title="KnightForge Chess Platform", version="4.0.0")
+# Capacitor serves the bundled Android UI from https://localhost (Android WebView).
+# Allow only the local app/dev origins; do not use a wildcard with credentials.
+app.add_middleware(
+    CORSMiddleware,
+    allow_origin_regex=(
+        r"^(https?://localhost(?::[0-9]+)?|capacitor://localhost|ionic://localhost|"
+        r"http://127[.]0[.]0[.]1(?::[0-9]+)?)$"
+    ),
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 def _user_id_from_header(authorization: str | None) -> int:
@@ -405,6 +418,11 @@ class ImportPgnRequest(BaseModel):
 class DrawActionRequest(BaseModel):
     action: Literal["offer", "accept", "decline", "claim"]
     actor: ColorName | None = None
+    player_token: str | None = None
+
+
+class PlayerActionRequest(BaseModel):
+    player_token: str | None = None
 
 
 class RecognizeRequest(BaseModel):
@@ -455,12 +473,20 @@ def login(request: AuthRequest) -> dict[str, Any]:
 
 
 @app.post("/api/auth/recover/request")
-def request_recovery(request: RecoveryRequest) -> dict[str, Any]:
-    try:
-        token = store.progress.create_recovery_token(request.username)
-        return {"recovery_token": token, "message": "One-time recovery token issued."}
-    except ValueError as exc:
-        raise HTTPException(status_code=404, detail=str(exc)) from exc
+def request_recovery(_request: RecoveryRequest) -> dict[str, Any]:
+    """Fail closed until a verified recovery-delivery provider is configured.
+
+    Returning a recovery token in an unauthenticated API response would let
+    anyone who knows a username take over that account. Tokens must only be
+    delivered through a verified out-of-band channel.
+    """
+    raise HTTPException(
+        status_code=503,
+        detail=(
+            "Password recovery is temporarily unavailable because verified "
+            "email delivery is not configured. No recovery token was issued."
+        ),
+    )
 
 
 @app.post("/api/auth/recover/confirm")
@@ -533,6 +559,25 @@ def save_notes(
 # ---------------------------------------------------------------------------
 # Full Chess Gameplay, Clocks & Multiplayer (HvAI / Local 2P / Online PvP)
 # ---------------------------------------------------------------------------
+def _online_action_color(
+    match: FullChessMatch, player_token: str | None, requested_actor: ColorName | None = None
+) -> ColorName | None:
+    """Authenticate state-changing online actions with the seat capability token."""
+    if match.mode != "online_pvp":
+        return requested_actor
+    if not player_token:
+        raise HTTPException(status_code=403, detail="A player token is required for online actions.")
+    if secrets.compare_digest(player_token, match.white_token):
+        color: ColorName = "white"
+    elif match.black_token and secrets.compare_digest(player_token, match.black_token):
+        color = "black"
+    else:
+        raise HTTPException(status_code=403, detail="Invalid player token.")
+    if requested_actor is not None and requested_actor != color:
+        raise HTTPException(status_code=403, detail="Player token does not match the requested side.")
+    return color
+
+
 def _record_game_if_over(record: MatchRecord, user_id: int) -> None:
     m = record.match
     if m.is_over and not record.recorded:
@@ -668,12 +713,17 @@ def restart_game(game_id: str) -> dict[str, Any]:
 
 @app.post("/api/games/{game_id}/resign")
 async def resign_game(
-    game_id: str, authorization: str | None = Header(default=None)
+    game_id: str,
+    request: PlayerActionRequest | None = None,
+    authorization: str | None = Header(default=None),
 ) -> dict[str, Any]:
     uid = _user_id_from_header(authorization)
     record = store.get_match(game_id)
     with record.lock:
-        record.match.resign()
+        actor = _online_action_color(
+            record.match, request.player_token if request else None
+        )
+        record.match.resign(color=actor)
         _record_game_if_over(record, uid)
         state = record.match.state_dict()
     await ws_manager.broadcast(game_id, {"event": "resign", "state": state})
@@ -689,8 +739,11 @@ async def draw_action(
     uid = _user_id_from_header(authorization)
     record = store.get_match(game_id)
     with record.lock:
+        actor = _online_action_color(
+            record.match, request.player_token, request.actor
+        )
         try:
-            msg = record.match.handle_draw_action(request.action, request.actor)
+            msg = record.match.handle_draw_action(request.action, actor)
         except (ValueError, RuntimeError) as exc:
             raise HTTPException(status_code=409, detail=str(exc)) from exc
         _record_game_if_over(record, uid)
@@ -796,6 +849,50 @@ def submit_move(
             record.completion_recorded = True
         payload = apply_mode_policy(submission_payload(result), record)
         payload["auto_reply_san"] = auto_reply_san
+        return payload
+
+
+@app.post("/api/sessions/{session_id}/continue")
+def continue_after_mistake(
+    session_id: str, authorization: str | None = Header(default=None)
+) -> dict[str, Any]:
+    """Apply the reviewed lesson move after the learner chooses Continue."""
+    uid = _user_id_from_header(authorization)
+    record = store.get(session_id)
+    if record.mode == "mastery":
+        raise HTTPException(status_code=403, detail="Continue is disabled in Mastery mode.")
+    with record.lock:
+        prompt = record.coach.prompt().prompt
+        if prompt.kind != "correction" or prompt.mistake_feedback is None:
+            raise HTTPException(status_code=409, detail="There is no mistake to continue past.")
+        if prompt.expected_uci is None:
+            raise HTTPException(status_code=409, detail="No reviewed continuation is available.")
+        try:
+            result = record.coach.submit_uci(prompt.expected_uci)
+        except (ValueError, RuntimeError) as exc:
+            raise HTTPException(status_code=409, detail=str(exc)) from exc
+        record.hint_level = 0
+        auto_reply_san: str | None = None
+        if record.auto_reply and result.submission.applied:
+            nxt_prompt = result.state.prompt
+            learner_col = record.coach.session.lesson.learner_color
+            if (
+                nxt_prompt.kind == "move"
+                and nxt_prompt.expected_uci
+                and nxt_prompt.turn != learner_col
+            ):
+                reply_res = record.coach.submit_uci(nxt_prompt.expected_uci)
+                auto_reply_san = reply_res.submission.actual_san
+                result = reply_res
+        if (
+            result.state.prompt.kind in {"complete", "free_play"}
+            and not record.completion_recorded
+        ):
+            store.progress.record_lesson_completion(record.lesson_id, record.mode, uid)
+            record.completion_recorded = True
+        payload = apply_mode_policy(submission_payload(result), record)
+        payload["auto_reply_san"] = auto_reply_san
+        payload["continued_after_feedback"] = True
         return payload
 
 

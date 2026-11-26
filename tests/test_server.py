@@ -1,4 +1,6 @@
 """HTTP and session lifecycle tests for the KnightForge browser server."""
+import secrets
+
 from fastapi.testclient import TestClient
 
 from knightforge_engine.server import app
@@ -152,3 +154,154 @@ def test_test_modes_keep_answer_hidden_after_move_and_state_refresh():
         assert refreshed.json()["state"]["coach"]["expected_move"] is None
         assert "e2e4" not in str(refreshed.json()["state"]["coach"]) and "e2e4" not in str(refreshed.json()["state"]["engine"])
 
+
+
+
+def test_password_recovery_fails_closed_without_verified_delivery():
+    username = f"recovery-{secrets.token_hex(4)}"
+    registered = client.post(
+        "/api/auth/register",
+        json={"username": username, "password": "correct-horse-1"},
+    )
+    assert registered.status_code == 200
+
+    request = client.post(
+        "/api/auth/recover/request",
+        json={"username": username},
+    )
+    assert request.status_code == 503
+    assert "recovery_token" not in request.json()
+
+    # The failed request must not alter credentials or issue a usable token.
+    login = client.post(
+        "/api/auth/login",
+        json={"username": username, "password": "correct-horse-1"},
+    )
+    assert login.status_code == 200
+    reset = client.post(
+        "/api/auth/recover/confirm",
+        json={"recovery_token": "not-a-real-token", "new_password": "attacker-password"},
+    )
+    assert reset.status_code == 400
+
+def test_online_resignation_requires_the_seated_player_token():
+    created = client.post("/api/games", json={"mode": "online_pvp"}).json()
+
+    game_id = created["game_id"]
+
+    missing = client.post(f"/api/games/{game_id}/resign")
+    assert missing.status_code == 403
+    invalid = client.post(
+        f"/api/games/{game_id}/resign",
+        json={"player_token": "not-a-player-token"},
+    )
+    assert invalid.status_code == 403
+    assert client.get(f"/api/games/{game_id}").json()["state"]["is_over"] is False
+
+    resigned = client.post(
+        f"/api/games/{game_id}/resign",
+        json={"player_token": created["player_token"]},
+    )
+    assert resigned.status_code == 200
+    assert resigned.json()["state"]["winner"] == "black"
+    assert resigned.json()["state"]["termination"] == "resignation"
+
+
+def test_online_draw_actions_require_tokens_and_opponent_response():
+    created = client.post("/api/games", json={"mode": "online_pvp"}).json()
+    joined = client.post(f"/api/games/join/{created['invite_code']}").json()
+    game_id = created["game_id"]
+
+    missing = client.post(f"/api/games/{game_id}/draw", json={"action": "offer"})
+    assert missing.status_code == 403
+
+    spoofed = client.post(
+        f"/api/games/{game_id}/draw",
+        json={"action": "offer", "actor": "white", "player_token": joined["player_token"]},
+    )
+    assert spoofed.status_code == 403
+
+    move = client.post(
+        f"/api/games/{game_id}/moves",
+        json={"uci": "e2e4", "player_token": created["player_token"]},
+    )
+    assert move.status_code == 200
+
+    offered = client.post(
+        f"/api/games/{game_id}/draw",
+        json={"action": "offer", "player_token": created["player_token"]},
+    )
+    assert offered.status_code == 200
+    self_accept = client.post(
+        f"/api/games/{game_id}/draw",
+        json={"action": "accept", "player_token": created["player_token"]},
+    )
+    assert self_accept.status_code == 409
+    accepted = client.post(
+        f"/api/games/{game_id}/draw",
+        json={"action": "accept", "player_token": joined["player_token"]},
+    )
+    assert accepted.status_code == 200
+    assert accepted.json()["state"]["termination"] == "draw_agreement"
+
+def test_academy_wrong_move_returns_mistake_feedback_and_continue_advances_reviewed_line():
+    created = client.post("/api/sessions", json={"mode": "guided"}).json()
+    session_id = created["session_id"]
+
+    wrong = client.post(
+        f"/api/sessions/{session_id}/moves",
+        json={"uci": "d2d4"},
+    )
+    assert wrong.status_code == 200
+    assert wrong.json()["move"]["applied"] is False
+    feedback = wrong.json()["state"]["coach"]["mistake_feedback"]
+    assert feedback is not None
+    assert feedback["title"] in {"Can I show you something?", "Let's review that move"}
+    assert feedback["voice_script"]
+    assert wrong.json()["state"]["board"]["fen"] == created["state"]["board"]["fen"]
+
+    continued = client.post(f"/api/sessions/{session_id}/continue")
+    assert continued.status_code == 200
+    assert continued.json()["move"]["applied"] is True
+    assert continued.json()["move"]["actual_san"] == "e4"
+    assert continued.json()["continued_after_feedback"] is True
+    assert continued.json()["state"]["coach"]["mistake_feedback"] is None
+    assert continued.json()["state"]["board"]["turn"] == "black"
+
+
+def test_mastery_mode_cannot_continue_by_revealing_the_expected_move():
+    created = client.post("/api/sessions", json={"mode": "mastery"}).json()
+    session_id = created["session_id"]
+    wrong = client.post(
+        f"/api/sessions/{session_id}/moves",
+        json={"uci": "d2d4"},
+    )
+    assert wrong.status_code == 200
+    assert wrong.json()["state"]["coach"]["expected_move"] is None
+    assert "e2e4" not in str(wrong.json()["state"]["coach"])
+
+    continued = client.post(f"/api/sessions/{session_id}/continue")
+    assert continued.status_code == 403
+
+
+
+def test_capacitor_webview_preflight_allows_local_app_origin():
+    origin = "https://localhost"
+    response = client.options(
+        "/api/sessions",
+        headers={
+            "Origin": origin,
+            "Access-Control-Request-Method": "POST",
+            "Access-Control-Request-Headers": "authorization,content-type",
+        },
+    )
+    assert response.status_code == 200
+    assert response.headers["access-control-allow-origin"] == origin
+    assert response.headers["access-control-allow-credentials"] == "true"
+    assert "POST" in response.headers["access-control-allow-methods"]
+
+
+def test_cors_does_not_reflect_an_untrusted_origin():
+    response = client.get("/api/health", headers={"Origin": "https://example.com"})
+    assert response.status_code == 200
+    assert "access-control-allow-origin" not in response.headers

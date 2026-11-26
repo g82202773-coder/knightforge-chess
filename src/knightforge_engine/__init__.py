@@ -10,6 +10,7 @@ from .curriculum import CurriculumCatalog, LessonEntry
 from .game_analyzer import ChessCoachAssistant, MoveReview, analyze_pgn_game
 from .game_manager import CLOCK_PRESETS, ChessClock, FullChessMatch
 from .guided_learning import (
+    CoachMistakeFeedback,
     CoachPrompt,
     GuidedLesson,
     GuidedLessonSession,
@@ -49,11 +50,11 @@ from .variation_matching import (
 )
 
 __all__ = [
+    "CLOCK_PRESETS",
     "AIDifficulty",
     "AIMoveDecision",
     "AdaptiveOpeningCoach",
     "AnalysisResult",
-    "CLOCK_PRESETS",
     "CandidateEval",
     "ChessAIOpponent",
     "ChessClock",
@@ -61,6 +62,7 @@ __all__ = [
     "ChessGame",
     "CoachDecisionLayer",
     "CoachHint",
+    "CoachMistakeFeedback",
     "CoachPrompt",
     "CurriculumCatalog",
     "EngineLine",
@@ -114,10 +116,10 @@ __all__ = [
     "analyze_pgn_game",
     "analyze_position",
     "build_opening_lesson",
-    "list_opening_variations",
     "coach_state_payload",
     "compute_elo_delta",
     "import_openings",
+    "list_opening_variations",
     "parse_opening_import",
     "submission_payload",
 ]

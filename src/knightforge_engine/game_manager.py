@@ -18,8 +18,6 @@ import chess.pgn
 from .ai_opponent import AIDifficulty, ChessAIOpponent
 from .opening_recognition import OpeningRecognizer
 from .opening_repository import OpeningRepository
-from .positional_analysis import analyze_position
-from .tactics import TacticalScanner
 from .variation_matching import PositionBasedVariationMatcher
 
 MatchMode = Literal["human_vs_ai", "local_pvp", "online_pvp"]
@@ -441,6 +439,8 @@ class FullChessMatch:
             raise RuntimeError("Game is already finished.")
         side = actor or self.turn
         if action == "claim":
+            if side != self.turn:
+                raise ValueError("Only the side to move may claim a draw.")
             if self.board.can_claim_threefold_repetition():
                 self.termination_reason = "threefold_repetition"
                 self.winner = None
@@ -453,6 +453,8 @@ class FullChessMatch:
                 return "Draw claimed under the fifty-move rule."
             raise ValueError("Position is not eligible for a threefold or 50-move draw claim.")
         if action == "offer":
+            if self.draw_offer_by is not None:
+                raise ValueError("A draw offer is already pending.")
             if self.mode == "human_vs_ai":
                 # AI accepts draw if materially equal or worse in endgame / repetition
                 cp = self.last_eval_cp_white or 0
@@ -468,11 +470,17 @@ class FullChessMatch:
         if action == "accept":
             if self.draw_offer_by is None:
                 raise ValueError("There is no active draw offer to accept.")
+            if self.draw_offer_by == side:
+                raise ValueError("A player cannot accept their own draw offer.")
             self.termination_reason = "draw_agreement"
             self.winner = None
             self.draw_offer_by = None
             self.clock.stop()
             return "Draw agreed."
+        if self.draw_offer_by is None:
+            raise ValueError("There is no active draw offer to decline.")
+        if self.draw_offer_by == side:
+            raise ValueError("Only the opponent may decline a draw offer.")
         self.draw_offer_by = None
         return "Draw offer declined."
 

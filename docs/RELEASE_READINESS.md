@@ -1,0 +1,53 @@
+# Release Readiness: KnightForge Chess
+
+**Snapshot:** 26 November 2026  
+**Status:** Development / pre-release. This repository is not yet approved for public production launch.
+
+## Verified repository inventory
+
+| Area | Current repository evidence | Release status |
+|---|---|---|
+| Legal chess and gameplay | `python-chess` rules engine; local PvP, human-vs-AI, PGN import/export, clocks and online invite/matchmaking endpoints | Implemented in code; full production hardening remains |
+| AI opponent | Seven configured difficulty profiles; optional Stockfish UCI with built-in fallback | Implemented; strength calibration and load tests remain |
+| Opening library | Taxonomy: 50 systems and 299 named variation labels; repository: 31 reviewed branching trees and 352 legal move nodes | Exact-ID coverage: 29/50 taxonomy systems; 21 taxonomy systems have no matching tree ID. Only 77/299 taxonomy variation labels currently match labelled nodes in those trees; 222 labels are not yet represented as validated branches. Two stored tree IDs (Englund Gambit and Stafford Gambit) are not linked to a taxonomy system ID. |
+| Gambit coverage | Six dedicated gambit trees: King's Gambit, Queen's Gambit, Blackmar–Diemer Gambit, Budapest Gambit, Englund Gambit and Stafford Gambit; 36 gambit-named variation labels in the taxonomy | This is below the earlier target of 25–30 full gambit trees; taxonomy labels must not be counted as complete playable trees. |
+| Academy | 28 lesson definitions and guided/practice/mastery session APIs | Implemented; lesson coverage/content review remains |
+| Tactics | 15 curated puzzles plus 1,064 bulk records (1,079 total) | Loader now validates positions and every solution move; bulk source/licence metadata is not recorded |
+| Accounts/progress | SQLite-backed users, ratings, lesson/puzzle progress, notes and saved PGN history | Implemented; production identity, recovery and database operations remain |
+| Multiplayer | Invite codes, seat tokens, draw actions, matchmaking and WebSocket updates | Prototype endpoints; active games and queue state remain process-local |
+| Browser client | Responsive web client with redesigned board-first mobile Academy, immediate 64-square offline preview, visible retry state, and professional course/board hierarchy | 4 mobile-browser E2E tests passed, including offline API fallback; physical Android viewport QA remains |
+| Voice-enabled Academy coach | In-lesson tactical mistake coach with danger arrows, speech bubble, selectable device TTS voice, adjustable pace and Listen/Stop controls | Integrated CI on 26 November 2026: Ruff passed, 161 Python tests passed (1 skipped), and 4 browser E2E tests passed; Android WebView voice/device QA still required |
+| Android | Capacitor wrapper; Academy/CORS/offline-board debug APK built and uploaded by GitHub Actions run #45821782139 on 26 November 2026 | Build and bundled assets verified; not a signed release; uses the test Render API and requires backend redeploy plus physical-device QA |
+| Hosting | Render Docker template with one worker | Example configuration only; durable storage and production service configuration required |
+
+## Release blockers
+
+1. **Durable game/session state.** Active matches, lesson sessions, puzzle sessions, invite-code indexes and matchmaking queues are Python process-memory dictionaries with TTL expiry. A restart loses them; multiple application instances will not share them. Move shared state to a transactional persistent store and use a shared pub/sub channel for multiplayer.
+2. **Production persistence.** The Render template points SQLite at the container filesystem and does not provision a persistent disk. Configure a supported managed database or a persistent disk, backups, migrations, restore drills and operational monitoring.
+3. **Account recovery.** Password recovery deliberately fails closed with HTTP 503 until verified out-of-band delivery is configured. Do not re-enable token-in-response recovery.
+4. **Puzzle provenance.** The 1,064 bulk puzzle records have no per-record source/licence fields. The application now labels missing values as “Source not recorded” and “License not recorded.” Verify provenance and licensing before redistribution.
+5. **Opening content quality.** The repository includes 31 trees, but 352 nodes do not constitute exhaustive repertoires. Expand practical branches, verify opening names/attributions, editorially review plans and explanations, and retain move legality tests.
+6. **Online multiplayer authorization.** Continue security review around every game mutation, WebSocket admission, invite-code entropy/rate limiting, reconnect/resume, clock authority, draw/resignation semantics, matchmaking abuse and per-user game ownership.
+7. **Release build and QA.** Run all CI jobs successfully on the final commit; run Android debug and signed release build; test on real Android devices and mobile browsers; test long-running games, network loss/reconnect, persistence restart and multi-instance behavior.
+8. **Deployment and secrets.** Replace test backend URLs, configure production domain/TLS, secrets, CORS/rate limits, logging/alerts, database backups and privacy/legal pages before launch.
+
+9. **Academy API CORS deployment.** The code now permits the Capacitor `https://localhost`/`capacitor://localhost` origins and has preflight tests, but the running test Render service must be redeployed from the CORS-enabled source before Android lesson requests can succeed. The board preview and Retry UI remain visible when the service is unavailable.
+
+## Immediate engineering sequence
+
+- PR #6 is the consolidated, CI-green release-candidate PR for hardening and the Academy voice coach. PR #2 remains a separate, older full-game/opening-training branch and must be rebased/audited before any integration; PRs #3–#5 were closed as superseded.
+- Preserve the passing Ruff, Python and browser E2E checks on the final release commit; re-run them after every code/content change.
+- Complete server-side multiplayer authorization and regression tests.
+- Verify the entire bulk puzzle dataset and correct provenance metadata.
+- Implement durable match/session persistence and shared multiplayer coordination.
+- Configure verified email recovery and production database/storage.
+- Build and test Android artifacts; then complete security and deployment sign-off.
+
+## Definition of done
+
+KnightForge is release-ready only when the complete automated test suite passes on the exact release commit; active games and progress survive restarts; multiplayer has authenticated, authorized and reconnect-safe state transitions; all redistributed learning content has reviewed licensing; account recovery is secure and deliverable; Android release artefacts are signed and device-tested; and production deployment, backups, monitoring and rollback have been exercised.
+
+
+### Academy coach runtime note
+
+The Academy voice coach uses the browser/device Web Speech API. The selected voice is available only when installed by the host browser or Android text-to-speech engine; availability and pronunciation must be checked on the target Android WebView and device language settings. When speech is unavailable, the written coach prompt, lesson board, hints and move arrows remain usable.

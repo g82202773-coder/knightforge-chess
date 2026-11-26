@@ -43,11 +43,16 @@ def test_level_zero_piece_basics_are_legally_validated():
     assert len(catalog.all()) >= 28
 
 
-def test_bulk_puzzle_catalog_loads_over_1000_verified_puzzles():
+def test_bulk_puzzle_catalog_loads_and_validates_every_record():
     catalog = PuzzleCatalog(include_bulk=True)
     all_puzzles = catalog.all()
-    assert len(all_puzzles) >= 1050
-    # Sample-test puzzles across different themes
+    assert len(all_puzzles) == 1079
+    assert len({puzzle.puzzle_id for puzzle in all_puzzles}) == 1079
+    bulk_puzzle = next(puzzle for puzzle in all_puzzles if puzzle.puzzle_id.startswith("kf-"))
+    assert bulk_puzzle.source_name == "Source not recorded"
+    assert bulk_puzzle.license_name == "License not recorded"
+    # The catalog constructor validates every FEN and every legal solution ply.
+    # Sample-test puzzle play across the dataset as an additional session-level check.
     for puz in (all_puzzles[0], all_puzzles[20], all_puzzles[500], all_puzzles[-1]):
         session = PuzzleSession(puz)
         for idx in range(0, len(puz.solution_uci), 2):

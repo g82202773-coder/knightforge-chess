@@ -1,4 +1,4 @@
-const CACHE = "knightforge-v4-static";
+const CACHE = "knightforge-v4-2-academy-coach-voice";
 const ASSETS = ["/", "/assets/styles.css", "/assets/pieces.js", "/assets/audio.js", "/assets/app.js", "/icon.svg"];
 
 self.addEventListener("install", (ev) => {
@@ -7,7 +7,14 @@ self.addEventListener("install", (ev) => {
 });
 
 self.addEventListener("activate", (ev) => {
-  ev.waitUntil(self.clients.claim());
+  ev.waitUntil(
+    caches.keys().then((keys) =>
+      Promise.all(
+        keys.filter((key) => key.startsWith("knightforge-") && key !== CACHE)
+          .map((key) => caches.delete(key))
+      )
+    ).then(() => self.clients.claim())
+  );
 });
 
 self.addEventListener("fetch", (ev) => {

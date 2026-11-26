@@ -1,7 +1,6 @@
 """Tests for post-game PGN analysis and grounded AI Chess Coach."""
 from pathlib import Path
 
-import chess
 import pytest
 
 from knightforge_engine.game_analyzer import ChessCoachAssistant, analyze_pgn_game

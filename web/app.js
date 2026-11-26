@@ -1,3 +1,4 @@
+const API_BASE_URL = (window.Capacitor && typeof window.Capacitor.isNativePlatform === "function" && window.Capacitor.isNativePlatform()) ? "https://knightforge-chess-test.onrender.com" : window.location.origin;
 const FILES = "abcdefgh";
 const $ = (id) => document.getElementById(id);
 const SVG_PIECES = window.KF_PIECES_SVG || {};
@@ -13,7 +14,7 @@ let authUsername = localStorage.getItem("kf_user") || "guest";
 async function api(path, options = {}) {
   const headers = { "Content-Type": "application/json", ...(options.headers || {}) };
   if (authToken) headers.Authorization = "Bearer " + authToken;
-  const res = await fetch(path, { ...options, headers });
+  const res = await fetch(new URL(path, API_BASE_URL), { ...options, headers });
   const body = await res.json().catch(() => ({}));
   if (!res.ok) throw new Error(body.detail || "Request failed");
   return body;
@@ -87,6 +88,7 @@ function renderCoords(ids, flipped) {
 // UNIFIED POINTER-EVENT DRAG-AND-DROP (ANDROID TOUCH + DESKTOP MOUSE) + TAP
 // =========================================================================
 let activeDrag = null;
+let suppressNextPieceClick = false;
 
 function squareFromPoint(boardEl, clientX, clientY, flipped) {
   const rect = boardEl.getBoundingClientRect();
@@ -140,19 +142,19 @@ function finishPointerDrag(ev) {
   if (drag.dragging) {
     const destSq = squareFromPoint(drag.boardEl, ev.clientX, ev.clientY, drag.flipped);
     if (destSq && destSq !== drag.fromSq && drag.onDropMove) {
+      suppressNextPieceClick = true;
       drag.onDropMove(drag.fromSq, destSq);
       return;
     }
   }
-  // Short tap (not a drag) -> normal click-to-select / click-to-move
-  if (drag.onSquareClick) drag.onSquareClick(drag.fromSq, drag.piece);
+  // Short taps are handled by the button click fallback below.
 }
 window.addEventListener("pointerup", finishPointerDrag);
 window.addEventListener("pointercancel", finishPointerDrag);
 
 function renderBoard({
   boardId, coordIds, fen, flipped, selected, targets, lastMove,
-  checkedSquare, arrowData, interactive = true, onSquareClick, onDropMove,
+  checkedSquare, arrowData, highlightedSquares = [], interactive = true, onSquareClick, onDropMove,
 }) {
   renderCoords(coordIds, flipped);
   const root = $(boardId);
@@ -172,6 +174,11 @@ function renderBoard({
       if (sq === selected) b.classList.add("selected");
       if (sq === checkedSquare) b.classList.add("in-check");
       if (lastMove && lastMove.includes(sq)) b.classList.add("last-move");
+      if (highlightedSquares.includes(sq)) b.classList.add("coach-threat");
+      if (arrowData && arrowData.highlightEndpoints) {
+        if (sq === arrowData.from) b.classList.add("coach-arrow-source");
+        if (sq === arrowData.to) b.classList.add("coach-arrow-target");
+      }
       if (targets.some((t) => t.to === sq)) {
         b.classList.add(piece ? "capture" : "legal");
       }
@@ -185,6 +192,7 @@ function renderBoard({
       b.setAttribute("aria-label", sq + (piece ? " " + piece : " empty"));
       if (interactive) {
         b.addEventListener("pointerdown", (ev) => {
+          suppressNextPieceClick = false;
           if (ev.button !== 0 && ev.pointerType === "mouse") return;
           if (piece && onDropMove) {
             activeDrag = {
@@ -200,10 +208,17 @@ function renderBoard({
               onSquareClick,
               onDropMove,
             };
-          } else if (onSquareClick) {
-            onSquareClick(sq, piece);
           }
         });
+        if (onSquareClick) {
+          b.addEventListener("click", () => {
+            if (suppressNextPieceClick) {
+              suppressNextPieceClick = false;
+              return;
+            }
+            onSquareClick(sq, piece);
+          });
+        }
       }
       root.append(b);
     }
@@ -220,17 +235,34 @@ function renderBoard({
     };
     const p = pos(arrowData.from);
     const q = pos(arrowData.to);
+    const markerId = "arrowhead-" + boardId;
+    const arrowColor = arrowData.tone === "danger" ? "#ef806b" : "#d7f18a";
     const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
     svg.setAttribute("viewBox", "0 0 100 100");
-    svg.setAttribute("class", "board-arrow");
-    svg.innerHTML =
-      '<defs><marker id="arrowhead" markerWidth="5" markerHeight="5" refX="3.8" refY="2.5" orient="auto">' +
-      '<path d="M0 0 L5 2.5 L0 5Z" fill="#d7f18a"/></marker></defs>';
+    svg.setAttribute("class", "board-arrow" + (arrowData.tone === "danger" ? " danger" : ""));
+    svg.setAttribute("aria-hidden", "true");
+
+    const defs = document.createElementNS("http://www.w3.org/2000/svg", "defs");
+    const marker = document.createElementNS("http://www.w3.org/2000/svg", "marker");
+    marker.setAttribute("id", markerId);
+    marker.setAttribute("markerWidth", "5");
+    marker.setAttribute("markerHeight", "5");
+    marker.setAttribute("refX", "3.8");
+    marker.setAttribute("refY", "2.5");
+    marker.setAttribute("orient", "auto");
+    const head = document.createElementNS("http://www.w3.org/2000/svg", "path");
+    head.setAttribute("d", "M0 0 L5 2.5 L0 5Z");
+    head.setAttribute("fill", arrowColor);
+    marker.append(head);
+    defs.append(marker);
+    svg.append(defs);
+
     const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
     line.setAttribute("x1", p.x);
     line.setAttribute("y1", p.y);
     line.setAttribute("x2", q.x);
     line.setAttribute("y2", q.y);
+    line.setAttribute("marker-end", "url(#" + markerId + ")");
     svg.append(line);
     root.append(svg);
   }
@@ -253,12 +285,136 @@ document.querySelectorAll(".promo-btn").forEach((btn) => {
   });
 });
 
-function speak(t) {
-  if (!window.speechSynthesis || !t) return;
-  window.speechSynthesis.cancel();
-  const u = new SpeechSynthesisUtterance(t);
-  u.rate = 0.94;
-  window.speechSynthesis.speak(u);
+let academyCoachVoices = [];
+let academyLastNarration = "";
+
+function speechOutputSupported() {
+  return typeof window.speechSynthesis !== "undefined" &&
+    typeof window.SpeechSynthesisUtterance !== "undefined";
+}
+
+function setCoachSpeechStatus(message, speaking = false) {
+  const status = $("coach-voice-status");
+  const bubbleStatus = $("coach-speaking-status");
+  if (status) status.textContent = message;
+  if (bubbleStatus) {
+    bubbleStatus.textContent = speaking ? "SPEAKING" : "READY";
+    bubbleStatus.classList.toggle("speaking", speaking);
+  }
+}
+
+function refreshCoachVoiceOptions() {
+  const select = $("coach-voice-select");
+  if (!select) return;
+  if (!speechOutputSupported()) {
+    select.disabled = true;
+    setCoachSpeechStatus("Speech synthesis is not available in this browser. Written coaching remains available.");
+    return;
+  }
+
+  const storedVoice = localStorage.getItem("kf_coach_voice") || "";
+  academyCoachVoices = window.speechSynthesis.getVoices
+    ? window.speechSynthesis.getVoices()
+    : [];
+  select.replaceChildren();
+
+  const defaultOption = document.createElement("option");
+  defaultOption.value = "";
+  defaultOption.textContent = "Device default";
+  select.append(defaultOption);
+
+  const sortedVoices = [...academyCoachVoices].sort((a, b) => {
+    const aEnglish = /^en/i.test(a.lang || "") ? 0 : 1;
+    const bEnglish = /^en/i.test(b.lang || "") ? 0 : 1;
+    return aEnglish - bEnglish || a.name.localeCompare(b.name);
+  });
+  for (const voice of sortedVoices) {
+    const option = document.createElement("option");
+    option.value = voice.voiceURI;
+    option.textContent = voice.name + " (" + voice.lang + ")";
+    select.append(option);
+  }
+
+  const preferred = academyCoachVoices.find((voice) => voice.voiceURI === storedVoice)
+    || academyCoachVoices.find((voice) => /^en-in$/i.test(voice.lang || ""))
+    || academyCoachVoices.find((voice) => /^en/i.test(voice.lang || ""));
+  select.value = preferred ? preferred.voiceURI : "";
+  if (preferred) {
+    setCoachSpeechStatus("Voice ready: " + preferred.name);
+  } else if (academyCoachVoices.length) {
+    setCoachSpeechStatus("Choose an installed voice, or use the device default.");
+  } else {
+    setCoachSpeechStatus("Waiting for voices supplied by your browser or Android device.");
+  }
+}
+
+function selectedCoachVoice() {
+  const select = $("coach-voice-select");
+  if (!select || !select.value) return null;
+  return academyCoachVoices.find((voice) => voice.voiceURI === select.value) || null;
+}
+
+function academyNarrationForState(state) {
+  if (!state || !state.coach) return "";
+  const mistake = state.coach.mistake_feedback;
+  if (mistake && !acMistakeDismissed) {
+    return String(mistake.voice_script || mistake.text || "").trim();
+  }
+  const coach = state.coach;
+  const script = typeof coach.voice_script === "string" ? coach.voice_script.trim() : "";
+  if (script) return script;
+  return [coach.text, coach.explanation]
+    .filter((part) => typeof part === "string" && part.trim())
+    .map((part) => part.trim())
+    .join(" ");
+}
+
+function speak(text) {
+  const narration = String(text || "").trim();
+  if (!narration) {
+    setCoachSpeechStatus("There is no coach instruction to read yet.");
+    return false;
+  }
+  if (!speechOutputSupported()) {
+    setCoachSpeechStatus("Speech synthesis is unavailable here. Read the written coaching instead.");
+    return false;
+  }
+
+  const synth = window.speechSynthesis;
+  synth.cancel();
+  const utterance = new window.SpeechSynthesisUtterance(narration);
+  const voice = selectedCoachVoice();
+  const rate = Number($("coach-rate-select").value || 0.96);
+  utterance.lang = voice ? voice.lang : "en-IN";
+  if (voice) utterance.voice = voice;
+  utterance.rate = Number.isFinite(rate) ? rate : 0.96;
+  utterance.pitch = 0.98;
+  utterance.volume = 1;
+  utterance.onstart = () => setCoachSpeechStatus("KnightForge is explaining the position.", true);
+  utterance.onend = () => setCoachSpeechStatus("Explanation finished. Continue when ready.");
+  utterance.onerror = (event) => {
+    if (!event || event.error !== "canceled") {
+      setCoachSpeechStatus("The device could not start speech. Try another voice or use Listen again.");
+    }
+  };
+  synth.speak(utterance);
+  return true;
+}
+
+function stopCoachSpeech() {
+  if (speechOutputSupported()) window.speechSynthesis.cancel();
+  setCoachSpeechStatus("Narration stopped.");
+}
+
+if (speechOutputSupported()) {
+  refreshCoachVoiceOptions();
+  if (typeof window.speechSynthesis.addEventListener === "function") {
+    window.speechSynthesis.addEventListener("voiceschanged", refreshCoachVoiceOptions);
+  } else {
+    window.speechSynthesis.onvoiceschanged = refreshCoachVoiceOptions;
+  }
+} else {
+  setCoachSpeechStatus("Speech synthesis is not available in this browser. Written coaching remains active.");
 }
 
 // =========================================================================
@@ -313,9 +469,10 @@ let playClockTimer = null;
 
 function connectPlayWs(gameId) {
   if (playWs) { playWs.close(); playWs = null; }
-  const proto = location.protocol === "https:" ? "wss:" : "ws:";
+  const wsUrl = new URL(`/ws/games/${gameId}`, API_BASE_URL);
+  wsUrl.protocol = wsUrl.protocol === "https:" ? "wss:" : "ws:";
   try {
-    playWs = new WebSocket(`${proto}//${location.host}/ws/games/${gameId}`);
+    playWs = new WebSocket(wsUrl.toString());
     playWs.onmessage = (ev) => {
       const msg = JSON.parse(ev.data);
       if (msg.state) {
@@ -633,7 +790,10 @@ $("play-pause-btn").addEventListener("click", async () => {
   } catch (e) { showFeedback("play-status", e.message, false); }
 });
 $("play-resign-btn").addEventListener("click", async () => {
-  const r = await api(`/api/games/${playGameId}/resign`, { method: "POST" });
+  const r = await api(`/api/games/${playGameId}/resign`, {
+    method: "POST",
+    body: JSON.stringify({ player_token: playToken }),
+  });
   playState = r.state; playViewPly = null; renderPlay();
 });
 $("play-draw-btn").addEventListener("click", async () => {
@@ -642,7 +802,7 @@ $("play-draw-btn").addEventListener("click", async () => {
   try {
     const r = await api(`/api/games/${playGameId}/draw`, {
       method: "POST",
-      body: JSON.stringify({ action }),
+      body: JSON.stringify({ action, player_token: playToken }),
     });
     playState = r.state;
     showFeedback("play-status", r.message, true);
@@ -705,17 +865,85 @@ let acHistory = [];
 let acHintLevel = 1;
 let acMode = "guided";
 let acFlipped = false;
+let acMistakeDismissed = false;
 
 function academyArrow() {
-  if (!academyState || acMode === "mastery") return null;
+  if (!academyState) return null;
+  const mistake = academyState.coach.mistake_feedback;
+  if (!acMistakeDismissed && mistake && mistake.threat_arrow_from && mistake.threat_arrow_to) {
+    return {
+      from: mistake.threat_arrow_from,
+      to: mistake.threat_arrow_to,
+      tone: "danger",
+    };
+  }
+  if (acMode === "mastery") return null;
   const h = academyState.coach.active_hint;
-  if (h && h.arrow_from && h.arrow_to) return { from: h.arrow_from, to: h.arrow_to };
+  if (h && h.arrow_from && h.arrow_to) {
+    return {
+      from: h.arrow_from,
+      to: h.arrow_to,
+      highlightEndpoints: true,
+    };
+  }
   const a = academyState.coach.expected_move && academyState.coach.expected_move.arrow;
-  return acMode === "guided" && a && a.from && a.to ? a : null;
+  return acMode === "guided" && a && a.from && a.to
+    ? { ...a, highlightEndpoints: true }
+    : null;
+}
+
+const ACADEMY_START_FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+
+function renderAcademyPreview() {
+  renderBoard({
+    boardId: "board",
+    coordIds: ["files-top", "files-bottom", "ranks-left", "ranks-right"],
+    fen: academyState?.board?.fen || ACADEMY_START_FEN,
+    flipped: acFlipped,
+    selected: academyState ? acSelected : null,
+    targets: academyState ? acTargets : [],
+    lastMove: academyState ? acLastMove : null,
+    checkedSquare: null,
+    arrowData: academyState ? academyArrow() : null,
+    highlightedSquares: [],
+    interactive: Boolean(academyState),
+    onSquareClick: academyState ? clickAcademySquare : undefined,
+    onDropMove: academyState ? dropAcademyMove : undefined,
+  });
+}
+
+function setAcademyControlsEnabled(enabled) {
+  ["undo-btn", "restart-btn", "continue-free-btn", "hint-btn",
+    "coach-voice-select", "coach-rate-select", "speak-btn"].forEach((id) => {
+    const control = $(id);
+    if (control) control.disabled = !enabled;
+  });
+  $("academy-board-status").textContent = enabled ? "LIVE LESSON" : "BOARD PREVIEW";
+}
+
+function showAcademyConnectionError(error) {
+  academySessionId = null;
+  academyState = null;
+  setAcademyControlsEnabled(false);
+  renderAcademyPreview();
+  const raw = error && error.message ? error.message : String(error || "Unknown connection error");
+  const networkFailure = /failed to fetch|network|cors|load failed|timeout/i.test(raw);
+  $("academy-connection-message").textContent = networkFailure
+    ? "KnightForge could not reach its training API. Check your internet connection and retry. If this persists, the backend must be redeployed with Capacitor CORS enabled."
+    : raw;
+  $("academy-connection-alert").classList.remove("hidden");
+  $("coach-text").textContent = "I have prepared the board. Let's reconnect to your lesson.";
+  $("coach-explanation").textContent = "Your lesson, hints and move controls will activate once the training server responds.";
+  $("coach-speaking-status").textContent = "OFFLINE";
+  $("academy-board-status").textContent = "PREVIEW · OFFLINE";
+  $("connection-label").textContent = "SERVER OFFLINE";
 }
 
 function renderAcademy() {
-  if (!academyState) return;
+  if (!academyState) {
+    renderAcademyPreview();
+    return;
+  }
   renderBoard({
     boardId: "board",
     coordIds: ["files-top", "files-bottom", "ranks-left", "ranks-right"],
@@ -726,6 +954,11 @@ function renderAcademy() {
     lastMove: acLastMove,
     checkedSquare: null,
     arrowData: academyArrow(),
+    highlightedSquares: (
+      !acMistakeDismissed && academyState.coach.mistake_feedback?.threatened_square
+        ? [academyState.coach.mistake_feedback.threatened_square]
+        : []
+    ),
     onSquareClick: clickAcademySquare,
     onDropMove: dropAcademyMove,
   });
@@ -784,13 +1017,22 @@ async function clickAcademySquare(sq, piece) {
 function applyAcademyState(s) {
   academyState = s;
   acMode = s.mode || acMode;
+  $("academy-connection-alert").classList.add("hidden");
+  $("academy-session-tag").textContent = (acMode || "guided").toUpperCase() + " TRAINING";
+  setAcademyControlsEnabled(true);
+  acMistakeDismissed = false;
   acHintLevel = s.coach.active_hint ? s.coach.active_hint.level : 0;
   renderAcademy();
   $("lesson-title").textContent = s.lesson_title || "KnightForge Lesson";
   $("turn-label").textContent = s.board.turn.toUpperCase() + " TO MOVE";
   $("opening-badge").textContent = "Opening: " + (s.opening && s.opening.name ? s.opening.name : "—");
-  $("coach-text").textContent = s.coach.text || "Lesson line complete.";
-  $("coach-explanation").textContent = s.coach.explanation || "";
+  const visibleMistake = s.coach.mistake_feedback;
+  $("coach-text").textContent = visibleMistake && !acMistakeDismissed
+    ? (visibleMistake.title || "Can I show you something?") + " " + (visibleMistake.text || "")
+    : (s.coach.text || "Lesson line complete.");
+  $("coach-explanation").textContent = visibleMistake && !acMistakeDismissed
+    ? (visibleMistake.detail || "")
+    : (s.coach.explanation || "");
   $("hint-level").textContent = s.coach.active_hint
     ? `LEVEL ${acHintLevel} / 4`
     : acMode === "mastery" ? "HINTS HIDDEN" : "HINT NOT REVEALED";
@@ -799,49 +1041,94 @@ function applyAcademyState(s) {
   $("move-count").textContent = `${acHistory.length} half-moves`;
   $("moves").className = acHistory.length ? "move-list" : "moves-empty";
   $("moves").textContent = formatMoves(acHistory);
-  if ($("voice-toggle").checked) speak(s.coach.voice_script || s.coach.text);
+  const mistake = s.coach.mistake_feedback;
+  const mistakeCard = $("mistake-coach");
+  if (mistake && !acMistakeDismissed) {
+    $("mistake-coach-title").textContent = mistake.title || "Let's review that move";
+    $("mistake-coach-text").textContent = mistake.text || "Let's look at the position again.";
+    $("mistake-coach-detail").textContent = mistake.detail || "";
+    $("mistake-continue-btn").classList.toggle("hidden", acMode === "mastery");
+    mistakeCard.classList.remove("hidden");
+  } else {
+    mistakeCard.classList.add("hidden");
+  }
+  const narration = academyNarrationForState(s);
+  const narrationChanged = narration.length > 0 && narration !== academyLastNarration;
+  academyLastNarration = narration;
+  if ($("voice-toggle").checked && narrationChanged) speak(narration);
 }
 
 async function loadLessonsAndStart() {
-  const cat = $("academy-category").value;
-  const data = await api("/api/lessons" + (cat ? `?category=${cat}` : ""));
-  const sel = $("lesson-select");
-  sel.innerHTML = "";
-  data.lessons.forEach((l) => {
-    const opt = document.createElement("option");
-    opt.value = l.lesson_id;
-    opt.textContent = `${l.completed ? "✓ " : ""}L${l.level} [${l.category}] ${l.title}`;
-    sel.append(opt);
-  });
-  await createAcademySession();
+  academyState = null;
+  academySessionId = null;
+  acHistory = [];
+  acSelected = null;
+  acTargets = [];
+  $("academy-connection-alert").classList.add("hidden");
+  $("coach-text").textContent = "Connecting to your training session…";
+  $("coach-explanation").textContent = "Loading the lesson, legal moves and coaching guidance.";
+  $("coach-speaking-status").textContent = "CONNECTING";
+  setAcademyControlsEnabled(false);
+  renderAcademyPreview();
+  try {
+    const cat = $("academy-category").value;
+    const data = await api("/api/lessons" + (cat ? `?category=${cat}` : ""));
+    if (!Array.isArray(data.lessons) || !data.lessons.length) {
+      throw new Error("No lessons were returned for this course. Choose another course or retry.");
+    }
+    const sel = $("lesson-select");
+    sel.innerHTML = "";
+    data.lessons.forEach((l) => {
+      const opt = document.createElement("option");
+      opt.value = l.lesson_id;
+      opt.textContent = `${l.completed ? "✓ " : ""}L${l.level} [${l.category}] ${l.title}`;
+      sel.append(opt);
+    });
+    await createAcademySession();
+  } catch (error) {
+    showAcademyConnectionError(error);
+  }
 }
 
 async function createAcademySession() {
   acMode = $("mode-select").value;
   const lessonId = $("lesson-select").value || "open-game-first-five";
-  const r = await api("/api/sessions", {
-    method: "POST",
-    body: JSON.stringify({ mode: acMode, lesson_id: lessonId }),
-  });
-  academySessionId = r.session_id;
-  acHistory = [];
-  acLastMove = null;
-  acSelected = null;
-  acTargets = [];
-  acFlipped = r.state.learner_color === "black";
-  $("feedback").className = "feedback hidden";
-  applyAcademyState(r.state);
+  setAcademyControlsEnabled(false);
+  try {
+    const r = await api("/api/sessions", {
+      method: "POST",
+      body: JSON.stringify({ mode: acMode, lesson_id: lessonId }),
+    });
+    academySessionId = r.session_id;
+    acHistory = [];
+    acLastMove = null;
+    acSelected = null;
+    acTargets = [];
+    acMistakeDismissed = false;
+    academyLastNarration = "";
+    acFlipped = r.state.learner_color === "black";
+    $("feedback").className = "feedback hidden";
+    applyAcademyState(r.state);
+  } catch (error) {
+    showAcademyConnectionError(error);
+  }
 }
 
 $("academy-category").addEventListener("change", loadLessonsAndStart);
 $("lesson-select").addEventListener("change", createAcademySession);
 $("mode-select").addEventListener("change", createAcademySession);
+$("academy-retry-btn").addEventListener("click", loadLessonsAndStart);
 $("hint-btn").addEventListener("click", async () => {
-  const r = await api(`/api/sessions/${academySessionId}/hints`, {
-    method: "POST",
-    body: JSON.stringify({ level: Math.min(4, acHintLevel + 1) }),
-  });
-  applyAcademyState(r.state);
+  if (!academySessionId) return;
+  try {
+    const r = await api(`/api/sessions/${academySessionId}/hints`, {
+      method: "POST",
+      body: JSON.stringify({ level: Math.min(4, acHintLevel + 1) }),
+    });
+    applyAcademyState(r.state);
+  } catch (error) {
+    showAcademyConnectionError(error);
+  }
 });
 $("undo-btn").addEventListener("click", async () => {
   try {
@@ -850,17 +1137,89 @@ $("undo-btn").addEventListener("click", async () => {
   } catch (e) { showFeedback("feedback", e.message, false); }
 });
 $("restart-btn").addEventListener("click", async () => {
-  const r = await api(`/api/sessions/${academySessionId}/restart`, { method: "POST" });
-  acHistory = []; acLastMove = null; $("feedback").className = "feedback hidden"; applyAcademyState(r.state);
+  if (!academySessionId) return;
+  try {
+    const r = await api(`/api/sessions/${academySessionId}/restart`, { method: "POST" });
+    acHistory = []; acLastMove = null; $("feedback").className = "feedback hidden"; applyAcademyState(r.state);
+  } catch (error) {
+    showAcademyConnectionError(error);
+  }
 });
-$("flip-btn").addEventListener("click", () => { acFlipped = !acFlipped; renderAcademy(); });
+$("flip-btn").addEventListener("click", () => {
+  acFlipped = !acFlipped;
+  renderAcademy();
+});
 $("continue-free-btn").addEventListener("click", async () => {
   if (!academyState) return;
   switchTab("play");
   await startPlayGame(academyState.board.fen);
   showFeedback("play-status", "Continuing your lesson position as a full unrestricted game!", true);
 });
-$("speak-btn").addEventListener("click", () => academyState && speak(academyState.coach.voice_script || academyState.coach.text));
+const savedAutoVoice = localStorage.getItem("kf_coach_auto_voice");
+$("voice-toggle").checked = savedAutoVoice === null ? true : savedAutoVoice === "1";
+const savedCoachRate = localStorage.getItem("kf_coach_rate");
+if (savedCoachRate && [...$("coach-rate-select").options].some((option) => option.value === savedCoachRate)) {
+  $("coach-rate-select").value = savedCoachRate;
+}
+$("voice-toggle").addEventListener("change", () => {
+  localStorage.setItem("kf_coach_auto_voice", $("voice-toggle").checked ? "1" : "0");
+  if ($("voice-toggle").checked && academyState) {
+    const narration = academyNarrationForState(academyState);
+    academyLastNarration = narration;
+    speak(narration);
+  } else {
+    stopCoachSpeech();
+  }
+});
+$("coach-voice-select").addEventListener("change", () => {
+  const voice = selectedCoachVoice();
+  localStorage.setItem("kf_coach_voice", voice ? voice.voiceURI : "");
+  if ($("voice-toggle").checked && academyState) speak(academyNarrationForState(academyState));
+});
+$("coach-rate-select").addEventListener("change", () => {
+  localStorage.setItem("kf_coach_rate", $("coach-rate-select").value);
+  if ($("voice-toggle").checked && academyState) speak(academyNarrationForState(academyState));
+});
+$("speak-btn").addEventListener("click", () => academyState && speak(academyNarrationForState(academyState)));
+$("stop-speak-btn").addEventListener("click", stopCoachSpeech);
+$("mistake-hear-btn").addEventListener("click", () => {
+  const mistake = academyState && academyState.coach.mistake_feedback;
+  if (mistake) speak(mistake.voice_script || mistake.text);
+});
+$("mistake-retry-btn").addEventListener("click", () => {
+  acMistakeDismissed = true;
+  acSelected = null;
+  acTargets = [];
+  $("mistake-coach").classList.add("hidden");
+  if (academyState) {
+    $("coach-text").textContent = academyState.coach.text || "Choose your next move.";
+    $("coach-explanation").textContent = academyState.coach.explanation || "";
+    const narration = academyNarrationForState(academyState);
+    if ($("voice-toggle").checked && narration && narration !== academyLastNarration) speak(narration);
+    academyLastNarration = narration;
+  }
+  renderAcademy();
+  showFeedback("feedback", "Your position is unchanged. Try the move again.", true);
+});
+$("mistake-continue-btn").addEventListener("click", async () => {
+  if (!academySessionId) return;
+  const button = $("mistake-continue-btn");
+  button.disabled = true;
+  try {
+    const r = await api(`/api/sessions/${academySessionId}/continue`, { method: "POST" });
+    if (r.move && r.move.actual_san) acHistory.push(r.move.actual_san);
+    if (r.auto_reply_san) acHistory.push(r.auto_reply_san);
+    acLastMove = null;
+    acSelected = null;
+    acTargets = [];
+    applyAcademyState(r.state);
+    showFeedback("feedback", "We continued with the reviewed lesson move. Follow the next coach instruction.", true);
+  } catch (e) {
+    showFeedback("feedback", e.message, false);
+  } finally {
+    button.disabled = false;
+  }
+});
 
 // =========================================================================
 // TAB 3: INTERACTIVE OPENING & GAMBIT TREE EXPLORER

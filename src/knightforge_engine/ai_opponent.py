@@ -8,6 +8,7 @@ fidelity (never random or hardcoded moves).
 """
 from __future__ import annotations
 
+import logging
 import os
 from dataclasses import dataclass
 from pathlib import Path
@@ -15,6 +16,8 @@ from typing import Literal
 
 import chess
 import chess.engine
+
+logger = logging.getLogger(__name__)
 
 AIDifficulty = Literal[
     "beginner",
@@ -167,8 +170,7 @@ def _quiesce(
     stand_pat = sign * evaluate_static_white(board, use_pst=use_pst)
     if stand_pat >= beta:
         return beta
-    if stand_pat > alpha:
-        alpha = stand_pat
+    alpha = max(alpha, stand_pat)
     if qdepth <= 0 or board.is_game_over():
         return alpha
 
@@ -180,8 +182,7 @@ def _quiesce(
         board.pop()
         if score >= beta:
             return beta
-        if score > alpha:
-            alpha = score
+        alpha = max(alpha, score)
     return alpha
 
 
@@ -215,10 +216,8 @@ def _negamax(
             board, depth - 1, -beta, -alpha, use_pst=use_pst, use_quiesce=use_quiesce
         )
         board.pop()
-        if val > best:
-            best = val
-        if best > alpha:
-            alpha = best
+        best = max(best, val)
+        alpha = max(alpha, best)
         if alpha >= beta:
             break
     return best
@@ -312,8 +311,10 @@ class ChessAIOpponent:
                 )
                 if sf_candidates:
                     return sf_candidates, "stockfish"
-            except Exception:
-                pass
+            except (chess.engine.EngineError, OSError, TimeoutError) as exc:
+                logger.warning(
+                    "Stockfish candidate analysis failed; using built-in evaluator: %s", exc
+                )
         return (
             evaluate_position_builtin(board, depth=min(3, max(1, depth)), multipv=multipv),
             "knightforge-builtin",
@@ -347,8 +348,10 @@ class ChessAIOpponent:
                     depth=int(profile["sf_depth"]),
                     time_limit=sf_time,
                 )
-            except Exception:
-                pass
+            except (chess.engine.EngineError, OSError, TimeoutError) as exc:
+                logger.warning(
+                    "Stockfish move selection failed; using built-in search: %s", exc
+                )
 
         return self._choose_builtin(
             board,

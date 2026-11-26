@@ -3,9 +3,9 @@ from __future__ import annotations
 
 import datetime
 import json
-from pathlib import Path
 import random
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Literal
 
 import chess
@@ -349,15 +349,16 @@ def _load_extra_puzzles(path: Path | None = None) -> tuple[Puzzle, ...]:
                 difficulty=item["difficulty"],
                 rating=int(item["rating"]),
                 explanation=str(item["explanation"]),
-                source_name=str(item.get("source_name", "KnightForge Verified Tactics Bank")),
-                license_name=str(item.get("license_name", "CC0 / Original content")),
+                source_name=str(item.get("source_name", "Source not recorded")),
+                license_name=str(item.get("license_name", "License not recorded")),
             )
         )
+        out[-1].validate()
     return tuple(out)
 
 
 class PuzzleCatalog:
-    """Read-only registry of 1,000+ validated KnightForge puzzles."""
+    """Registry of validated curated puzzles and an optional imported bulk dataset."""
 
     def __init__(
         self,
@@ -376,7 +377,7 @@ class PuzzleCatalog:
         self._by_id: dict[str, Puzzle] = {}
         for item in items:
             if item.puzzle_id in self._by_id:
-                continue
+                raise ValueError(f"Duplicate puzzle_id: {item.puzzle_id}")
             self._by_id[item.puzzle_id] = item
 
     def all(self) -> tuple[Puzzle, ...]:
