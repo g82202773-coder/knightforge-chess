@@ -280,7 +280,7 @@ def test_android_native_coach_tts_bridge_speaks_without_web_speech_api(
         browser = p.chromium.launch()
         page = browser.new_page(viewport={"width": 390, "height": 844})
         page.add_init_script(
-            """() => {
+            """(() => {
                 window.__nativeTtsCalls = [];
                 Object.defineProperty(window, "speechSynthesis", {
                     configurable: true,
@@ -311,7 +311,7 @@ def test_android_native_coach_tts_bridge_speaks_without_web_speech_api(
                         return nativeTts;
                     }
                 };
-            }"""
+            })()"""
         )
         page.goto(live_server_url, wait_until="networkidle")
         page.locator('.mobile-tab-btn[data-tab="academy"]').click()
