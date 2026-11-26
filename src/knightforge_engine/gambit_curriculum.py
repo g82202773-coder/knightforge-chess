@@ -268,8 +268,9 @@ def build_gambit_library(path: str | Path | None = None) -> GambitLibrary:
                 raise ValueError(f"Missing or duplicate line label in {gambit_id}: {label!r}")
             seen_labels.add(label.casefold())
             try:
+                parse_san_sequence(line["moves"])
                 _build_mutable_line(roots, record, line)
-            except (ValueError, chess.IllegalMoveError, chess.InvalidMoveError, chess.AmbiguousMoveError) as exc:
+            except ValueError as exc:
                 issues.append(
                     GambitValidationIssue(
                         gambit_id=gambit_id,
