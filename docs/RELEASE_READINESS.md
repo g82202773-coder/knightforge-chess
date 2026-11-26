@@ -9,8 +9,8 @@
 |---|---|---|
 | Legal chess and gameplay | `python-chess` rules engine; local PvP, human-vs-AI, PGN import/export, clocks and online invite/matchmaking endpoints | Implemented in code; full production hardening remains |
 | AI opponent | Seven configured difficulty profiles; optional Stockfish UCI with built-in fallback | Implemented; strength calibration and load tests remain |
-| Opening library | 31 branching opening records and 352 legal move nodes in `data/openings/repository.json` | Move legality validated; editorial depth and variation coverage remain incomplete |
-| Academy | Curriculum and guided/practice/mastery session APIs | Implemented; lesson coverage/content review remains |
+| Opening library | Taxonomy seed: 50 systems and 299 named variation labels; repository: 31 branching opening records and 352 legal move nodes | Move legality validated; the taxonomy is explicitly non-exhaustive and 19 named systems do not yet have their own full tree |
+| Academy | 28 lesson definitions and guided/practice/mastery session APIs | Implemented; lesson coverage/content review remains |
 | Tactics | 15 curated puzzles plus 1,064 bulk records (1,079 total) | Loader now validates positions and every solution move; bulk source/licence metadata is not recorded |
 | Accounts/progress | SQLite-backed users, ratings, lesson/puzzle progress, notes and saved PGN history | Implemented; production identity, recovery and database operations remain |
 | Multiplayer | Invite codes, seat tokens, draw actions, matchmaking and WebSocket updates | Prototype endpoints; active games and queue state remain process-local |
