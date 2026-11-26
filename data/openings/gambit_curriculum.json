@@ -865,12 +865,12 @@
         },
         {
           "label": "Declined · ...Nb4",
-          "moves": "e4 e6 d4 d5 e5 c5 c3 Nc6 Nf3 Qb6 Bd3 Nb4",
+          "moves": "e4 e6 d4 d5 e5 c5 c3 Nc6 Nf3 Qb6 Bd3 cxd4 cxd4 Bd7 O-O Nb4",
           "coach": ""
         },
         {
           "label": "Declined · ...Rc8",
-          "moves": "e4 e6 d4 d5 e5 c5 c3 Nc6 Nf3 Qb6 Bd3 Rc8",
+          "moves": "e4 e6 d4 d5 e5 c5 c3 Nc6 Nf3 Qb6 Bd3 cxd4 cxd4 Bd7 O-O Rc8",
           "coach": ""
         }
       ]
