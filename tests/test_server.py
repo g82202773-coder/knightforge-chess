@@ -243,3 +243,42 @@ def test_online_draw_actions_require_tokens_and_opponent_response():
     )
     assert accepted.status_code == 200
     assert accepted.json()["state"]["termination"] == "draw_agreement"
+
+def test_academy_wrong_move_returns_mistake_feedback_and_continue_advances_reviewed_line():
+    created = client.post("/api/sessions", json={"mode": "guided"}).json()
+    session_id = created["session_id"]
+
+    wrong = client.post(
+        f"/api/sessions/{session_id}/moves",
+        json={"uci": "d2d4"},
+    )
+    assert wrong.status_code == 200
+    assert wrong.json()["move"]["applied"] is False
+    feedback = wrong.json()["state"]["coach"]["mistake_feedback"]
+    assert feedback is not None
+    assert feedback["title"] in {"Can I show you something?", "Let's review that move"}
+    assert feedback["voice_script"]
+    assert wrong.json()["state"]["board"]["fen"] == created["state"]["board"]["fen"]
+
+    continued = client.post(f"/api/sessions/{session_id}/continue")
+    assert continued.status_code == 200
+    assert continued.json()["move"]["applied"] is True
+    assert continued.json()["move"]["actual_san"] == "e4"
+    assert continued.json()["continued_after_feedback"] is True
+    assert continued.json()["state"]["coach"]["mistake_feedback"] is None
+    assert continued.json()["state"]["board"]["turn"] == "black"
+
+
+def test_mastery_mode_cannot_continue_by_revealing_the_expected_move():
+    created = client.post("/api/sessions", json={"mode": "mastery"}).json()
+    session_id = created["session_id"]
+    wrong = client.post(
+        f"/api/sessions/{session_id}/moves",
+        json={"uci": "d2d4"},
+    )
+    assert wrong.status_code == 200
+    assert wrong.json()["state"]["coach"]["expected_move"] is None
+    assert "e2e4" not in str(wrong.json()["state"]["coach"])
+
+    continued = client.post(f"/api/sessions/{session_id}/continue")
+    assert continued.status_code == 403
