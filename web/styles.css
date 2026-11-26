@@ -394,6 +394,7 @@ footer {
   color: var(--text);
   font: 800 15px/1.25 Manrope, sans-serif;
 }
+.coach-character { display: block; width: 48px; height: 48px; }
 .mistake-coach-text {
   margin: 12px 0 0;
   color: var(--text);
