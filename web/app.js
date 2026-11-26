@@ -325,9 +325,28 @@ let coachSpeechSequence = 0;
 let nativeCoachVoiceReady = false;
 let nativeCoachVoiceError = "";
 
+let cachedNativeCoachTts = null;
+
 function nativeCoachTts() {
-  const plugins = window.Capacitor && window.Capacitor.Plugins;
-  return plugins && plugins.TextToSpeech ? plugins.TextToSpeech : null;
+  if (cachedNativeCoachTts) return cachedNativeCoachTts;
+  const capacitor = window.Capacitor;
+  if (!capacitor) return null;
+  const plugins = capacitor.Plugins || {};
+  if (plugins.TextToSpeech) {
+    cachedNativeCoachTts = plugins.TextToSpeech;
+    return cachedNativeCoachTts;
+  }
+  // KnightForge serves plain JavaScript, not a bundled ES module. Register the
+  // installed native plugin through Capacitor's runtime bridge on demand.
+  if (typeof capacitor.registerPlugin === "function") {
+    try {
+      cachedNativeCoachTts = capacitor.registerPlugin("TextToSpeech");
+      return cachedNativeCoachTts;
+    } catch (error) {
+      return null;
+    }
+  }
+  return null;
 }
 
 function browserSpeechSupported() {
