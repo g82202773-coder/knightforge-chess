@@ -15,6 +15,7 @@
 | Accounts/progress | SQLite-backed users, ratings, lesson/puzzle progress, notes and saved PGN history | Implemented; production identity, recovery and database operations remain |
 | Multiplayer | Invite codes, seat tokens, draw actions, matchmaking and WebSocket updates | Prototype endpoints; active games and queue state remain process-local |
 | Browser client | Responsive web client with Playwright mobile viewport E2E | CI E2E is present; wider device/browser QA remains |
+| Voice-enabled Academy coach | In-lesson tactical mistake coach with danger arrows, plus coach speech bubble, selectable device TTS voice, adjustable pace and Listen/Stop controls | Browser regression coverage added; final integrated CI and real-device voice QA still required |
 | Android | Capacitor wrapper and a workflow that builds a debug APK | Not a signed release; current config points to a test Render URL |
 | Hosting | Render Docker template with one worker | Example configuration only; durable storage and production service configuration required |
 
