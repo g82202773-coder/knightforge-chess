@@ -21,10 +21,10 @@ from .ai_opponent import AIDifficulty, ChessAIOpponent
 from .analysis import StockfishAnalyzer
 from .coach_presentation import coach_state_payload, submission_payload
 from .curriculum import CurriculumCatalog
+from .gambit_curriculum import build_gambit_library
 from .game_analyzer import ChessCoachAssistant, analyze_pgn_game
 from .game_manager import CLOCK_PRESETS, ColorName, FullChessMatch, MatchMode
 from .guided_learning import GuidedLesson
-from .gambit_curriculum import build_gambit_library
 from .opening_catalog import OpeningCatalog
 from .opening_coverage import analyze_opening_coverage
 from .opening_recognition import OpeningRecognizer
