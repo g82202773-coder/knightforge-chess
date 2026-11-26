@@ -1003,7 +1003,6 @@ def openings_repository(q: str = "") -> dict[str, Any]:
                 "mainline_uci": list(tree.mainline_uci()),
                 "branch_count": tree.branch_count(),
                 "source_name": tree.source_name,
-                "tree": tree.to_dict(),
             }
             for tree in trees
         ]
