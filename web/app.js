@@ -1,3 +1,4 @@
+const API_BASE_URL = "https://knightforge-chess-test.onrender.com";
 const FILES = "abcdefgh";
 const $ = (id) => document.getElementById(id);
 const SVG_PIECES = window.KF_PIECES_SVG || {};
@@ -13,7 +14,7 @@ let authUsername = localStorage.getItem("kf_user") || "guest";
 async function api(path, options = {}) {
   const headers = { "Content-Type": "application/json", ...(options.headers || {}) };
   if (authToken) headers.Authorization = "Bearer " + authToken;
-  const res = await fetch(path, { ...options, headers });
+  const res = await fetch(new URL(path, API_BASE_URL), { ...options, headers });
   const body = await res.json().catch(() => ({}));
   if (!res.ok) throw new Error(body.detail || "Request failed");
   return body;
@@ -468,9 +469,10 @@ let playClockTimer = null;
 
 function connectPlayWs(gameId) {
   if (playWs) { playWs.close(); playWs = null; }
-  const proto = location.protocol === "https:" ? "wss:" : "ws:";
+  const wsUrl = new URL(`/ws/games/${gameId}`, API_BASE_URL);
+  wsUrl.protocol = wsUrl.protocol === "https:" ? "wss:" : "ws:";
   try {
-    playWs = new WebSocket(`${proto}//${location.host}/ws/games/${gameId}`);
+    playWs = new WebSocket(wsUrl.toString());
     playWs.onmessage = (ev) => {
       const msg = JSON.parse(ev.data);
       if (msg.state) {
