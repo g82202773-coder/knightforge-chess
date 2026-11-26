@@ -94,3 +94,38 @@ def test_lesson_validation_rejects_illegal_branch():
     lesson = GuidedLesson("bad", "Bad lesson", "white", (LessonNode("e2e5", "Illegal."),))
     with pytest.raises(ValueError, match="Illegal lesson move"):
         lesson.validate()
+
+def test_wrong_move_explains_a_verified_hanging_pawn_and_marks_the_capture():
+    lesson = GuidedLesson(
+        lesson_id="hanging-pawn-test",
+        title="Keep Your Pieces Safe",
+        learner_color="white",
+        starting_fen="6k1/8/8/1q6/2P1P3/3B4/8/R5K1 w - - 0 1",
+        roots=(LessonNode("e4e5", "Advance the central pawn while keeping the c4-pawn defended."),),
+    )
+    session = GuidedLessonSession(lesson)
+    result = session.submit_uci("d3c2")
+
+    assert not result.applied
+    feedback = result.prompt.mistake_feedback
+    assert feedback is not None
+    assert feedback.severity == "warning"
+    assert "pawn on C4" in feedback.text
+    assert "Qxc4" in feedback.detail
+    assert "no legal immediate recapture" in feedback.detail
+    assert feedback.threat_arrow_from == "b5"
+    assert feedback.threat_arrow_to == "c4"
+    assert feedback.threatened_square == "c4"
+    assert session.game.fen == lesson.starting_fen
+
+
+def test_wrong_move_without_forced_hanging_piece_uses_cautious_feedback():
+    session = GuidedLessonSession(sample_lesson())
+    result = session.submit_uci("d2d4")
+
+    feedback = result.prompt.mistake_feedback
+    assert feedback is not None
+    assert feedback.severity == "info"
+    assert feedback.threat_arrow_from is None
+    assert feedback.threat_arrow_to is None
+    assert "does not follow the reviewed continuation" in feedback.text
