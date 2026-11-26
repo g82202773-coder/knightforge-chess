@@ -405,6 +405,11 @@ class ImportPgnRequest(BaseModel):
 class DrawActionRequest(BaseModel):
     action: Literal["offer", "accept", "decline", "claim"]
     actor: ColorName | None = None
+    player_token: str | None = None
+
+
+class PlayerActionRequest(BaseModel):
+    player_token: str | None = None
 
 
 class RecognizeRequest(BaseModel):
@@ -541,6 +546,25 @@ def save_notes(
 # ---------------------------------------------------------------------------
 # Full Chess Gameplay, Clocks & Multiplayer (HvAI / Local 2P / Online PvP)
 # ---------------------------------------------------------------------------
+def _online_action_color(
+    match: FullChessMatch, player_token: str | None, requested_actor: ColorName | None = None
+) -> ColorName | None:
+    """Authenticate state-changing online actions with the seat capability token."""
+    if match.mode != "online_pvp":
+        return requested_actor
+    if not player_token:
+        raise HTTPException(status_code=403, detail="A player token is required for online actions.")
+    if secrets.compare_digest(player_token, match.white_token):
+        color: ColorName = "white"
+    elif match.black_token and secrets.compare_digest(player_token, match.black_token):
+        color = "black"
+    else:
+        raise HTTPException(status_code=403, detail="Invalid player token.")
+    if requested_actor is not None and requested_actor != color:
+        raise HTTPException(status_code=403, detail="Player token does not match the requested side.")
+    return color
+
+
 def _record_game_if_over(record: MatchRecord, user_id: int) -> None:
     m = record.match
     if m.is_over and not record.recorded:
@@ -676,12 +700,17 @@ def restart_game(game_id: str) -> dict[str, Any]:
 
 @app.post("/api/games/{game_id}/resign")
 async def resign_game(
-    game_id: str, authorization: str | None = Header(default=None)
+    game_id: str,
+    request: PlayerActionRequest | None = None,
+    authorization: str | None = Header(default=None),
 ) -> dict[str, Any]:
     uid = _user_id_from_header(authorization)
     record = store.get_match(game_id)
     with record.lock:
-        record.match.resign()
+        actor = _online_action_color(
+            record.match, request.player_token if request else None
+        )
+        record.match.resign(color=actor)
         _record_game_if_over(record, uid)
         state = record.match.state_dict()
     await ws_manager.broadcast(game_id, {"event": "resign", "state": state})
@@ -697,8 +726,11 @@ async def draw_action(
     uid = _user_id_from_header(authorization)
     record = store.get_match(game_id)
     with record.lock:
+        actor = _online_action_color(
+            record.match, request.player_token, request.actor
+        )
         try:
-            msg = record.match.handle_draw_action(request.action, request.actor)
+            msg = record.match.handle_draw_action(request.action, actor)
         except (ValueError, RuntimeError) as exc:
             raise HTTPException(status_code=409, detail=str(exc)) from exc
         _record_game_if_over(record, uid)
