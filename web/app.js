@@ -172,6 +172,10 @@ function renderBoard({
       if (sq === selected) b.classList.add("selected");
       if (sq === checkedSquare) b.classList.add("in-check");
       if (lastMove && lastMove.includes(sq)) b.classList.add("last-move");
+      if (arrowData && arrowData.highlightEndpoints) {
+        if (sq === arrowData.from) b.classList.add("coach-arrow-source");
+        if (sq === arrowData.to) b.classList.add("coach-arrow-target");
+      }
       if (targets.some((t) => t.to === sq)) {
         b.classList.add(piece ? "capture" : "legal");
       }
@@ -220,17 +224,35 @@ function renderBoard({
     };
     const p = pos(arrowData.from);
     const q = pos(arrowData.to);
+    const arrowColor = arrowData.color || "#d7f18a";
+    const markerId = "arrowhead-" + boardId;
     const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
     svg.setAttribute("viewBox", "0 0 100 100");
     svg.setAttribute("class", "board-arrow");
-    svg.innerHTML =
-      '<defs><marker id="arrowhead" markerWidth="5" markerHeight="5" refX="3.8" refY="2.5" orient="auto">' +
-      '<path d="M0 0 L5 2.5 L0 5Z" fill="#d7f18a"/></marker></defs>';
+    svg.setAttribute("aria-hidden", "true");
+
+    const defs = document.createElementNS("http://www.w3.org/2000/svg", "defs");
+    const marker = document.createElementNS("http://www.w3.org/2000/svg", "marker");
+    marker.setAttribute("id", markerId);
+    marker.setAttribute("markerWidth", "5");
+    marker.setAttribute("markerHeight", "5");
+    marker.setAttribute("refX", "3.8");
+    marker.setAttribute("refY", "2.5");
+    marker.setAttribute("orient", "auto");
+    const head = document.createElementNS("http://www.w3.org/2000/svg", "path");
+    head.setAttribute("d", "M0 0 L5 2.5 L0 5Z");
+    head.setAttribute("fill", arrowColor);
+    marker.append(head);
+    defs.append(marker);
+    svg.append(defs);
+
     const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
     line.setAttribute("x1", p.x);
     line.setAttribute("y1", p.y);
     line.setAttribute("x2", q.x);
     line.setAttribute("y2", q.y);
+    line.setAttribute("marker-end", "url(#" + markerId + ")");
+    line.style.stroke = arrowColor;
     svg.append(line);
     root.append(svg);
   }
@@ -253,12 +275,134 @@ document.querySelectorAll(".promo-btn").forEach((btn) => {
   });
 });
 
-function speak(t) {
-  if (!window.speechSynthesis || !t) return;
-  window.speechSynthesis.cancel();
-  const u = new SpeechSynthesisUtterance(t);
-  u.rate = 0.94;
-  window.speechSynthesis.speak(u);
+let academyCoachVoices = [];
+let academyLastNarration = "";
+
+function speechOutputSupported() {
+  return typeof window.speechSynthesis !== "undefined" &&
+    typeof window.SpeechSynthesisUtterance !== "undefined";
+}
+
+function setCoachSpeechStatus(message, speaking = false) {
+  const controlStatus = $("coach-voice-status");
+  const bubbleStatus = $("coach-speaking-status");
+  if (controlStatus) controlStatus.textContent = message;
+  if (bubbleStatus) {
+    bubbleStatus.textContent = speaking ? "SPEAKING" : "READY";
+    bubbleStatus.classList.toggle("speaking", speaking);
+  }
+}
+
+function refreshCoachVoiceOptions() {
+  const select = $("coach-voice-select");
+  if (!select) return;
+  if (!speechOutputSupported()) {
+    select.disabled = true;
+    setCoachSpeechStatus("Speech synthesis is not available in this browser. The written coach remains available.");
+    return;
+  }
+
+  academyCoachVoices = window.speechSynthesis.getVoices();
+  const savedVoice = localStorage.getItem("kf_coach_voice") || "";
+  const preferredVoice =
+    academyCoachVoices.find((voice) => voice.voiceURI === savedVoice) ||
+    academyCoachVoices.find((voice) => /^en-in$/i.test(voice.lang)) ||
+    academyCoachVoices.find((voice) => /^en/i.test(voice.lang)) ||
+    null;
+
+  select.replaceChildren();
+  const defaultOption = document.createElement("option");
+  defaultOption.value = "";
+  defaultOption.textContent = "Device default";
+  select.append(defaultOption);
+
+  const sortedVoices = [...academyCoachVoices].sort((a, b) => {
+    const aEnglish = /^en/i.test(a.lang) ? 0 : 1;
+    const bEnglish = /^en/i.test(b.lang) ? 0 : 1;
+    return aEnglish - bEnglish || a.name.localeCompare(b.name);
+  });
+  for (const voice of sortedVoices) {
+    const option = document.createElement("option");
+    option.value = voice.voiceURI;
+    option.textContent = voice.name + " (" + voice.lang + ")";
+    select.append(option);
+  }
+
+  select.value = academyCoachVoices.some((voice) => voice.voiceURI === savedVoice)
+    ? savedVoice
+    : preferredVoice ? preferredVoice.voiceURI : "";
+  if (academyCoachVoices.length) {
+    const selectedVoice = academyCoachVoices.find((voice) => voice.voiceURI === select.value);
+    setCoachSpeechStatus(
+      selectedVoice ? "Voice ready: " + selectedVoice.name : "Ready to use your device's default voice."
+    );
+  } else {
+    setCoachSpeechStatus("Waiting for voices supplied by your browser or device.");
+  }
+}
+
+function selectedCoachVoice() {
+  const uri = $("coach-voice-select") ? $("coach-voice-select").value : "";
+  return academyCoachVoices.find((voice) => voice.voiceURI === uri) || null;
+}
+
+function speak(text) {
+  const narration = String(text || "").trim();
+  if (!narration) {
+    setCoachSpeechStatus("There is no coach instruction to read yet.");
+    return false;
+  }
+  if (!speechOutputSupported()) {
+    setCoachSpeechStatus("Speech synthesis is unavailable here. You can still read the coach explanation.");
+    return false;
+  }
+
+  const synth = window.speechSynthesis;
+  synth.cancel();
+  const utterance = new window.SpeechSynthesisUtterance(narration);
+  const voice = selectedCoachVoice();
+  const rate = Number($("coach-rate-select") ? $("coach-rate-select").value : 0.96);
+  if (voice) {
+    utterance.voice = voice;
+    utterance.lang = voice.lang;
+  } else {
+    utterance.lang = "en-IN";
+  }
+  utterance.rate = Number.isFinite(rate) ? rate : 0.96;
+  utterance.pitch = 0.98;
+  utterance.volume = 1;
+  utterance.onstart = () => setCoachSpeechStatus("KnightForge is explaining the position.", true);
+  utterance.onend = () => setCoachSpeechStatus("Explanation finished. Continue when ready.");
+  utterance.onerror = (event) => {
+    if (!event || event.error !== "canceled") {
+      setCoachSpeechStatus("The device could not start speech. Try another voice or use Listen again.");
+    }
+  };
+  synth.speak(utterance);
+  return true;
+}
+
+function stopCoachSpeech() {
+  if (speechOutputSupported()) window.speechSynthesis.cancel();
+  setCoachSpeechStatus("Narration stopped.");
+}
+
+function academyNarrationForState(state) {
+  if (!state || !state.coach) return "";
+  const coach = state.coach;
+  const script = typeof coach.voice_script === "string" ? coach.voice_script.trim() : "";
+  if (script) return script;
+  return [coach.text, coach.explanation]
+    .filter((part) => typeof part === "string" && part.trim())
+    .map((part) => part.trim())
+    .join(" ");
+}
+
+if (speechOutputSupported()) {
+  refreshCoachVoiceOptions();
+  window.speechSynthesis.addEventListener("voiceschanged", refreshCoachVoiceOptions);
+} else {
+  setCoachSpeechStatus("Speech synthesis is not available in this browser. Written coaching is still active.");
 }
 
 // =========================================================================
@@ -709,9 +853,18 @@ let acFlipped = false;
 function academyArrow() {
   if (!academyState || acMode === "mastery") return null;
   const h = academyState.coach.active_hint;
-  if (h && h.arrow_from && h.arrow_to) return { from: h.arrow_from, to: h.arrow_to };
+  if (h && h.arrow_from && h.arrow_to) {
+    return {
+      from: h.arrow_from,
+      to: h.arrow_to,
+      color: "#e56b58",
+      highlightEndpoints: true,
+    };
+  }
   const a = academyState.coach.expected_move && academyState.coach.expected_move.arrow;
-  return acMode === "guided" && a && a.from && a.to ? a : null;
+  return acMode === "guided" && a && a.from && a.to
+    ? { ...a, color: "#e56b58", highlightEndpoints: true }
+    : null;
 }
 
 function renderAcademy() {
@@ -799,7 +952,10 @@ function applyAcademyState(s) {
   $("move-count").textContent = `${acHistory.length} half-moves`;
   $("moves").className = acHistory.length ? "move-list" : "moves-empty";
   $("moves").textContent = formatMoves(acHistory);
-  if ($("voice-toggle").checked) speak(s.coach.voice_script || s.coach.text);
+  const narration = academyNarrationForState(s);
+  const narrationChanged = narration && narration !== academyLastNarration;
+  academyLastNarration = narration;
+  if ($("voice-toggle").checked && narrationChanged) speak(narration);
 }
 
 async function loadLessonsAndStart() {
@@ -828,6 +984,7 @@ async function createAcademySession() {
   acLastMove = null;
   acSelected = null;
   acTargets = [];
+  academyLastNarration = "";
   acFlipped = r.state.learner_color === "black";
   $("feedback").className = "feedback hidden";
   applyAcademyState(r.state);
@@ -860,7 +1017,32 @@ $("continue-free-btn").addEventListener("click", async () => {
   await startPlayGame(academyState.board.fen);
   showFeedback("play-status", "Continuing your lesson position as a full unrestricted game!", true);
 });
-$("speak-btn").addEventListener("click", () => academyState && speak(academyState.coach.voice_script || academyState.coach.text));
+$("voice-toggle").checked = localStorage.getItem("kf_coach_auto_voice") === "1";
+$("voice-toggle").addEventListener("change", () => {
+  localStorage.setItem("kf_coach_auto_voice", $("voice-toggle").checked ? "1" : "0");
+  if ($("voice-toggle").checked && academyState) {
+    const narration = academyNarrationForState(academyState);
+    academyLastNarration = narration;
+    speak(narration);
+  } else {
+    stopCoachSpeech();
+  }
+});
+$("coach-voice-select").addEventListener("change", () => {
+  const voice = selectedCoachVoice();
+  localStorage.setItem("kf_coach_voice", voice ? voice.voiceURI : "");
+  if ($("voice-toggle").checked && academyState) speak(academyNarrationForState(academyState));
+});
+$("coach-rate-select").addEventListener("change", () => {
+  localStorage.setItem("kf_coach_rate", $("coach-rate-select").value);
+  if ($("voice-toggle").checked && academyState) speak(academyNarrationForState(academyState));
+});
+const savedCoachRate = localStorage.getItem("kf_coach_rate");
+if (savedCoachRate && [...$("coach-rate-select").options].some((option) => option.value === savedCoachRate)) {
+  $("coach-rate-select").value = savedCoachRate;
+}
+$("speak-btn").addEventListener("click", () => academyState && speak(academyNarrationForState(academyState)));
+$("stop-speak-btn").addEventListener("click", stopCoachSpeech);
 
 // =========================================================================
 // TAB 3: INTERACTIVE OPENING & GAMBIT TREE EXPLORER
