@@ -42,6 +42,11 @@ def coach_state_payload(state: OpeningCoachState) -> dict[str, Any]:
                 ),
             },
             "active_hint": asdict(hint) if hint is not None else None,
+            "mistake_feedback": (
+                asdict(prompt.mistake_feedback)
+                if prompt.mistake_feedback is not None
+                else None
+            ),
         },
         "engine": {
             "recommendation": asdict(recommendation) if recommendation is not None else None,
