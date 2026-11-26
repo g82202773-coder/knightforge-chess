@@ -892,8 +892,58 @@ function academyArrow() {
     : null;
 }
 
+const ACADEMY_START_FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+
+function renderAcademyPreview() {
+  renderBoard({
+    boardId: "board",
+    coordIds: ["files-top", "files-bottom", "ranks-left", "ranks-right"],
+    fen: academyState?.board?.fen || ACADEMY_START_FEN,
+    flipped: acFlipped,
+    selected: academyState ? acSelected : null,
+    targets: academyState ? acTargets : [],
+    lastMove: academyState ? acLastMove : null,
+    checkedSquare: null,
+    arrowData: academyState ? academyArrow() : null,
+    highlightedSquares: [],
+    interactive: Boolean(academyState),
+    onSquareClick: academyState ? clickAcademySquare : undefined,
+    onDropMove: academyState ? dropAcademyMove : undefined,
+  });
+}
+
+function setAcademyControlsEnabled(enabled) {
+  ["undo-btn", "restart-btn", "continue-free-btn", "hint-btn",
+    "coach-voice-select", "coach-rate-select", "speak-btn"].forEach((id) => {
+    const control = $(id);
+    if (control) control.disabled = !enabled;
+  });
+  $("academy-board-status").textContent = enabled ? "LIVE LESSON" : "BOARD PREVIEW";
+}
+
+function showAcademyConnectionError(error) {
+  academySessionId = null;
+  academyState = null;
+  setAcademyControlsEnabled(false);
+  renderAcademyPreview();
+  const raw = error && error.message ? error.message : String(error || "Unknown connection error");
+  const networkFailure = /failed to fetch|network|cors|load failed|timeout/i.test(raw);
+  $("academy-connection-message").textContent = networkFailure
+    ? "KnightForge could not reach its training API. Check your internet connection and retry. If this persists, the backend must be redeployed with Capacitor CORS enabled."
+    : raw;
+  $("academy-connection-alert").classList.remove("hidden");
+  $("coach-text").textContent = "I have prepared the board. Let's reconnect to your lesson.";
+  $("coach-explanation").textContent = "Your lesson, hints and move controls will activate once the training server responds.";
+  $("coach-speaking-status").textContent = "OFFLINE";
+  $("academy-board-status").textContent = "PREVIEW · OFFLINE";
+  $("connection-label").textContent = "SERVER OFFLINE";
+}
+
 function renderAcademy() {
-  if (!academyState) return;
+  if (!academyState) {
+    renderAcademyPreview();
+    return;
+  }
   renderBoard({
     boardId: "board",
     coordIds: ["files-top", "files-bottom", "ranks-left", "ranks-right"],
@@ -967,6 +1017,9 @@ async function clickAcademySquare(sq, piece) {
 function applyAcademyState(s) {
   academyState = s;
   acMode = s.mode || acMode;
+  $("academy-connection-alert").classList.add("hidden");
+  $("academy-session-tag").textContent = (acMode || "guided").toUpperCase() + " TRAINING";
+  setAcademyControlsEnabled(true);
   acMistakeDismissed = false;
   acHintLevel = s.coach.active_hint ? s.coach.active_hint.level : 0;
   renderAcademy();
@@ -1006,47 +1059,76 @@ function applyAcademyState(s) {
 }
 
 async function loadLessonsAndStart() {
-  const cat = $("academy-category").value;
-  const data = await api("/api/lessons" + (cat ? `?category=${cat}` : ""));
-  const sel = $("lesson-select");
-  sel.innerHTML = "";
-  data.lessons.forEach((l) => {
-    const opt = document.createElement("option");
-    opt.value = l.lesson_id;
-    opt.textContent = `${l.completed ? "✓ " : ""}L${l.level} [${l.category}] ${l.title}`;
-    sel.append(opt);
-  });
-  await createAcademySession();
+  academyState = null;
+  academySessionId = null;
+  acHistory = [];
+  acSelected = null;
+  acTargets = [];
+  $("academy-connection-alert").classList.add("hidden");
+  $("coach-text").textContent = "Connecting to your training session…";
+  $("coach-explanation").textContent = "Loading the lesson, legal moves and coaching guidance.";
+  $("coach-speaking-status").textContent = "CONNECTING";
+  setAcademyControlsEnabled(false);
+  renderAcademyPreview();
+  try {
+    const cat = $("academy-category").value;
+    const data = await api("/api/lessons" + (cat ? `?category=${cat}` : ""));
+    if (!Array.isArray(data.lessons) || !data.lessons.length) {
+      throw new Error("No lessons were returned for this course. Choose another course or retry.");
+    }
+    const sel = $("lesson-select");
+    sel.innerHTML = "";
+    data.lessons.forEach((l) => {
+      const opt = document.createElement("option");
+      opt.value = l.lesson_id;
+      opt.textContent = `${l.completed ? "✓ " : ""}L${l.level} [${l.category}] ${l.title}`;
+      sel.append(opt);
+    });
+    await createAcademySession();
+  } catch (error) {
+    showAcademyConnectionError(error);
+  }
 }
 
 async function createAcademySession() {
   acMode = $("mode-select").value;
   const lessonId = $("lesson-select").value || "open-game-first-five";
-  const r = await api("/api/sessions", {
-    method: "POST",
-    body: JSON.stringify({ mode: acMode, lesson_id: lessonId }),
-  });
-  academySessionId = r.session_id;
-  acHistory = [];
-  acLastMove = null;
-  acSelected = null;
-  acTargets = [];
-  acMistakeDismissed = false;
-  academyLastNarration = "";
-  acFlipped = r.state.learner_color === "black";
-  $("feedback").className = "feedback hidden";
-  applyAcademyState(r.state);
+  setAcademyControlsEnabled(false);
+  try {
+    const r = await api("/api/sessions", {
+      method: "POST",
+      body: JSON.stringify({ mode: acMode, lesson_id: lessonId }),
+    });
+    academySessionId = r.session_id;
+    acHistory = [];
+    acLastMove = null;
+    acSelected = null;
+    acTargets = [];
+    acMistakeDismissed = false;
+    academyLastNarration = "";
+    acFlipped = r.state.learner_color === "black";
+    $("feedback").className = "feedback hidden";
+    applyAcademyState(r.state);
+  } catch (error) {
+    showAcademyConnectionError(error);
+  }
 }
 
 $("academy-category").addEventListener("change", loadLessonsAndStart);
 $("lesson-select").addEventListener("change", createAcademySession);
 $("mode-select").addEventListener("change", createAcademySession);
+$("academy-retry-btn").addEventListener("click", loadLessonsAndStart);
 $("hint-btn").addEventListener("click", async () => {
-  const r = await api(`/api/sessions/${academySessionId}/hints`, {
-    method: "POST",
-    body: JSON.stringify({ level: Math.min(4, acHintLevel + 1) }),
-  });
-  applyAcademyState(r.state);
+  if (!academySessionId) return;
+  try {
+    const r = await api(`/api/sessions/${academySessionId}/hints`, {
+      method: "POST",
+      body: JSON.stringify({ level: Math.min(4, acHintLevel + 1) }),
+    });
+    applyAcademyState(r.state);
+  } catch (error) {
+    showAcademyConnectionError(error);
+  }
 });
 $("undo-btn").addEventListener("click", async () => {
   try {
@@ -1055,10 +1137,18 @@ $("undo-btn").addEventListener("click", async () => {
   } catch (e) { showFeedback("feedback", e.message, false); }
 });
 $("restart-btn").addEventListener("click", async () => {
-  const r = await api(`/api/sessions/${academySessionId}/restart`, { method: "POST" });
-  acHistory = []; acLastMove = null; $("feedback").className = "feedback hidden"; applyAcademyState(r.state);
+  if (!academySessionId) return;
+  try {
+    const r = await api(`/api/sessions/${academySessionId}/restart`, { method: "POST" });
+    acHistory = []; acLastMove = null; $("feedback").className = "feedback hidden"; applyAcademyState(r.state);
+  } catch (error) {
+    showAcademyConnectionError(error);
+  }
 });
-$("flip-btn").addEventListener("click", () => { acFlipped = !acFlipped; renderAcademy(); });
+$("flip-btn").addEventListener("click", () => {
+  acFlipped = !acFlipped;
+  renderAcademy();
+});
 $("continue-free-btn").addEventListener("click", async () => {
   if (!academyState) return;
   switchTab("play");
