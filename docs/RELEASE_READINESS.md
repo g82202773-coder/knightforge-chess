@@ -9,7 +9,8 @@
 |---|---|---|
 | Legal chess and gameplay | `python-chess` rules engine; local PvP, human-vs-AI, PGN import/export, clocks and online invite/matchmaking endpoints | Implemented in code; full production hardening remains |
 | AI opponent | Seven configured difficulty profiles; optional Stockfish UCI with built-in fallback | Implemented; strength calibration and load tests remain |
-| Opening library | Taxonomy seed: 50 systems and 299 named variation labels; repository: 31 branching opening records and 352 legal move nodes | Move legality validated; the taxonomy is explicitly non-exhaustive and 19 named systems do not yet have their own full tree |
+| Opening library | Taxonomy: 50 systems and 299 named variation labels; repository: 31 reviewed branching trees and 352 legal move nodes | Exact-ID coverage: 29/50 taxonomy systems; 21 taxonomy systems have no matching tree ID. Only 77/299 taxonomy variation labels currently match labelled nodes in those trees; 222 labels are not yet represented as validated branches. Two stored tree IDs (Englund Gambit and Stafford Gambit) are not linked to a taxonomy system ID. |
+| Gambit coverage | Six dedicated gambit trees: King's Gambit, Queen's Gambit, Blackmar–Diemer Gambit, Budapest Gambit, Englund Gambit and Stafford Gambit; 36 gambit-named variation labels in the taxonomy | This is below the earlier target of 25–30 full gambit trees; taxonomy labels must not be counted as complete playable trees. |
 | Academy | 28 lesson definitions and guided/practice/mastery session APIs | Implemented; lesson coverage/content review remains |
 | Tactics | 15 curated puzzles plus 1,064 bulk records (1,079 total) | Loader now validates positions and every solution move; bulk source/licence metadata is not recorded |
 | Accounts/progress | SQLite-backed users, ratings, lesson/puzzle progress, notes and saved PGN history | Implemented; production identity, recovery and database operations remain |
