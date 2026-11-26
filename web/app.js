@@ -318,11 +318,25 @@ document.querySelectorAll(".promo-btn").forEach((btn) => {
 });
 
 let academyCoachVoices = [];
+let academyNativeCoachVoices = [];
+let academyNativeCoachLanguages = [];
 let academyLastNarration = "";
+let coachSpeechSequence = 0;
+let nativeCoachVoiceReady = false;
+let nativeCoachVoiceError = "";
 
-function speechOutputSupported() {
+function nativeCoachTts() {
+  const plugins = window.Capacitor && window.Capacitor.Plugins;
+  return plugins && plugins.TextToSpeech ? plugins.TextToSpeech : null;
+}
+
+function browserSpeechSupported() {
   return typeof window.speechSynthesis !== "undefined" &&
     typeof window.SpeechSynthesisUtterance !== "undefined";
+}
+
+function speechOutputSupported() {
+  return Boolean(nativeCoachTts()) || browserSpeechSupported();
 }
 
 function setCoachSpeechStatus(message, speaking = false) {
@@ -335,19 +349,14 @@ function setCoachSpeechStatus(message, speaking = false) {
   }
 }
 
-function refreshCoachVoiceOptions() {
+function updateNativeVoiceSetupButton(visible) {
+  const button = $("coach-voice-setup-btn");
+  if (button) button.classList.toggle("hidden", !visible);
+}
+
+function fillCoachVoiceOptions(voices, preferredValue, nativeMode) {
   const select = $("coach-voice-select");
   if (!select) return;
-  if (!speechOutputSupported()) {
-    select.disabled = true;
-    setCoachSpeechStatus("Speech synthesis is not available in this browser. Written coaching remains available.");
-    return;
-  }
-
-  const storedVoice = localStorage.getItem("kf_coach_voice") || "";
-  academyCoachVoices = window.speechSynthesis.getVoices
-    ? window.speechSynthesis.getVoices()
-    : [];
   select.replaceChildren();
 
   const defaultOption = document.createElement("option");
@@ -355,7 +364,28 @@ function refreshCoachVoiceOptions() {
   defaultOption.textContent = "Device default";
   select.append(defaultOption);
 
-  const sortedVoices = [...academyCoachVoices].sort((a, b) => {
+  if (nativeMode) {
+    const ordered = voices.map((voice, index) => ({ voice, index }));
+    ordered.sort((a, b) => {
+      const rank = (voice) => /^en-in$/i.test(voice.lang || "") ? 0 :
+        (/^en/i.test(voice.lang || "") ? 1 : 2);
+      return rank(a.voice) - rank(b.voice) ||
+        String(a.voice.name || "").localeCompare(String(b.voice.name || ""));
+    });
+    ordered.forEach(({ voice, index }) => {
+      const option = document.createElement("option");
+      option.value = String(index);
+      option.textContent = (voice.name || "Device voice") + " (" + (voice.lang || "unknown") + ")";
+      select.append(option);
+    });
+    const preferred = ordered.find(({ voice }) => voice.voiceURI === preferredValue)
+      || ordered.find(({ voice }) => /^en-in$/i.test(voice.lang || ""))
+      || ordered.find(({ voice }) => /^en/i.test(voice.lang || ""));
+    select.value = preferred ? String(preferred.index) : "";
+    return;
+  }
+
+  const sortedVoices = [...voices].sort((a, b) => {
     const aEnglish = /^en/i.test(a.lang || "") ? 0 : 1;
     const bEnglish = /^en/i.test(b.lang || "") ? 0 : 1;
     return aEnglish - bEnglish || a.name.localeCompare(b.name);
@@ -366,21 +396,106 @@ function refreshCoachVoiceOptions() {
     option.textContent = voice.name + " (" + voice.lang + ")";
     select.append(option);
   }
-
-  const preferred = academyCoachVoices.find((voice) => voice.voiceURI === storedVoice)
-    || academyCoachVoices.find((voice) => /^en-in$/i.test(voice.lang || ""))
-    || academyCoachVoices.find((voice) => /^en/i.test(voice.lang || ""));
+  const preferred = voices.find((voice) => voice.voiceURI === preferredValue)
+    || voices.find((voice) => /^en-in$/i.test(voice.lang || ""))
+    || voices.find((voice) => /^en/i.test(voice.lang || ""));
   select.value = preferred ? preferred.voiceURI : "";
-  if (preferred) {
-    setCoachSpeechStatus("Voice ready: " + preferred.name);
-  } else if (academyCoachVoices.length) {
-    setCoachSpeechStatus("Choose an installed voice, or use the device default.");
+}
+
+async function loadNativeCoachVoiceData() {
+  const plugin = nativeCoachTts();
+  if (!plugin) return false;
+
+  const storedVoice = localStorage.getItem("kf_coach_voice") || "";
+  let lastError = null;
+  // Android TextToSpeech initializes asynchronously after the Capacitor plugin loads.
+  // Retry while the native engine and its voice data become available.
+  for (let attempt = 0; attempt < 10; attempt += 1) {
+    try {
+      const [voiceResult, languageResult] = await Promise.all([
+        plugin.getSupportedVoices(),
+        plugin.getSupportedLanguages(),
+      ]);
+      const voices = Array.isArray(voiceResult && voiceResult.voices) ? voiceResult.voices : [];
+      const languages = Array.isArray(languageResult && languageResult.languages)
+        ? languageResult.languages
+        : [];
+      if (voices.length || languages.length || attempt === 9) {
+        academyNativeCoachVoices = voices;
+        academyNativeCoachLanguages = languages;
+        nativeCoachVoiceReady = voices.length > 0 || languages.length > 0;
+        nativeCoachVoiceError = nativeCoachVoiceReady
+          ? ""
+          : "Android reports no installed speech voices or language data.";
+        fillCoachVoiceOptions(voices, storedVoice, true);
+        updateNativeVoiceSetupButton(!nativeCoachVoiceReady);
+        return nativeCoachVoiceReady;
+      }
+    } catch (error) {
+      lastError = error;
+    }
+    await new Promise((resolve) => window.setTimeout(resolve, 250));
+  }
+
+  nativeCoachVoiceReady = false;
+  nativeCoachVoiceError = lastError && lastError.message
+    ? lastError.message
+    : "Android Text-to-Speech is not ready.";
+  updateNativeVoiceSetupButton(true);
+  return false;
+}
+
+async function refreshCoachVoiceOptions() {
+  const select = $("coach-voice-select");
+  if (!select) return;
+
+  if (nativeCoachTts()) {
+    select.disabled = true;
+    setCoachSpeechStatus("Connecting to Android's native speech engine…");
+    const ready = await loadNativeCoachVoiceData();
+    select.disabled = false;
+    if (ready) {
+      setCoachSpeechStatus(
+        academyNativeCoachVoices.length
+          ? "Android voice ready. Coach speech uses the phone's native TTS engine."
+          : "Android speech engine ready. Using its default installed voice."
+      );
+    } else {
+      setCoachSpeechStatus(
+        "Android speech is not ready: " + nativeCoachVoiceError +
+        " Use Set up voice to install or enable a speech engine."
+      );
+    }
+    return;
+  }
+
+  updateNativeVoiceSetupButton(false);
+  if (!browserSpeechSupported()) {
+    select.disabled = true;
+    setCoachSpeechStatus("Speech is unavailable in this browser. Written coaching remains available.");
+    return;
+  }
+
+  select.disabled = false;
+  const storedVoice = localStorage.getItem("kf_coach_voice") || "";
+  academyCoachVoices = window.speechSynthesis.getVoices
+    ? window.speechSynthesis.getVoices()
+    : [];
+  fillCoachVoiceOptions(academyCoachVoices, storedVoice, false);
+  if (academyCoachVoices.length) {
+    const preferred = academyCoachVoices.find((voice) => voice.voiceURI === select.value);
+    setCoachSpeechStatus(preferred ? "Voice ready: " + preferred.name : "Choose an installed voice, or use the device default.");
   } else {
-    setCoachSpeechStatus("Waiting for voices supplied by your browser or Android device.");
+    setCoachSpeechStatus("No browser voices are listed yet. Tap Listen to test the device default voice.");
   }
 }
 
 function selectedCoachVoice() {
+  if (nativeCoachTts()) {
+    const rawIndex = $("coach-voice-select") && $("coach-voice-select").value;
+    const index = rawIndex === "" || rawIndex == null ? -1 : Number(rawIndex);
+    return Number.isInteger(index) && index >= 0 ? academyNativeCoachVoices[index] || null : null;
+  }
   const select = $("coach-voice-select");
   if (!select || !select.value) return null;
   return academyCoachVoices.find((voice) => voice.voiceURI === select.value) || null;
@@ -401,13 +516,74 @@ function academyNarrationForState(state) {
     .join(" ");
 }
 
-function speak(text) {
+function nativeCoachLanguage(voice) {
+  if (voice && voice.lang) return voice.lang;
+  const languages = academyNativeCoachLanguages;
+  return languages.find((lang) => /^en-in$/i.test(lang))
+    || languages.find((lang) => /^en/i.test(lang))
+    || languages[0]
+    || "en-US";
+}
+
+async function speak(text) {
   const narration = String(text || "").trim();
   if (!narration) {
     setCoachSpeechStatus("There is no coach instruction to read yet.");
     return false;
   }
-  if (!speechOutputSupported()) {
+
+  const requestId = ++coachSpeechSequence;
+  const rate = Number($("coach-rate-select").value || 0.96);
+  const voice = selectedCoachVoice();
+  const safeRate = Number.isFinite(rate) ? rate : 0.96;
+
+  const nativePlugin = nativeCoachTts();
+  if (nativePlugin) {
+    if (!nativeCoachVoiceReady) {
+      setCoachSpeechStatus("Preparing Android speech engine…");
+      const ready = await loadNativeCoachVoiceData();
+      if (!ready) {
+        if (requestId === coachSpeechSequence) {
+          setCoachSpeechStatus(
+            "No Android speech voice is ready. Use Set up voice, then tap Listen again."
+          );
+        }
+        return false;
+      }
+    }
+    const currentVoice = selectedCoachVoice();
+    const rawIndex = $("coach-voice-select") && $("coach-voice-select").value;
+    const voiceIndex = rawIndex === "" || rawIndex == null ? -1 : Number(rawIndex);
+    const language = nativeCoachLanguage(currentVoice);
+    setCoachSpeechStatus("KnightForge is speaking through Android Text-to-Speech.", true);
+    try {
+      await nativePlugin.speak({
+        text: narration,
+        lang: language,
+        rate: safeRate,
+        pitch: 0.98,
+        volume: 1,
+        voice: Number.isInteger(voiceIndex) ? voiceIndex : -1,
+        queueStrategy: 0,
+      });
+      if (requestId === coachSpeechSequence) {
+        setCoachSpeechStatus("Explanation finished. Continue when ready.");
+      }
+      return true;
+    } catch (error) {
+      if (requestId === coachSpeechSequence) {
+        const reason = error && error.message ? error.message : String(error || "Unknown TTS error");
+        setCoachSpeechStatus(
+          "Android could not speak this instruction: " + reason +
+          ". Check that a Text-to-Speech engine and English voice are installed."
+        );
+        updateNativeVoiceSetupButton(true);
+      }
+      return false;
+    }
+  }
+
+  if (!browserSpeechSupported()) {
     setCoachSpeechStatus("Speech synthesis is unavailable here. Read the written coaching instead.");
     return false;
   }
@@ -415,17 +591,19 @@ function speak(text) {
   const synth = window.speechSynthesis;
   synth.cancel();
   const utterance = new window.SpeechSynthesisUtterance(narration);
-  const voice = selectedCoachVoice();
-  const rate = Number($("coach-rate-select").value || 0.96);
   utterance.lang = voice ? voice.lang : "en-IN";
   if (voice) utterance.voice = voice;
-  utterance.rate = Number.isFinite(rate) ? rate : 0.96;
+  utterance.rate = safeRate;
   utterance.pitch = 0.98;
   utterance.volume = 1;
-  utterance.onstart = () => setCoachSpeechStatus("KnightForge is explaining the position.", true);
-  utterance.onend = () => setCoachSpeechStatus("Explanation finished. Continue when ready.");
+  utterance.onstart = () => {
+    if (requestId === coachSpeechSequence) setCoachSpeechStatus("KnightForge is explaining the position.", true);
+  };
+  utterance.onend = () => {
+    if (requestId === coachSpeechSequence) setCoachSpeechStatus("Explanation finished. Continue when ready.");
+  };
   utterance.onerror = (event) => {
-    if (!event || event.error !== "canceled") {
+    if (requestId === coachSpeechSequence && (!event || event.error !== "canceled")) {
       setCoachSpeechStatus("The device could not start speech. Try another voice or use Listen again.");
     }
   };
@@ -433,20 +611,51 @@ function speak(text) {
   return true;
 }
 
-function stopCoachSpeech() {
-  if (speechOutputSupported()) window.speechSynthesis.cancel();
+async function stopCoachSpeech() {
+  coachSpeechSequence += 1;
+  const nativePlugin = nativeCoachTts();
+  if (nativePlugin) {
+    try {
+      await nativePlugin.stop();
+    } catch (error) {
+      // The native engine may still be initializing; the next speech can retry.
+    }
+  } else if (browserSpeechSupported()) {
+    window.speechSynthesis.cancel();
+  }
   setCoachSpeechStatus("Narration stopped.");
 }
 
-if (speechOutputSupported()) {
-  refreshCoachVoiceOptions();
+async function openCoachVoiceSetup() {
+  const nativePlugin = nativeCoachTts();
+  if (!nativePlugin || typeof nativePlugin.openInstall !== "function") {
+    setCoachSpeechStatus("Open Android Settings → Accessibility → Text-to-speech output to install a voice engine.");
+    return;
+  }
+  try {
+    setCoachSpeechStatus("Opening Android Text-to-Speech setup…");
+    await nativePlugin.openInstall();
+    setCoachSpeechStatus("Return to KnightForge after enabling a voice, then tap Listen.");
+  } catch (error) {
+    setCoachSpeechStatus("Could not open voice setup. Check Android Settings → Accessibility → Text-to-speech output.");
+  }
+}
+
+if (nativeCoachTts()) {
+  void refreshCoachVoiceOptions();
+} else if (browserSpeechSupported()) {
+  void refreshCoachVoiceOptions();
   if (typeof window.speechSynthesis.addEventListener === "function") {
-    window.speechSynthesis.addEventListener("voiceschanged", refreshCoachVoiceOptions);
+    window.speechSynthesis.addEventListener("voiceschanged", () => {
+      void refreshCoachVoiceOptions();
+    });
   } else {
-    window.speechSynthesis.onvoiceschanged = refreshCoachVoiceOptions;
+    window.speechSynthesis.onvoiceschanged = () => {
+      void refreshCoachVoiceOptions();
+    };
   }
 } else {
-  setCoachSpeechStatus("Speech synthesis is not available in this browser. Written coaching remains active.");
+  setCoachSpeechStatus("Speech is not available here. Written coaching remains active.");
 }
 
 // =========================================================================
