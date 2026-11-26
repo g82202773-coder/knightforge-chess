@@ -840,8 +840,11 @@ def submit_move(
 
 
 @app.post("/api/sessions/{session_id}/continue")
-def continue_after_mistake(session_id: str) -> dict[str, Any]:
+def continue_after_mistake(
+    session_id: str, authorization: str | None = Header(default=None)
+) -> dict[str, Any]:
     """Apply the reviewed lesson move after the learner chooses Continue."""
+    uid = _user_id_from_header(authorization)
     record = store.get(session_id)
     if record.mode == "mastery":
         raise HTTPException(status_code=403, detail="Continue is disabled in Mastery mode.")
@@ -872,7 +875,7 @@ def continue_after_mistake(session_id: str) -> dict[str, Any]:
             result.state.prompt.kind in {"complete", "free_play"}
             and not record.completion_recorded
         ):
-            store.progress.record_lesson_completion(record.lesson_id, record.mode, 0)
+            store.progress.record_lesson_completion(record.lesson_id, record.mode, uid)
             record.completion_recorded = True
         payload = apply_mode_policy(submission_payload(result), record)
         payload["auto_reply_san"] = auto_reply_san
