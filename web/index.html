@@ -233,6 +233,31 @@
             <span id="turn-label" class="turn-pill">WHITE TO MOVE</span>
           </div>
         </div>
+        <section class="academy-coach-callout" aria-label="KnightForge coach explanation">
+          <div class="academy-coach-avatar" aria-hidden="true">
+            <svg viewBox="0 0 96 112" role="presentation" focusable="false">
+              <path d="M8 111c2-19 13-31 31-35h18c18 4 29 16 31 35" fill="#d9e0e4"/>
+              <path d="M24 111c3-15 11-23 24-23s21 8 24 23" fill="#9caeb5"/>
+              <path d="M29 46c0-22 8-34 20-34 15 0 23 12 23 34v17c-2 15-12 23-23 23S31 78 29 63z" fill="#e6b99c"/>
+              <path d="M26 47c-5-17 1-34 13-40 12-7 29-2 36 11 4 7 5 17 2 29-4-7-8-13-13-16-9 8-22 11-38 10z" fill="#59453d"/>
+              <path d="M31 36c4-13 14-19 26-18 8 1 14 6 18 14-11-3-20-7-26-12-4 8-10 13-18 16z" fill="#72564a"/>
+              <path d="M39 48c3-2 6-2 9 0M57 48c3-2 6-2 9 0" fill="none" stroke="#4b3b34" stroke-width="2.2" stroke-linecap="round"/>
+              <circle cx="44" cy="55" r="2" fill="#342e2b"/><circle cx="62" cy="55" r="2" fill="#342e2b"/>
+              <path d="M52 56l-2 9 4 1M44 72c5 4 12 4 17-1" fill="none" stroke="#9b675d" stroke-width="1.8" stroke-linecap="round"/>
+              <path d="M38 66c4 4 9 5 14 3 5 3 10 2 15-2-1 11-8 18-16 18-8 0-13-7-13-19z" fill="#725044" opacity=".82"/>
+              <path d="M17 111c2-17 10-27 25-31l7 10 8-10c15 4 23 14 25 31" fill="#e5e9e9"/>
+              <path d="M37 82l11 10 12-10 8 29H29z" fill="#70858b"/>
+            </svg>
+          </div>
+          <div class="academy-coach-bubble">
+            <div class="coach-bubble-meta">
+              <span class="eyebrow">KNIGHTFORGE CHESS COACH</span>
+              <span id="coach-speaking-status" class="coach-speaking-status">READY</span>
+            </div>
+            <p id="coach-text">Loading your lesson…</p>
+            <p id="coach-explanation" class="explanation"></p>
+          </div>
+        </section>
         <div class="board-wrap">
           <div id="files-top" class="board-coordinates files-top"></div>
           <div class="board-row">
@@ -291,11 +316,7 @@
           </select>
         </div>
 
-        <div class="coach-message">
-          <span class="eyebrow">YOUR NEXT TASK</span>
-          <p id="coach-text">Loading your lesson…</p>
-          <p id="coach-explanation" class="explanation"></p>
-        </div>
+        <!-- The coach explanation is displayed beside the academy board. -->
         <div id="feedback" class="feedback hidden" aria-live="polite"></div>
 
         <div class="hint-area">
@@ -308,8 +329,31 @@
         </div>
 
         <div class="coach-controls">
-          <label class="toggle"><input id="voice-toggle" type="checkbox"><span>Read coach aloud</span></label>
-          <button id="speak-btn" class="icon-button" title="Read instruction">🔊</button>
+          <label class="toggle" for="voice-toggle">
+            <input id="voice-toggle" type="checkbox">
+            <span>Automatically narrate new instructions</span>
+          </label>
+          <div class="coach-audio-actions">
+            <label class="coach-audio-setting">
+              <span>Voice</span>
+              <select id="coach-voice-select" aria-label="Coach voice">
+                <option value="">Device default</option>
+              </select>
+            </label>
+            <label class="coach-audio-setting">
+              <span>Speed</span>
+              <select id="coach-rate-select" aria-label="Coach speaking speed">
+                <option value="0.88">Calm</option>
+                <option value="0.96" selected>Natural</option>
+                <option value="1.05">Brisk</option>
+              </select>
+            </label>
+            <button id="speak-btn" class="button secondary mini" type="button">▶ Listen</button>
+            <button id="stop-speak-btn" class="button secondary mini" type="button">■ Stop</button>
+          </div>
+          <p id="coach-voice-status" class="coach-voice-status" role="status" aria-live="polite">
+            Coach narration uses the voices available on this device.
+          </p>
         </div>
         <div class="engine-note">
           <span class="engine-indicator"></span>
