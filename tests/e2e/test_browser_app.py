@@ -104,3 +104,50 @@ def test_academy_mistake_coach_retry_continue_and_voice(live_server_url: str) ->
         page.locator("#mistake-coach").wait_for(state="hidden")
         assert "e4" in page.locator("#moves").inner_text().lower()
         browser.close()
+
+
+
+def test_academy_coach_speech_bubble_arrows_and_voice_controls(live_server_url: str) -> None:
+    with playwright.sync_playwright() as p:
+        browser = p.chromium.launch()
+        page = browser.new_page(viewport={"width": 390, "height": 844})
+        page.goto(live_server_url, wait_until="networkidle")
+        page.locator('.mobile-tab-btn[data-tab="academy"]').click()
+        page.wait_for_selector("#board .square")
+        page.wait_for_selector(".academy-coach-callout")
+        page.wait_for_selector("#coach-voice-select")
+        page.wait_for_selector("#coach-rate-select")
+        assert page.locator("#coach-text").inner_text().strip()
+        assert page.locator("#coach-explanation").count() == 1
+        assert page.locator("#board .board-arrow").count() == 1
+        assert page.locator("#board .square.coach-arrow-source").count() == 1
+        assert page.locator("#board .square.coach-arrow-target").count() == 1
+
+        # Replace native TTS with a deterministic browser stub for the Listen action.
+        page.evaluate(
+            """() => {
+                Object.defineProperty(window, "speechSynthesis", {
+                    configurable: true,
+                    value: {
+                        cancel() {},
+                        getVoices() { return []; },
+                        addEventListener() {},
+                        speak(utterance) {
+                            window.__knightForgeSpoken = utterance.text;
+                            if (utterance.onstart) utterance.onstart();
+                            if (utterance.onend) utterance.onend();
+                        }
+                    }
+                });
+                window.SpeechSynthesisUtterance = function(text) {
+                    this.text = text;
+                };
+            }"""
+        )
+        page.locator("#coach-voice-select").select_option("")
+        page.locator("#speak-btn").click()
+        page.wait_for_function("Boolean(window.__knightForgeSpoken)")
+        assert page.evaluate("window.__knightForgeSpoken").strip()
+        page.locator("#stop-speak-btn").click()
+        assert "stopped" in page.locator("#coach-voice-status").inner_text().lower()
+        browser.close()
